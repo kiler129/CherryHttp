@@ -1,0 +1,35 @@
+{
+  "name": "noflash/cherryhttp",
+  "description": "Fast, secure, customizable and easy to use HTTP/1.1 server framework.",
+  "keywords": [
+    "http",
+    "server",
+    "framework",
+    "secure",
+    "fast",
+    "psr-4"
+  ],
+  "homepage": "http://github.com/kiler129/CherryHttp",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Grzegorz Zdanowski",
+      "email": "grzegorz@noflash.pl",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "psr/log": "~1.0"
+  },
+  "suggest": {
+    "noflash/shout": "Required to see any log messages from server. Also needed by most examples.",
+    "ext-dio": "Required to run \"ContinuousStreamDio\" example."
+  },
+  "autoload": {
+    "psr-4": {
+      "noFlash\\CherryHttp\\": "src"
+    }
+  }
+}
