@@ -1,5 +1,5 @@
 # &#127826; CherryHttp
-Fast, secure, customizable and easy to use HTTP/1.1 server implementation. It's also licensed under MIT, so feel free to use it in your commercial project ;)
+Fast, secure, customizable and easy to use HTTP/1.1 server implementation. It's also licensed under MIT, so feel free to use it in your commercial project ;)  
 Originally it was part of [TinyWs](https://github.com/kiler129/TinyWs), but it evolved into standalone project to provide modular architecture.
 
 ### What is supported and what's not?
@@ -58,7 +58,7 @@ Server use technique called synchronous I/O multiplexing utilizing [select(2)](h
 Server keeps track on every client socket and it's own server socket. After processing any information [stream_select()](http://php.net/stream_select) is called, which causes kernel to suspend whole PHP process (code freezes, no CPU is used during that time). When there's any expected activity on any socket, operating system wakes PHP process and applications continues. That process continues in endless loop.
 
 #### Debugging core
-Whole code contains a lot of debug messages wrapped into $this->logger->debug() calls. Due to performance reasons they're commented (unfortunately PHP doesn't offer builtin preprocessor like C does).  
+Whole code contains a lot of debug messages wrapped into `$this->logger->debug()` calls. Due to performance reasons they're commented (unfortunately PHP doesn't offer builtin preprocessor like C does).  
 There're also some additional verification code in some part of source, marked by `//TODO debug only` wrapped into multiline comment.
 
 You can safely uncomment them all and see what's going on under the hood.
