@@ -34,8 +34,8 @@ class Server
     private $clientsLimit = 1023;
     /** @var integer|null Interval in seconds to call callback */
     private $heartbeatInterval = null;
-    /** @var integer Holds unix timestamp of last heartbeat call */
-    private $lastHeartbeatTime = 0;
+    /** @var integer Holds unix timestamp of next heartbeat call */
+    private $nextHeartbeatTime = 0;
 
     /**
      * @param LoggerInterface $logger
@@ -171,7 +171,7 @@ class Server
             throw new InvalidArgumentException("Hearbeat interval MUST be integer >= 0");
         }
 
-        $this->lastHeartbeatTime = 0;
+        $this->nextHeartbeatTime = 0;
         $this->heartbeatInterval = $interval;
     }
 
@@ -259,10 +259,10 @@ class Server
         while (true) {
             try {
                 //Fire callback before builidng sockets arrays (if callback decides to modify sth it will be catched right away)
-                if ($this->subscribedEvents["heartbeat"] && time() - $this->lastHeartbeatTime >= $this->heartbeatInterval) {
+                if ($this->subscribedEvents["heartbeat"] && time() >= $this->nextHeartbeatTime) {
                     //$this->logger->debug("Firing heartbeat event");
 
-                    $this->lastHeartbeatTime = time();
+                    $this->nextHeartbeatTime = time() + $this->heartbeatInterval;
                     $this->eventsHandler->onHeartbeat();
                 }
 
