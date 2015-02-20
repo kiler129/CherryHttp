@@ -6,7 +6,7 @@ require_once("../../../psr/log/Psr/Log/AbstractLogger.php");
 require_once("../../../psr/log/Psr/Log/NullLogger.php");
 
 //Shout
-require_once("../../../noflash/shout/src/Shout.php");
+require_once("../../shout/src/Shout.php");
 
 //CherryHttp
 require_once("../src/ClientDisconnectException.php");
