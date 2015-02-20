@@ -1,6 +1,7 @@
 <?php
 namespace noFlash\CherryHttp;
 
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -14,6 +15,8 @@ abstract class StreamServerClient implements StreamServerClientInterface
     const STREAM_CHUNK_SIZE = 8192;
     /** @var resource Client socket */
     public $socket;
+    /** @var array Defines which events should be dispatched to eventsHandler by Server class */
+    public $subscribedEvents = array("writeBufferEmpty" => false, "httpException" => false);
     /** @var LoggerInterface */
     protected $logger;
     protected $inputBuffer;
@@ -184,6 +187,38 @@ abstract class StreamServerClient implements StreamServerClientInterface
 
         //$this->logger->debug("Added data to buffer, now contains " . strlen($this->outputBuffer) . " bytes"); //Time consuming
         return true;
+    }
+
+    /**
+     * Subscribe to event (aka enable it).
+     *
+     * @param string $eventName Any valid client event name
+     *
+     * @throws InvalidArgumentException Invalid event name specified
+     */
+    public function subscribeEvent($eventName)
+    {
+        if (!isset($this->subscribedEvents[$eventName])) {
+            throw new InvalidArgumentException("Event $eventName doesn't exists in client context");
+        }
+
+        $this->subscribedEvents[$eventName] = true;
+    }
+
+    /**
+     * Unsubscribe from event (aka disable it).
+     *
+     * @param string $eventName Any valid event name
+     *
+     * @throws InvalidArgumentException Invalid event name specified
+     */
+    public function unsubscribeEvent($eventName)
+    {
+        if (!isset($this->subscribedEvents[$eventName])) {
+            throw new InvalidArgumentException("Event $eventName doesn't exists in client context");
+        }
+
+        $this->subscribedEvents[$eventName] = false;
     }
 
     /**

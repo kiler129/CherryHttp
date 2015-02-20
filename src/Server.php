@@ -22,7 +22,7 @@ class Server
     protected $pathHandlers = array();
     /** @var EventsHandlerInterface|null */
     protected $eventsHandler = null;
-    /** @var array Defines which events should be dispatched to eventsHandler */
+    /** @var array Defines which events should be dispatched to eventsHandler - global array */
     protected $subscribedEvents = array("heartbeat" => false, "writeBufferEmpty" => false, "httpException" => false);
     /** @var resource|null Holds listening server socket. */
     private $serverSocket;
@@ -179,13 +179,15 @@ class Server
      * Subscribe to event (aka enable it).
      *
      * @param string $eventName Any valid event name
+     * @param bool $overwriteAll When true [default] subscription status will be changed for currently connected
+     *     clients, when false only new clients gonna be affected
      *
      * @throws InvalidArgumentException Invalid event name specified
      * @throws ServerException Trying to subscribe event before specifying events handler
      *
      * @see setEventHandler()
      */
-    public function subscribeEvent($eventName)
+    public function subscribeEvent($eventName, $changeAll = true)
     {
         if (!isset($this->subscribedEvents[$eventName])) {
             throw new InvalidArgumentException("Event $eventName doesn't exists");
@@ -196,22 +198,46 @@ class Server
         }
 
         $this->subscribedEvents[$eventName] = true;
+
+        if (!$changeAll) {
+            return;
+        }
+
+        foreach ($this->clients as $client) {
+            if (isset($client->subscribedEvents[$eventName])) {
+                continue; //Event doesn't exist at client level (eg. heartbeat)
+            }
+            $client->subscribedEvents[$eventName] = false;
+        }
     }
 
     /**
      * Unsubscribe from event (aka disable it).
      *
      * @param string $eventName Any valid event name
+     * @param bool $overwriteAll When true [default] subscription status will be changed for currently connected
+     *     clients, when false only new clients gonna be affected
      *
      * @throws InvalidArgumentException Invalid event name specified
      */
-    public function unsubscribeEvent($eventName)
+    public function unsubscribeEvent($eventName, $changeAll = true)
     {
         if (!isset($this->subscribedEvents[$eventName])) {
             throw new InvalidArgumentException("Event $eventName doesn't exists");
         }
 
         $this->subscribedEvents[$eventName] = false;
+
+        if (!$changeAll) {
+            return;
+        }
+
+        foreach ($this->clients as $client) {
+            if (isset($client->subscribedEvents[$eventName])) {
+                continue; //Event doesn't exist at client level (eg. heartbeat)
+            }
+            $client->subscribedEvents[$eventName] = false;
+        }
     }
 
     /**
@@ -280,7 +306,7 @@ class Server
                     foreach ($write as $socket) {
                         $socketId = (int)$socket;
 
-                        if ($this->clients[$socketId]->onWriteReady() && $this->subscribedEvents["writeBufferEmpty"]) {
+                        if ($this->clients[$socketId]->onWriteReady() && $this->clients[$socketId]->subscribedEvents["writeBufferEmpty"]) {
                             $this->eventsHandler->onWriteBufferEmpty($this->clients[$socketId]);
                         }
                     }
@@ -362,6 +388,7 @@ class Server
             }
 
             $this->clients[(int)$clientSocket] = new HttpClient($clientSocket, $peerName, $this->logger);
+            $this->clients[(int)$clientSocket]->subscribedEvents = $this->subscribedEvents;
             $this->clientsCount++;
             $this->logger->info("New client connected $peerName");
 
@@ -410,7 +437,7 @@ class Server
     {
         //$this->logger->debug("Handling HttpException [code: " . $exception->getCode() . ", reason: " . $exception->getMessage() . "]");
 
-        $errorResponse = ($this->subscribedEvents["httpException"]) ? $this->eventsHandler->onHttpException($exception,
+        $errorResponse = ($client->subscribedEvents["httpException"]) ? $this->eventsHandler->onHttpException($exception,
             $client) : $exception->getResponse();
 
         $client->pushData($errorResponse);

@@ -7,6 +7,7 @@ namespace noFlash\CherryHttp;
  * @package noFlash\CherryHttp
  *
  * @property resource $socket Client socket returned by stream_socket_accept()
+ * @property string[] $subscribedEvents Contains subscription status for events of client
  * @property HttpRequest|null $request Current request sent by client, null if no request present
  *
  */
