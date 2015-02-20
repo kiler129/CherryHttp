@@ -3,7 +3,7 @@ require_once("../../../autoload.php");
 
 /**
  * This example serves infinite stream of null bytes at url http://127.0.0.1:8080/zero
- * It uses "Direct I/O" which require DIO php extension. It's generaly around 10% faster than standard approach.
+ * It uses "Direct I/O" which require DIO php extension. It's generally around 10% faster than standard approach.
  *
  * Note: This example doesn't work on Windows (there's no /dev/zero stream)
  */
@@ -58,7 +58,7 @@ class StreamServerDio implements HttpRequestHandlerInterface, EventsHandlerInter
 
 
 $streamServer = new StreamServerDio();
-$server = new Server(); //Logger ommited to speed it up ;)
+$server = new Server(); //Logger omitted to speed it up ;)
 $server->bind("127.0.0.1", 8080);
 $server->addPathHandler($streamServer);
 $server->setEventsHandler($streamServer);

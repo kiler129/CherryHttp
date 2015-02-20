@@ -1,6 +1,10 @@
 <?php
 require_once("../../../autoload.php");
 
+/**
+ * This example provides outputs "I'm everywhere" along with current time (ISO 8601 format) on all URLs
+ */
+
 use noFlash\CherryHttp\HttpRequest;
 use noFlash\CherryHttp\HttpRequestHandlerInterface;
 use noFlash\CherryHttp\HttpResponse;

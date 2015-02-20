@@ -1,6 +1,10 @@
 <?php
 require_once("../../../autoload.php");
 
+/**
+ * This example provides two URLs - http://127.0.0.1:8080/hello (serving "Hello world!") and http://127.0.0.1:8080/time
+ */
+
 use noFlash\CherryHttp\HttpRequest;
 use noFlash\CherryHttp\HttpRequestHandlerInterface;
 use noFlash\CherryHttp\HttpResponse;
