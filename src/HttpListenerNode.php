@@ -8,6 +8,7 @@
 
 namespace noFlash\CherryHttp;
 
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
@@ -55,6 +56,10 @@ class HttpListenerNode extends StreamServerNode
 
         if ($ssl) {
             throw new ServerException("SSL support is not implemented");
+        }
+
+        if(!filter_var($ip, FILTER_VALIDATE_IP)) {
+            throw new InvalidArgumentException("Failed to create " . __CLASS__ . " - $ip is not valid IP address");
         }
 
         /** @noinspection PhpUsageOfSilenceOperatorInspection This function raises PHP E_WARNING */
