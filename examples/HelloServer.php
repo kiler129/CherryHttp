@@ -9,12 +9,12 @@ use noFlash\CherryHttp\HttpRequest;
 use noFlash\CherryHttp\HttpRequestHandlerInterface;
 use noFlash\CherryHttp\HttpResponse;
 use noFlash\CherryHttp\Server;
-use noFlash\CherryHttp\StreamServerClientInterface;
+use noFlash\CherryHttp\StreamServerNodeInterface;
 use noFlash\Shout\Shout;
 
 class HelloServer implements HttpRequestHandlerInterface
 {
-    public function onRequest(StreamServerClientInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
     {
         $response = new HttpResponse("I'm everywhere ;)\nIt's " . date("c"));
         $client->pushData($response);

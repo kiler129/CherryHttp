@@ -25,13 +25,13 @@ interface EventsHandlerInterface
      * large files over HTTP.
      * Simple demonstration of it's usage can be seen in "ContinuousStream" example.
      *
-     * @param StreamServerClientInterface $client
+     * @param StreamServerNodeInterface $client
      *
      * @return void
-     * @throws ClientDisconnectException
+     * @throws NodeDisconnectException
      * @throws ClientUpgradeException
      */
-    public function onWriteBufferEmpty(StreamServerClientInterface &$client);
+    public function onWriteBufferEmpty(StreamServerNodeInterface &$client);
 
 
     /**
@@ -40,10 +40,10 @@ interface EventsHandlerInterface
      * actions.
      *
      * @param HttpException $exception Raised exception containing proposed HttpResponse
-     * @param StreamServerClientInterface $client
+     * @param StreamServerNodeInterface $client
      *
      * @return HttpResponse
      * @see HttpException::getResponse()
      */
-    public function onHttpException(HttpException &$exception, StreamServerClientInterface &$client);
+    public function onHttpException(HttpException &$exception, StreamServerNodeInterface &$client);
 }

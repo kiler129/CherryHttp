@@ -2,7 +2,7 @@
 namespace noFlash\CherryHttp;
 
 /**
- * Interface for stream server client.
+ * Interface for stream server nodes (nodes & listeners)
  *
  * @package noFlash\CherryHttp
  *
@@ -11,7 +11,7 @@ namespace noFlash\CherryHttp;
  * @property HttpRequest|null $request Current request sent by client, null if no request present
  *
  */
-interface StreamServerClientInterface
+interface StreamServerNodeInterface
 {
     /**
      * Return remote peername
@@ -50,7 +50,7 @@ interface StreamServerClientInterface
      * disconnection)
      *
      * @return void
-     * @throws ClientDisconnectException On client disconnection
+     * @throws NodeDisconnectException On client disconnection
      */
     public function onReadReady();
 

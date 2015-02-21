@@ -12,7 +12,7 @@ use noFlash\CherryHttp\HttpRequest;
 use noFlash\CherryHttp\HttpRequestHandlerInterface;
 use noFlash\CherryHttp\HttpResponse;
 use noFlash\CherryHttp\Server;
-use noFlash\CherryHttp\StreamServerClientInterface;
+use noFlash\CherryHttp\StreamServerNodeInterface;
 
 class StreamServer implements HttpRequestHandlerInterface, EventsHandlerInterface
 {
@@ -23,7 +23,7 @@ class StreamServer implements HttpRequestHandlerInterface, EventsHandlerInterfac
         $this->zeroStream = fopen("/dev/zero", "r");
     }
 
-    public function onRequest(StreamServerClientInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
     {
         $response = new HttpResponse();
         $response->setHeader("Content-Disposition", "attachment; filename=zero.bin;");
@@ -40,12 +40,12 @@ class StreamServer implements HttpRequestHandlerInterface, EventsHandlerInterfac
     {
     }
 
-    public function onWriteBufferEmpty(StreamServerClientInterface &$client)
+    public function onWriteBufferEmpty(StreamServerNodeInterface &$client)
     {
         $client->pushData(fread($this->zeroStream, 131072));
     }
 
-    public function onHttpException(\noFlash\CherryHttp\HttpException &$exception, StreamServerClientInterface &$client)
+    public function onHttpException(\noFlash\CherryHttp\HttpException &$exception, StreamServerNodeInterface &$client)
     {
     }
 }

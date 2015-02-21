@@ -11,14 +11,14 @@ use noFlash\CherryHttp\HttpException;
 use noFlash\CherryHttp\HttpRequest;
 use noFlash\CherryHttp\HttpRequestHandlerInterface;
 use noFlash\CherryHttp\Server;
-use noFlash\CherryHttp\StreamServerClientInterface;
+use noFlash\CherryHttp\StreamServerNodeInterface;
 use noFlash\Shout\Shout;
 
 class PrettyErrors implements HttpRequestHandlerInterface, EventsHandlerInterface
 {
-    const ERROR_PAGE = '<html><head><title>&#127826; Error %1$s</title><style>html,body{margin:0;padding:0;height:100%%;width:100%%;background:gray;font-family:Sans-serif;}</style></head><body><div style="width:100%%;height:100%%;background:radial-gradient(ellipse at center,rgba(255,255,255,1) 0%%,rgba(255,255,255,0) 100%%);"><div style="text-align:center;position:relative;top:45%%;transform:translateY(-45%%);"><h1 style="font-size:10em;margin:0;">%1$s</h1><p style="font-family:Monospace;font-size:1.5em;">%2$s</p></div></div></body></html>';
+    const ERROR_PAGE = '<html><head><title>&#127826; Error %1$s</title><style>html,body{margin:0;padding:0;height:100%%;width:100%%;background:gray;font-family:sans-serif;}</style></head><body><div style="width:100%%;height:100%%;background:radial-gradient(ellipse at center,rgba(255,255,255,1) 0%%,rgba(255,255,255,0) 100%%);"><div style="text-align:center;position:relative;top:45%%;transform:translateY(-45%%);"><h1 style="font-size:10em;margin:0;">%1$s</h1><p style="font-family:Monospace;font-size:1.5em;">%2$s</p></div></div></body></html>';
 
-    public function onRequest(StreamServerClientInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
     {
         throw new HttpException("It's a trap, run away!");
     }
@@ -32,11 +32,11 @@ class PrettyErrors implements HttpRequestHandlerInterface, EventsHandlerInterfac
     {
     }
 
-    public function onWriteBufferEmpty(StreamServerClientInterface &$client)
+    public function onWriteBufferEmpty(StreamServerNodeInterface &$client)
     {
     }
 
-    public function onHttpException(HttpException &$exception, StreamServerClientInterface &$client)
+    public function onHttpException(HttpException &$exception, StreamServerNodeInterface &$client)
     {
         $exceptionResponse = $exception->getResponse();
 

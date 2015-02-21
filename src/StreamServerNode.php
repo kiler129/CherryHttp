@@ -5,11 +5,11 @@ use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
- * Generic TCP stream client representation.
+ * Generic TCP stream node representation.
  *
  * @package noFlash\CherryHttp
  */
-abstract class StreamServerClient implements StreamServerClientInterface
+abstract class StreamServerNode implements StreamServerNodeInterface
 {
     /* @var integer Defines default chunk size read from wire. By default most (all?) systems use 8KB */
     const STREAM_CHUNK_SIZE = 8192;
@@ -33,7 +33,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
      *
      * @param LoggerInterface $logger
      *
-     * @throws ClientDisconnectException
+     * @throws NodeDisconnectException
      */
     public function __construct($socket, $peerName, LoggerInterface &$logger)
     {
@@ -43,7 +43,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
         $this->peerName = empty($peerName) ? stream_socket_get_name($socket, false) : $peerName;
 
         if (!is_resource($socket) || feof($socket)) {
-            $this->logger->error("Client $this is gone before handling (server overloaded?)");
+            $this->logger->error("Node $this is gone before handling (server overloaded?)");
             $this->disconnect(true);
         }
     }
@@ -51,7 +51,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
     /**
      * {@inheritdoc}
      */
-    public function getPeerName()
+    final public function getPeerName()
     {
         return $this->peerName;
     }
@@ -59,7 +59,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
     /**
      * {@inheritdoc}
      */
-    public function getIp()
+    final public function getIp()
     {
         if ($this->ip === null) {
             $this->ip = substr($this->peerName, 0, strrpos($this->peerName, ":"));
@@ -71,7 +71,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
     /**
      * {@inheritdoc}
      */
-    final public function isWriteReady()
+    public function isWriteReady()
     {
         if ($this->outputBuffer === '') { //You CANNOT use empty() - buffer can contain single \0
             if ($this->isDegenerated) {
@@ -87,7 +87,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
     /**
      * {@inheritdoc}
      */
-    final public function onReadReady()
+    public function onReadReady()
     {
         $readContent = fread($this->socket, static::STREAM_CHUNK_SIZE); //Around 13% faster than stream_get_contents()
         if ($readContent === '') { //Client disconnected
@@ -106,17 +106,17 @@ abstract class StreamServerClient implements StreamServerClientInterface
         //$this->logger->debug("Client $this contains " . strlen($this->inputBuffer) . " bytes in read buffer"); //Time consuming
 
         //For explanation read "important note" for processInputBuffer()
-        while ($this->processInputBuffer() === false) {
-            ;
-        }
+        //@formatter:off
+        while ($this->processInputBuffer() === false);
+        //@formatter:on
     }
 
     /**
      * {@inheritdoc}
      *
-     * @throws ClientDisconnectException
+     * @throws NodeDisconnectException
      */
-    final public function onWriteReady()
+    public function onWriteReady()
     {
         $bytesWritten = fwrite($this->socket, $this->outputBuffer);
         /*if ($bytesWritten === 0) { //This assumption can be wrong. It was observed but maybe due possible buggy pushData()?
@@ -146,7 +146,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
     /**
      * {@inheritdoc}
      *
-     * @throws ClientDisconnectException
+     * @throws NodeDisconnectException
      */
     public function disconnect($drop = false)
     {
@@ -157,7 +157,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
             $this->outputBuffer = "";
             /** @noinspection PhpUsageOfSilenceOperatorInspection fclose() generates E_WARNING if socket is invalid, in this case we don't care if it's valid or not */
             @fclose($this->socket);
-            throw new ClientDisconnectException($this);
+            throw new NodeDisconnectException($this);
 
         } else {
             //$this->logger->debug("Disconnecting client $this (waiting for output buffer to be send...)");
@@ -177,7 +177,7 @@ abstract class StreamServerClient implements StreamServerClientInterface
     /**
      * @{@inheritdoc}
      */
-    final public function pushData($data)
+    public function pushData($data)
     {
         if ($this->isDegenerated) {
             return false;
@@ -188,6 +188,17 @@ abstract class StreamServerClient implements StreamServerClientInterface
         //$this->logger->debug("Added data to buffer, now contains " . strlen($this->outputBuffer) . " bytes"); //Time consuming
         return true;
     }
+
+    /**
+     * Method is called everytime some data are collected.
+     *
+     * Important note: to prevent infinite loops this function MUST NOT return false unless it's intended to be called
+     * again. At first it seems weird, but it's useful dealing with multiple "packets" of data after single buffer
+     * read efficiently (using recurrence creates very deep stack eating significant amount of memory & CPU).
+     *
+     * @return bool|null
+     */
+    abstract protected function processInputBuffer();
 
     /**
      * Subscribe to event (aka enable it).
@@ -220,15 +231,4 @@ abstract class StreamServerClient implements StreamServerClientInterface
 
         $this->subscribedEvents[$eventName] = false;
     }
-
-    /**
-     * Method is called everytime some data are collected.
-     *
-     * Important note: to prevent infinite loops this function MUST NOT return false unless it's intended to be called
-     * again. At first it seems weird, but it's useful dealing with multiple "packets" of data after single buffer
-     * read efficiently (using recurrence creates very deep stack eating significant amount of memory & CPU).
-     *
-     * @return bool|null
-     */
-    abstract protected function processInputBuffer();
 }

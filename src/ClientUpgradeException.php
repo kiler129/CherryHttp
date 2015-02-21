@@ -10,18 +10,18 @@ use Exception;
  */
 class ClientUpgradeException extends Exception
 {
-    /** @var StreamServerClientInterface */
+    /** @var StreamServerNodeInterface */
     protected $oldClient;
-    /** @var StreamServerClientInterface */
+    /** @var StreamServerNodeInterface */
     protected $newClient;
 
     /**
-     * @param StreamServerClientInterface $oldClient
-     * @param StreamServerClientInterface $newClient
+     * @param StreamServerNodeInterface $oldNode
+     * @param StreamServerNodeInterface $newClient
      */
-    public function __construct(StreamServerClientInterface &$oldClient, StreamServerClientInterface &$newClient)
+    public function __construct(StreamServerNodeInterface &$oldNode, StreamServerNodeInterface &$newClient)
     {
-        $this->oldClient = &$oldClient;
+        $this->oldClient = &$oldNode;
         $this->newClient = &$newClient;
         parent::__construct("Upgrading client to new one.");
     }
@@ -29,7 +29,7 @@ class ClientUpgradeException extends Exception
     /**
      * Provides old client object. It's provided for identification purposes.
      *
-     * @return StreamServerClientInterface
+     * @return StreamServerNodeInterface
      */
     public function getOldClient()
     {
@@ -39,7 +39,7 @@ class ClientUpgradeException extends Exception
     /**
      * Provides new ready to use (already prepared by code raising this exception) object of client.
      *
-     * @return StreamServerClientInterface
+     * @return StreamServerNodeInterface
      */
     public function getNewClient()
     {

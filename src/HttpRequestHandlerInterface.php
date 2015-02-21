@@ -14,16 +14,16 @@ interface HttpRequestHandlerInterface
     /**
      * Called everytime new request matching paths specified by getHandledPaths() completely arrives.
      *
-     * @param StreamServerClientInterface $client
+     * @param StreamServerNodeInterface $client
      * @param HttpRequest $request
      *
      * @return void
-     * @throws ClientDisconnectException
+     * @throws NodeDisconnectException
      * @throws ClientUpgradeException
      *
      * @see getHandledPaths()
      */
-    public function onRequest(StreamServerClientInterface &$client, HttpRequest &$request);
+    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request);
 
     /**
      * Returns paths which events handler wish to handle by receiving requests.

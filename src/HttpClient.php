@@ -6,7 +6,7 @@ namespace noFlash\CherryHttp;
  *
  * @package noFlash\CherryHttp
  */
-class HttpClient extends StreamServerClient
+class HttpClient extends StreamServerNode
 {
     /** @var HttpRequest Currently handled HTTP request */
     public $request;
@@ -36,8 +36,8 @@ class HttpClient extends StreamServerClient
                 return;
             }
 
-            list($headers, $this->inputBuffer) = explode("\r\n\r\n", $this->inputBuffer,
-                2); //TODO: Refactor to 2x substr (based on $headersBreakpoint) - it's ~5% faster [but it need to be changed along with payloads support]
+            //TODO: Refactor to 2x substr (based on $headersBreakpoint) - it's ~5% faster [but it need to be changed along with payloads support]
+            list($headers, $this->inputBuffer) = explode("\r\n\r\n", $this->inputBuffer, 2);
             //$this->logger->debug("Got HTTP headers, creating HttpRequest...");
             $this->request = new HttpRequest($headers, $this->logger);
         }

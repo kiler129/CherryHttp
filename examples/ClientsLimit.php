@@ -11,12 +11,12 @@ use noFlash\CherryHttp\HttpRequest;
 use noFlash\CherryHttp\HttpRequestHandlerInterface;
 use noFlash\CherryHttp\HttpResponse;
 use noFlash\CherryHttp\Server;
-use noFlash\CherryHttp\StreamServerClientInterface;
+use noFlash\CherryHttp\StreamServerNodeInterface;
 use noFlash\Shout\Shout;
 
 class ClientsLimit implements HttpRequestHandlerInterface
 {
-    public function onRequest(StreamServerClientInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
     {
         $response = new HttpResponse("Current time: " . date("c"));
         $client->pushData($response);
@@ -30,7 +30,7 @@ class ClientsLimit implements HttpRequestHandlerInterface
 
 $prettyErrors = new ClientsLimit();
 $server = new Server(new Shout());
-$server->setClientsLimit(1); //Set number of clients limit
+$server->setNodesLimit(1); //Set number of clients limit
 $server->bind("127.0.0.1", 8080);
 $server->addPathHandler($prettyErrors);
 $server->run();

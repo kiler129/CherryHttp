@@ -9,7 +9,7 @@ require_once("../../../autoload.php");
  */
 
 if (function_exists("xdebug_get_profiler_filename")) {
-    echo xdebug_get_profiler_filename() . "\n";
+    echo xdebug_get_profiler_filename() . "\n"; //Used for profiling - not actual part of example ;)
 }
 
 use noFlash\CherryHttp\EventsHandlerInterface;
@@ -17,7 +17,7 @@ use noFlash\CherryHttp\HttpRequest;
 use noFlash\CherryHttp\HttpRequestHandlerInterface;
 use noFlash\CherryHttp\HttpResponse;
 use noFlash\CherryHttp\Server;
-use noFlash\CherryHttp\StreamServerClientInterface;
+use noFlash\CherryHttp\StreamServerNodeInterface;
 
 class StreamServerDio implements HttpRequestHandlerInterface, EventsHandlerInterface
 {
@@ -29,7 +29,7 @@ class StreamServerDio implements HttpRequestHandlerInterface, EventsHandlerInter
         $this->zeroStream = dio_open("/dev/zero", O_RDONLY);
     }
 
-    public function onRequest(StreamServerClientInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
     {
         $response = new HttpResponse();
         $response->setHeader("Content-Disposition", "attachment; filename=zero.bin;");
@@ -46,12 +46,12 @@ class StreamServerDio implements HttpRequestHandlerInterface, EventsHandlerInter
     {
     }
 
-    public function onWriteBufferEmpty(StreamServerClientInterface &$client)
+    public function onWriteBufferEmpty(StreamServerNodeInterface &$client)
     {
         $client->pushData(dio_read($this->zeroStream, 131072));
     }
 
-    public function onHttpException(\noFlash\CherryHttp\HttpException &$exception, StreamServerClientInterface &$client)
+    public function onHttpException(\noFlash\CherryHttp\HttpException &$exception, StreamServerNodeInterface &$client)
     {
     }
 }

@@ -5,7 +5,7 @@ use InvalidArgumentException;
 use LogicException;
 
 /**
- * Represents generic HTTP response containing all informations to send to client
+ * Represents generic HTTP response containing all information to send to client
  *
  * @package noFlash\CherryHttp
  */
@@ -27,7 +27,7 @@ class HttpResponse
      * @param int $code HTTP code, see HttpCode class
      *
      * @throws InvalidArgumentException Raised when invalid code is provided.
-     * @throws LogicException Raied if you try to set code which should not contain body (eg. 204 No Content) and
+     * @throws LogicException Raised if you try to set code which should not contain body (eg. 204 No Content) and
      *     provide body.
      */
     public function __construct($body = null, array $headers = array(), $code = HttpCode::OK)
@@ -46,7 +46,7 @@ class HttpResponse
      * @param string
      *
      * @throws InvalidArgumentException Invalid HTTP version was set. Note that HttpResponse supports 1.0 & 1.1
-     *     verisons only.
+     *     venison only.
      */
     public function setProtocolVersion($httpVersion)
     {
@@ -166,7 +166,7 @@ class HttpResponse
 
     /**
      * Sets body for response.
-     * It also automagically sets correct Content-Length header.
+     * It also automatically sets correct Content-Length header.
      *
      * @param $body
      *
@@ -192,6 +192,7 @@ class HttpResponse
     public function isConnectionClose()
     {
         $connectionHeader = strtolower($this->getHeader("connection"));
+
         return ($connectionHeader === "close" || ((float)$this->getProtocolVersion() <= 1.1 && $connectionHeader !== "keep-alive"));
     }
 

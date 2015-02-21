@@ -122,7 +122,7 @@ class HttpRequest
      * Decides if TCP connection should be closed after request completion.
      *
      * @return bool
-     * @todo Veirfy if this method behaviour conforms to HTTP RFC
+     * @todo Verify if this method behaviour conforms to HTTP RFC
      */
     public function closeConnection()
     {
