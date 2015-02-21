@@ -176,7 +176,7 @@ class HttpRequest
             $headers[$header[0]] = $header[1];
         }
 
-        return $this->headers;
+        return $headers;
     }
 
     /**
