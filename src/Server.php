@@ -163,11 +163,11 @@ class Server
      *
      * @param StreamServerNodeInterface $node Node to remove from server
      */
-    private function removeNode($node)
+    public function removeNode(StreamServerNodeInterface $node)
     {
-        /*if (!isset($this->nodes[(int)$node->socket])) { //TODO debug only, client have to be in this array. Comment-out after debugging.
+        if (!isset($this->nodes[(int)$node->socket])) {
             throw new ServerException("Tried to remove nonexistent node [bug?]");
-        }*/
+        }
 
         unset($this->nodes[(int)$node->socket]);
         $this->nodesCount--;
