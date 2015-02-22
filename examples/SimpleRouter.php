@@ -14,7 +14,7 @@ use noFlash\Shout\Shout;
 
 class SimpleRouter implements HttpRequestHandlerInterface
 {
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         switch ($request->getUri()) {
             case "/hello":

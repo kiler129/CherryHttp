@@ -38,18 +38,11 @@ class Server
     /**
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface &$logger = null, HttpRouterInterface &$router = null)
+    public function __construct(LoggerInterface $logger = null, HttpRouterInterface $router = null)
     {
-        if ($logger === null) {
-            $this->logger = new NullLogger();
-
-        } else {
-            $this->logger = &$logger;
-        }
-
+        $this->logger = ($logger === null) ? new NullLogger() : $logger;
         $this->router = ($router === null) ? new HttpRouter($this->logger) : $router;
     }
-
 
     /**
      * Creates listener using default HttpListenerNode class
@@ -107,7 +100,7 @@ class Server
      *
      * @throws ServerException
      */
-    public function addNode(StreamServerNodeInterface &$node)
+    public function addNode(StreamServerNodeInterface $node)
     {
         try {
             if ($this->nodesCount >= $this->nodesLimit) {
@@ -117,7 +110,7 @@ class Server
                 return;
             }
 
-            $this->nodes[(int)$node->socket] = &$node;
+            $this->nodes[(int)$node->socket] = $node;
             $this->nodes[(int)$node->socket]->subscribedEvents = $this->subscribedEvents; //TODO this should be moved to HttpListenerNode
             $this->nodesCount++;
             $this->logger->info("New node added to server: " . $node->getPeerName());
@@ -157,9 +150,9 @@ class Server
      *
      * @see http://en.wikipedia.org/wiki/Select_(Unix)
      */
-    public function setEventsHandler(EventsHandlerInterface &$handler)
+    public function setEventsHandler(EventsHandlerInterface $handler)
     {
-        $this->eventsHandler = &$handler;
+        $this->eventsHandler = $handler;
     }
 
     /**
@@ -323,7 +316,7 @@ class Server
      * @param HttpException $exception HttpException to handle
      * @param StreamServerNodeInterface $client Client which generated that exception
      */
-    private function handleHttpException(HttpException &$exception, StreamServerNodeInterface &$client)
+    private function handleHttpException(HttpException $exception, StreamServerNodeInterface $client)
     {
         //$this->logger->debug("Handling HttpException [code: " . $exception->getCode() . ", reason: " . $exception->getMessage() . "]");
 
@@ -354,6 +347,6 @@ class Server
             throw new ServerException("Tried to upgrade non existing client!");
         }
 
-        $this->nodes[(int)$oldClient->socket] = &$upgrade->getNewClient();
+        $this->nodes[(int)$oldClient->socket] = $upgrade->getNewClient();
     }
 }

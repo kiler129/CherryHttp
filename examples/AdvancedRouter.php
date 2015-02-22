@@ -23,7 +23,7 @@ class CustomRouter implements HttpRouterInterface
 {
     private $browsers;
 
-    public function handleClientRequest(StreamServerNodeInterface &$client)
+    public function handleClientRequest(StreamServerNodeInterface $client)
     {
         $userAgent = $client->request->getHeader("user-agent");
         $isHandled = false;
@@ -41,19 +41,19 @@ class CustomRouter implements HttpRouterInterface
         }
     }
 
-    public function addPathHandler(HttpRequestHandlerInterface &$requestHandler)
+    public function addPathHandler(HttpRequestHandlerInterface $requestHandler)
     {
         $this->browsers[get_class($requestHandler)] = $requestHandler;
     }
 
-    public function removePathHandler(HttpRequestHandlerInterface &$requestHandler)
+    public function removePathHandler(HttpRequestHandlerInterface $requestHandler)
     {
         unset($this->browsers[get_class($requestHandler)]);
     }
 }
 
 class AppleWebKit implements HttpRequestHandlerInterface {
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $client->pushData(new HttpResponse("Hello WebKit-based browser!"));
     }
@@ -66,7 +66,7 @@ class AppleWebKit implements HttpRequestHandlerInterface {
 }
 
 class Firefox implements HttpRequestHandlerInterface {
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $client->pushData(new HttpResponse("Hello Firefox!"));
     }
@@ -79,7 +79,7 @@ class Firefox implements HttpRequestHandlerInterface {
 }
 
 class MSIE implements HttpRequestHandlerInterface {
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $client->pushData(new HttpResponse("Internet Exploder, could you stop destroying the Internet, please?"));
     }

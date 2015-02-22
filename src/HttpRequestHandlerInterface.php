@@ -23,7 +23,7 @@ interface HttpRequestHandlerInterface
      *
      * @see getHandledPaths()
      */
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request);
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request);
 
     /**
      * Returns paths which events handler wish to handle by receiving requests.

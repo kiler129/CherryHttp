@@ -19,20 +19,15 @@ class HttpRouter implements HttpRouterInterface {
     /**
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface &$logger = null)
+    public function __construct(LoggerInterface $logger = null)
     {
-        if ($logger === null) {
-            $this->logger = new NullLogger();
-
-        } else {
-            $this->logger = &$logger;
-        }
+        $this->logger = ($logger === null) ? new NullLogger() : $logger;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function addPathHandler(HttpRequestHandlerInterface &$requestHandler)
+    public function addPathHandler(HttpRequestHandlerInterface $requestHandler)
     {
         $paths = $requestHandler->getHandledPaths();
         foreach ($paths as $path) {
@@ -40,14 +35,14 @@ class HttpRouter implements HttpRouterInterface {
                 $this->logger->warning("Replacing path handler " . get_class($this->pathHandlers[$path]) . " with " . get_class($requestHandler) . " for path $path");
             }
 
-            $this->pathHandlers[$path] = &$requestHandler;
+            $this->pathHandlers[$path] = $requestHandler;
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function removePathHandler(HttpRequestHandlerInterface &$requestHandler)
+    public function removePathHandler(HttpRequestHandlerInterface $requestHandler)
     {
         foreach ($this->pathHandlers as $path => $handler) {
             if ($handler === $requestHandler) {
@@ -59,7 +54,7 @@ class HttpRouter implements HttpRouterInterface {
     /**
      * {@inheritdoc}
      */
-    public function handleClientRequest(StreamServerNodeInterface &$client)
+    public function handleClientRequest(StreamServerNodeInterface $client)
     {
         //$this->logger->debug("Request receiving from " . $client . " finished");
         $request = $client->request;

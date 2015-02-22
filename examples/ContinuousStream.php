@@ -23,7 +23,7 @@ class StreamServer implements HttpRequestHandlerInterface, EventsHandlerInterfac
         $this->zeroStream = fopen("/dev/zero", "r");
     }
 
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $response = new HttpResponse();
         $response->setHeader("Content-Disposition", "attachment; filename=zero.bin;");
@@ -40,12 +40,12 @@ class StreamServer implements HttpRequestHandlerInterface, EventsHandlerInterfac
     {
     }
 
-    public function onWriteBufferEmpty(StreamServerNodeInterface &$client)
+    public function onWriteBufferEmpty(StreamServerNodeInterface $client)
     {
         $client->pushData(fread($this->zeroStream, 131072));
     }
 
-    public function onHttpException(\noFlash\CherryHttp\HttpException &$exception, StreamServerNodeInterface &$client)
+    public function onHttpException(\noFlash\CherryHttp\HttpException $exception, StreamServerNodeInterface $client)
     {
     }
 }

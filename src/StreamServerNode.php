@@ -35,9 +35,9 @@ abstract class StreamServerNode implements StreamServerNodeInterface
      *
      * @throws NodeDisconnectException
      */
-    public function __construct($socket, $peerName, LoggerInterface &$logger)
+    public function __construct($socket, $peerName, LoggerInterface $logger)
     {
-        $this->logger = &$logger;
+        $this->logger = ($logger === null) ? new NullLogger() : $logger;
 
         $this->socket = $socket;
         $this->peerName = empty($peerName) ? stream_socket_get_name($socket, false) : $peerName;

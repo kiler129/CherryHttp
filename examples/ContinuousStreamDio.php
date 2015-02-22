@@ -29,7 +29,7 @@ class StreamServerDio implements HttpRequestHandlerInterface, EventsHandlerInter
         $this->zeroStream = dio_open("/dev/zero", O_RDONLY);
     }
 
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $response = new HttpResponse();
         $response->setHeader("Content-Disposition", "attachment; filename=zero.bin;");
@@ -46,12 +46,12 @@ class StreamServerDio implements HttpRequestHandlerInterface, EventsHandlerInter
     {
     }
 
-    public function onWriteBufferEmpty(StreamServerNodeInterface &$client)
+    public function onWriteBufferEmpty(StreamServerNodeInterface $client)
     {
         $client->pushData(dio_read($this->zeroStream, 131072));
     }
 
-    public function onHttpException(\noFlash\CherryHttp\HttpException &$exception, StreamServerNodeInterface &$client)
+    public function onHttpException(\noFlash\CherryHttp\HttpException $exception, StreamServerNodeInterface $client)
     {
     }
 }

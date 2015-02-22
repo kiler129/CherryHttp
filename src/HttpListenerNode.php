@@ -3,7 +3,7 @@
  * @author Grzegorz Zdanowski <grzegorz129@gmail.com>
  *
  * @project cherryhttp
- * @package 
+ * @package
  */
 
 namespace noFlash\CherryHttp;
@@ -39,20 +39,14 @@ class HttpListenerNode extends StreamServerNode
      * @throws ServerException
      */
     public function __construct(
-        Server &$server,
+        Server $server,
         $ip = "0.0.0.0",
         $port = 8080,
         $ssl = false,
-        LoggerInterface &$logger = null
+        LoggerInterface $logger = null
     ) {
-        $this->server = &$server;
-
-        if ($logger === null) {
-            $this->logger = new NullLogger();
-
-        } else {
-            $this->logger = &$logger;
-        }
+        $this->server = $server;
+        $this->logger = ($logger === null) ? new NullLogger() : $logger;
 
         if ($ssl) {
             throw new ServerException("SSL support is not implemented");

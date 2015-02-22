@@ -14,7 +14,7 @@ interface HttpRouterInterface {
      *
      * @param HttpRequestHandlerInterface $requestHandler
      */
-    public function addPathHandler(HttpRequestHandlerInterface &$requestHandler);
+    public function addPathHandler(HttpRequestHandlerInterface $requestHandler);
 
     /**
      * Removes previously added path handler
@@ -22,7 +22,7 @@ interface HttpRouterInterface {
      *
      * @param HttpRequestHandlerInterface $requestHandler Previously added path handler
      */
-    public function removePathHandler(HttpRequestHandlerInterface &$requestHandler);
+    public function removePathHandler(HttpRequestHandlerInterface $requestHandler);
 
     /**
      * Routes request from client
@@ -31,5 +31,5 @@ interface HttpRouterInterface {
      *
      * @throws HttpException
      */
-    public function handleClientRequest(StreamServerNodeInterface &$client);
+    public function handleClientRequest(StreamServerNodeInterface $client);
 }

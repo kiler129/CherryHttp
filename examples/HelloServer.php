@@ -14,7 +14,7 @@ use noFlash\Shout\Shout;
 
 class HelloServer implements HttpRequestHandlerInterface
 {
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $response = new HttpResponse("I'm everywhere ;)\nIt's " . date("c"));
         $client->pushData($response);

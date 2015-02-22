@@ -19,10 +19,10 @@ class ClientUpgradeException extends Exception
      * @param StreamServerNodeInterface $oldNode
      * @param StreamServerNodeInterface $newClient
      */
-    public function __construct(StreamServerNodeInterface &$oldNode, StreamServerNodeInterface &$newClient)
+    public function __construct(StreamServerNodeInterface $oldNode, StreamServerNodeInterface $newClient)
     {
-        $this->oldClient = &$oldNode;
-        $this->newClient = &$newClient;
+        $this->oldClient = $oldNode;
+        $this->newClient = $newClient;
         parent::__construct("Upgrading client to new one.");
     }
 

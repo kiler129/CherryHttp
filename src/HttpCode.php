@@ -1,7 +1,5 @@
 <?php
-
 namespace noFlash\CherryHttp;
-
 
 use InvalidArgumentException;
 

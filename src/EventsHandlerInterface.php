@@ -31,7 +31,7 @@ interface EventsHandlerInterface
      * @throws NodeDisconnectException
      * @throws ClientUpgradeException
      */
-    public function onWriteBufferEmpty(StreamServerNodeInterface &$client);
+    public function onWriteBufferEmpty(StreamServerNodeInterface $client);
 
 
     /**
@@ -45,5 +45,5 @@ interface EventsHandlerInterface
      * @return HttpResponse
      * @see HttpException::getResponse()
      */
-    public function onHttpException(HttpException &$exception, StreamServerNodeInterface &$client);
+    public function onHttpException(HttpException $exception, StreamServerNodeInterface $client);
 }

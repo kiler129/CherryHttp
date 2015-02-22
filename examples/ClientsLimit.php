@@ -16,7 +16,7 @@ use noFlash\Shout\Shout;
 
 class ClientsLimit implements HttpRequestHandlerInterface
 {
-    public function onRequest(StreamServerNodeInterface &$client, HttpRequest &$request)
+    public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $response = new HttpResponse("Current time: " . date("c"));
         $client->pushData($response);
