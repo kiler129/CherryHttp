@@ -3,6 +3,7 @@ namespace noFlash\CherryHttp;
 
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Generic TCP stream node representation.
