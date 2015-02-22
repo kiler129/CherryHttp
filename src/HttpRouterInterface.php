@@ -1,13 +1,13 @@
 <?php
 namespace noFlash\CherryHttp;
 
-
 /**
  * Routes incoming HTTP requests to correct handlers.
  *
  * @package noFlash\CherryHttp
  */
-interface HttpRouterInterface {
+interface HttpRouterInterface
+{
     /**
      * Adds path handler to server
      * Note: If you add many handlers with the same path the "the last wins" rule applies

@@ -1,11 +1,4 @@
 <?php
-/*
- * @author Grzegorz Zdanowski <grzegorz129@gmail.com>
- *
- * @project cherryhttp
- * @package
- */
-
 namespace noFlash\CherryHttp;
 
 use InvalidArgumentException;
@@ -52,7 +45,7 @@ class HttpListenerNode extends StreamServerNode
             throw new ServerException("SSL support is not implemented");
         }
 
-        if(!filter_var($ip, FILTER_VALIDATE_IP)) {
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             throw new InvalidArgumentException("Failed to create " . __CLASS__ . " - $ip is not valid IP address");
         }
 

@@ -37,6 +37,7 @@ class Server
 
     /**
      * @param LoggerInterface $logger
+     * @param HttpRouterInterface $router
      */
     public function __construct(LoggerInterface $logger = null, HttpRouterInterface $router = null)
     {

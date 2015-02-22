@@ -21,6 +21,7 @@ use noFlash\Shout\Shout;
  */
 class CustomRouter implements HttpRouterInterface
 {
+    /** @var HttpRequestHandlerInterface */
     private $browsers;
 
     public function handleClientRequest(StreamServerNodeInterface $client)
@@ -52,7 +53,8 @@ class CustomRouter implements HttpRouterInterface
     }
 }
 
-class AppleWebKit implements HttpRequestHandlerInterface {
+class AppleWebKit implements HttpRequestHandlerInterface
+{
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $client->pushData(new HttpResponse("Hello WebKit-based browser!"));
@@ -65,7 +67,8 @@ class AppleWebKit implements HttpRequestHandlerInterface {
     }
 }
 
-class Firefox implements HttpRequestHandlerInterface {
+class Firefox implements HttpRequestHandlerInterface
+{
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $client->pushData(new HttpResponse("Hello Firefox!"));
@@ -78,7 +81,8 @@ class Firefox implements HttpRequestHandlerInterface {
     }
 }
 
-class MSIE implements HttpRequestHandlerInterface {
+class MSIE implements HttpRequestHandlerInterface
+{
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         $client->pushData(new HttpResponse("Internet Exploder, could you stop destroying the Internet, please?"));

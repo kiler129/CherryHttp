@@ -9,7 +9,8 @@ use Psr\Log\NullLogger;
  *
  * @package noFlash\CherryHttp
  */
-class HttpRouter implements HttpRouterInterface {
+class HttpRouter implements HttpRouterInterface
+{
     /** @var LoggerInterface PSR-3 logger */
     protected $logger;
 
