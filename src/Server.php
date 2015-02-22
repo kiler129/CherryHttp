@@ -135,6 +135,8 @@ class Server
      * Adds new node (client/listener) to current server instance
      *
      * @param StreamServerNodeInterface $node
+     *
+     * @throws ServerException
      */
     public function addNode(StreamServerNodeInterface &$node)
     {
@@ -162,6 +164,8 @@ class Server
      * Removes node (client/listener) based on given socket node object.
      *
      * @param StreamServerNodeInterface $node Node to remove from server
+     *
+     * @throws ServerException
      */
     public function removeNode(StreamServerNodeInterface $node)
     {
