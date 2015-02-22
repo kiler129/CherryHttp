@@ -20,6 +20,8 @@ require_once("../src/HttpException.php");
 require_once("../src/HttpRequest.php");
 require_once("../src/HttpRequestHandlerInterface.php");
 require_once("../src/HttpResponse.php");
+require_once("../src/HttpRouterInterface.php");
+require_once("../src/HttpRouter.php");
 require_once("../src/HttpListenerNode.php");
 require_once("../src/Server.php");
 require_once("../src/ServerException.php");

@@ -40,5 +40,5 @@ class SimpleRouter implements HttpRequestHandlerInterface
 $routingServer = new SimpleRouter();
 $server = new Server(new Shout());
 $server->bind("127.0.0.1", 8080);
-$server->addPathHandler($routingServer);
+$server->router->addPathHandler($routingServer);
 $server->run();

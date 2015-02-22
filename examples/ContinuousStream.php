@@ -53,7 +53,7 @@ class StreamServer implements HttpRequestHandlerInterface, EventsHandlerInterfac
 $streamServer = new StreamServer();
 $server = new Server(); //Logger omitted to speed it up ;)
 $server->bind("127.0.0.1", 8080);
-$server->addPathHandler($streamServer);
+$server->router->addPathHandler($streamServer);
 $server->setEventsHandler($streamServer);
 $server->subscribeEvent("writeBufferEmpty");
 $server->run();

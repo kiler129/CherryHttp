@@ -52,7 +52,7 @@ class PrettyErrors implements HttpRequestHandlerInterface, EventsHandlerInterfac
 $prettyErrors = new PrettyErrors();
 $server = new Server(new Shout());
 $server->bind("127.0.0.1", 8080);
-$server->addPathHandler($prettyErrors);
+$server->router->addPathHandler($prettyErrors);
 $server->setEventsHandler($prettyErrors);
 $server->subscribeEvent("httpException");
 $server->run();

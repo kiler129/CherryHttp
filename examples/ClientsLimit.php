@@ -32,5 +32,5 @@ $prettyErrors = new ClientsLimit();
 $server = new Server(new Shout());
 $server->setNodesLimit(1); //Set number of clients limit
 $server->bind("127.0.0.1", 8080);
-$server->addPathHandler($prettyErrors);
+$server->router->addPathHandler($prettyErrors);
 $server->run();

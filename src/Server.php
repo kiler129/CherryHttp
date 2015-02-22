@@ -16,10 +16,10 @@ use Psr\Log\NullLogger;
  */
 class Server
 {
+    /** @var HttpRouterInterface Routes request to path handlers */
+    public $router;
     /** @var LoggerInterface PSR-3 logger */
     protected $logger;
-    /** @var HttpRequestHandlerInterface[] Contains path handler which are used to route incoming requests. */
-    protected $pathHandlers = array();
     /** @var EventsHandlerInterface|null */
     protected $eventsHandler = null;
     /** @var array Defines which events should be dispatched to eventsHandler - global array */
@@ -38,7 +38,7 @@ class Server
     /**
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface &$logger = null)
+    public function __construct(LoggerInterface &$logger = null, HttpRouterInterface &$router = null)
     {
         if ($logger === null) {
             $this->logger = new NullLogger();
@@ -46,6 +46,8 @@ class Server
         } else {
             $this->logger = &$logger;
         }
+
+        $this->router = ($router === null) ? new HttpRouter($this->logger) : $router;
     }
 
 
@@ -81,39 +83,6 @@ class Server
 
         $this->nodesLimit = $limit;
         $this->logger->info("Changed nodes limit to $limit");
-    }
-
-    /**
-     * Adds path handler to server
-     * Note: If you add many handlers with the same path the "the last wins" rule applies
-     *
-     * @param HttpRequestHandlerInterface $requestHandler
-     */
-    public function addPathHandler(HttpRequestHandlerInterface &$requestHandler)
-    {
-        $paths = $requestHandler->getHandledPaths();
-        foreach ($paths as $path) {
-            if (isset($this->pathHandlers[$path])) {
-                $this->logger->warning("Replacing path handler " . get_class($this->pathHandlers[$path]) . " with " . get_class($requestHandler) . " for path $path");
-            }
-
-            $this->pathHandlers[$path] = &$requestHandler;
-        }
-    }
-
-    /**
-     * Removes previously added path handler
-     * Note: method doesn't perform checks whatever handler has been previously added or not
-     *
-     * @param HttpRequestHandlerInterface $requestHandler Previously added path handler
-     */
-    public function removePathHandler(HttpRequestHandlerInterface &$requestHandler)
-    {
-        foreach ($this->pathHandlers as $path => $handler) {
-            if ($handler === $requestHandler) {
-                unset($this->pathHandlers[$path]);
-            }
-        }
     }
 
     /**
@@ -324,7 +293,7 @@ class Server
                         $this->nodes[$socketId]->onReadReady();
 
                         if (isset($this->nodes[$socketId]->request)) { //Request to handle
-                            $this->handleClientRequest($this->nodes[$socketId]);
+                            $this->router->handleClientRequest($this->nodes[$socketId]);
                         }
                     }
 
@@ -347,32 +316,6 @@ class Server
             } catch(NodeDisconnectException $e) {
                 $this->removeNode($e->getNode());
             }
-        }
-    }
-
-    /**
-     * Routes request from client
-     *
-     * @param StreamServerNodeInterface $client
-     *
-     * @throws HttpException
-     */
-    private function handleClientRequest(StreamServerNodeInterface &$client)
-    {
-        //$this->logger->debug("Request receiving from " . $client . " finished");
-        $request = $client->request;
-        $client->request = null;
-
-        $uri = $request->getUri();
-        if (isset($this->pathHandlers[$uri])) {
-            $this->pathHandlers[$uri]->onRequest($client, $request);
-
-        } elseif (isset($this->pathHandlers["*"])) {
-            $this->pathHandlers["*"]->onRequest($client, $request);
-
-        } else {
-            throw new HttpException("No resource lives here.", HttpCode::NOT_FOUND,
-                array("X-Reason" => "no module for path"), $request->closeConnection());
         }
     }
 

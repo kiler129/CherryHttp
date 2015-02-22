@@ -29,5 +29,5 @@ class HelloServer implements HttpRequestHandlerInterface
 $helloServer = new HelloServer();
 $server = new Server(new Shout());
 $server->bind("127.0.0.1", 8080);
-$server->addPathHandler($helloServer);
+$server->router->addPathHandler($helloServer);
 $server->run();
