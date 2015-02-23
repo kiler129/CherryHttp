@@ -253,7 +253,7 @@ class Server
      */
     public function run()
     {
-        $this->logger->debug("run() called - multiplexer is running");
+        //$this->logger->debug("run() called - multiplexer is running");
         while (true) {
             try {
                 //Fire callback before building sockets arrays (if callback decides to modify sth it will be catched right away)
