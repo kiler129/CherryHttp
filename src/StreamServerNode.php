@@ -39,9 +39,11 @@ abstract class StreamServerNode implements StreamServerNodeInterface
     public function __construct($socket, $peerName, LoggerInterface $logger)
     {
         $this->logger = ($logger === null) ? new NullLogger() : $logger;
-
         $this->socket = $socket;
-        $this->peerName = empty($peerName) ? stream_socket_get_name($socket, false) : $peerName;
+
+        if(empty($peerName)) { //Probably external error
+            $this->peerName = "UNKNOWN:0";
+        }
 
         if (!is_resource($socket) || feof($socket)) {
             $this->logger->error("Node $this is gone before handling (server overloaded?)");
