@@ -41,8 +41,11 @@ abstract class StreamServerNode implements StreamServerNodeInterface
         $this->logger = ($logger === null) ? new NullLogger() : $logger;
         $this->socket = $socket;
 
-        if(empty($peerName)) { //Probably external error
-            $this->peerName = "UNKNOWN:0";
+        if (empty($peerName)) {
+            $this->peerName = (is_resource($this->socket)) ? stream_socket_get_name($this->socket, false) : "UNKNOWN:0";
+
+        } else {
+            $this->peerName = $peerName;
         }
 
         if (!is_resource($socket) || feof($socket)) {
