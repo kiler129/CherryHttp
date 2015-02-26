@@ -1,5 +1,5 @@
 <?php
-require_once("../../../autoload.php");
+require_once('../../../autoload.php');
 
 /**
  * This example replaces all server error pages with pretty one. It also provides example HTTP/500
@@ -20,12 +20,12 @@ class PrettyErrors implements HttpRequestHandlerInterface, EventsHandlerInterfac
 
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
-        throw new HttpException("It's a trap, run away!");
+        throw new HttpException('It\'s a trap, run away!');
     }
 
     public function getHandledPaths()
     {
-        return array("/500");
+        return array('/500');
     }
 
     public function onHeartbeat()
@@ -51,8 +51,8 @@ class PrettyErrors implements HttpRequestHandlerInterface, EventsHandlerInterfac
 
 $prettyErrors = new PrettyErrors();
 $server = new Server(new Shout());
-$server->bind("127.0.0.1", 8080);
+$server->bind('127.0.0.1', 8080);
 $server->router->addPathHandler($prettyErrors);
 $server->setEventsHandler($prettyErrors);
-$server->subscribeEvent("httpException");
+$server->subscribeEvent('httpException');
 $server->run();

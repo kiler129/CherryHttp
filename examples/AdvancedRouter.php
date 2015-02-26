@@ -1,5 +1,5 @@
 <?php
-require_once("../../../autoload.php");
+require_once('../../../autoload.php');
 
 /**
  * This example routes users based on their browsers (Chrome+Safari/Firefox/Other).
@@ -26,7 +26,7 @@ class CustomRouter implements HttpRouterInterface
 
     public function handleClientRequest(StreamServerNodeInterface $client)
     {
-        $userAgent = $client->request->getHeader("user-agent");
+        $userAgent = $client->request->getHeader('user-agent');
         $isHandled = false;
 
         foreach ($this->browsers as $name => $object) {
@@ -38,7 +38,7 @@ class CustomRouter implements HttpRouterInterface
 
         $client->request = null; //Request handling finished
         if (!$isHandled) { //No supported browser found
-            throw new HttpException("Unsupported browser", HttpCode::FORBIDDEN);
+            throw new HttpException('Unsupported browser', HttpCode::FORBIDDEN);
         }
     }
 
@@ -57,13 +57,13 @@ class AppleWebKit implements HttpRequestHandlerInterface
 {
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
-        $client->pushData(new HttpResponse("Hello WebKit-based browser!"));
+        $client->pushData(new HttpResponse('Hello WebKit-based browser!'));
     }
 
 
     public function getHandledPaths()
     {
-        return array("*");
+        return array('*');
     }
 }
 
@@ -71,13 +71,13 @@ class Firefox implements HttpRequestHandlerInterface
 {
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
-        $client->pushData(new HttpResponse("Hello Firefox!"));
+        $client->pushData(new HttpResponse('Hello Firefox!'));
     }
 
 
     public function getHandledPaths()
     {
-        return array("*");
+        return array('*');
     }
 }
 
@@ -85,18 +85,18 @@ class MSIE implements HttpRequestHandlerInterface
 {
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
-        $client->pushData(new HttpResponse("Internet Exploder, could you stop destroying the Internet, please?"));
+        $client->pushData(new HttpResponse('Internet Exploder, could you stop destroying the Internet, please?'));
     }
 
 
     public function getHandledPaths()
     {
-        return array("*");
+        return array('*');
     }
 }
 
 $server = new Server(new Shout(), new CustomRouter());
-$server->bind("127.0.0.1", 8080);
+$server->bind('127.0.0.1', 8080);
 $server->router->addPathHandler(new AppleWebKit());
 $server->router->addPathHandler(new Firefox());
 $server->router->addPathHandler(new MSIE());

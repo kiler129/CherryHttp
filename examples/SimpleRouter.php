@@ -1,8 +1,8 @@
 <?php
-require_once("../../../autoload.php");
+require_once('../../../autoload.php');
 
 /**
- * This example provides two URLs - http://127.0.0.1:8080/hello (serving "Hello world!") and http://127.0.0.1:8080/time
+ * This example provides two URLs - http://127.0.0.1:8080/hello (serving 'Hello world!') and http://127.0.0.1:8080/time
  */
 
 use noFlash\CherryHttp\HttpRequest;
@@ -17,14 +17,14 @@ class SimpleRouter implements HttpRequestHandlerInterface
     public function onRequest(StreamServerNodeInterface $client, HttpRequest $request)
     {
         switch ($request->getUri()) {
-            case "/hello":
-                $response = new HttpResponse("Hello world!");
+            case '/hello':
+                $response = new HttpResponse('Hello world!');
                 $client->pushData($response);
                 break;
 
-            case "/time":
-                $response = new HttpResponse("<h2>It's " . date("r") . "</h2>");
-                $response->setHeader("Content-Type", "text/html");
+            case '/time':
+                $response = new HttpResponse('<h2>It\'s ' . date('r') . '</h2>');
+                $response->setHeader('Content-Type', 'text/html');
 
                 $client->pushData($response);
                 break;
@@ -33,12 +33,12 @@ class SimpleRouter implements HttpRequestHandlerInterface
 
     public function getHandledPaths()
     {
-        return array("/time", "/hello");
+        return array('/time', '/hello');
     }
 }
 
 $routingServer = new SimpleRouter();
 $server = new Server(new Shout());
-$server->bind("127.0.0.1", 8080);
+$server->bind('127.0.0.1', 8080);
 $server->router->addPathHandler($routingServer);
 $server->run();
