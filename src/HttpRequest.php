@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
  *
  * @package noFlash\CherryHttp
  */
-class HttpRequest
+class HttpRequest extends HttpMessage
 {
     /** @var integer Maximum URI length */
     const MAX_URI_LENGTH = 2048;
@@ -17,11 +17,10 @@ class HttpRequest
     /** @var LoggerInterface */
     protected $logger;
     protected $isRequestCollected = false;
-    private   $method;
-    private   $uri;
-    private   $queryString;
-    private   $httpVersion;
-    private   $headers            = array();
+
+    protected $method      = '';
+    protected $queryString = '';
+    protected $uri         = '';
 
     /**
      * @param string $headers HTTP request headers (along with status line)
@@ -32,24 +31,21 @@ class HttpRequest
     public function __construct($headers, LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->parseHeaders($headers);
+        $this->parseHeader($headers);
     }
 
     /**
-     * This parser intentional doesn't implement folded headers. It also doesn't implement multiple occupancies
-     * of the same header properly.
+     * Parses HTTP header & populates http headers
      *
-     * @param string $headers HTTP request headers (along with status line)
+     * @param string $header HTTP request header including status line & all headers
      *
-     * @throws HttpException
-     * @todo Implement multiple headers with the same name
+     * @throws HttpException Raised if request header is not RFC-compilant
      */
-    private function parseHeaders($headers)
+    private function parseHeader($header)
     {
-        $this->headers = array();
-
-        $headers = explode("\r\n", $headers);
-        $statusLine = explode(" ", $headers[0], 3); //Eg.: GET /file HTTP/1.1
+        //$this->logger->debug("Parsing request header");
+        $header = explode("\r\n", $header); //Now it contains header lines
+        $statusLine = explode(" ", $header[0], 3); //Eg.: GET /file HTTP/1.1 will be parsed into [GET, /file, HTTP/1.1]
         if (!isset($statusLine[2]) || substr($statusLine[2], 0, 5) !== "HTTP/") {
             throw new HttpException("Request is not HTTP compliant.", HttpCode::BAD_REQUEST, array(), true);
         }
@@ -59,33 +55,59 @@ class HttpRequest
                 HttpCode::REQUEST_URI_TOO_LONG);
         }
 
-        $this->method = $statusLine[0]; //TODO validate method
+        //TODO shouldn't it convert method to uppercase?
+        $this->method = $statusLine[0];
 
-        $fullUri = explode("?", $statusLine[1], 2);
-        $this->uri = $fullUri[0]; //TODO validate URI
+        $fullUri = explode("?", $statusLine[1], 2); //URL + query string, eg. [/file, var1=test&var2=foo&bar=derp]
+        $this->uri = $fullUri[0];
 
-        $this->queryString = (isset($fullUri[1])) ? $fullUri[1] : "";
+        if (isset($fullUri[1])) {
+            $this->queryString = $fullUri[1];
+        }
 
-        $this->httpVersion = substr($statusLine[2], 5); //Everything after HTTP/ is http version number
-        if ($this->httpVersion !== "1.1" && $this->httpVersion !== "1.0") {
+        $this->protocolVersion = substr($statusLine[2], 5); //Everything after HTTP/ is http version number
+        if ($this->protocolVersion !== "1.1" && $this->protocolVersion !== "1.0") {
             throw new HttpException("Requested HTTP version is not supported", HttpCode::VERSION_NOT_SUPPORTED, array(),
                 true);
         }
-        unset($headers[0]); //Status line
 
-        foreach ($headers as $headersLine) {
-            $headersLine = explode(":", $headersLine, 2);
-            $headerName = trim($headersLine[0]); //TODO Is it this RFC-complaint?
+        unset($header[0]); //Status line
+        $this->populateHeaders($header); //Everything left from header is actually http headers
 
-
-            $this->headers[strtolower($headerName)] = array( //Key is case-insensitive
-                $headerName, //Real, case sensitive header name
-                (isset($headersLine[1])) ? trim($headersLine[1]) : "" //Header value
-            );
-        }
-
-        //$this->logger->debug("Got HTTP headers, marking request as collected");
         $this->isRequestCollected = true;
+        //$this->logger->debug("Got HTTP headers, request is collected");
+    }
+
+    /**
+     * Parses HTTP headers into $this->headers array.
+     * Note: This parser intentional doesn't implement folded headers (WTF is that anyway?!).
+     *
+     * @param $header
+     *
+     * @todo Check if fully conforms to RFC (trims)
+     */
+    private function populateHeaders($header)
+    {
+        $this->headers = array();
+
+        //$this->logger->debug("Parsing HTTP request headers");
+        foreach ($header as $headersLine) {
+            $headersLine = explode(":", $headersLine, 2);
+            $headerName = trim($headersLine[0]);
+            $lowercaseName = strtolower($headerName);
+            $headerValue = (isset($headersLine[1])) ? trim($headersLine[1]) : "";
+
+            if (isset($this->headers[$lowercaseName])) { //Duplicated header with the same name (eg. Set-Cookie)
+                if (is_array($this->headers[$lowercaseName][1])) {
+                    $this->headers[$lowercaseName][1][] = $headerValue;
+                } else {
+                    $this->headers[$lowercaseName][1] = array($this->headers[$lowercaseName][1], $headerValue);
+                }
+
+            } else {
+                $this->headers[$lowercaseName] = array($headerName, $headerValue);
+            }
+        }
     }
 
     /**
@@ -118,66 +140,6 @@ class HttpRequest
         return $this->queryString;
     }
 
-    /**
-     * Decides if TCP connection should be closed after request completion.
-     *
-     * @return bool
-     * @todo Verify if this method behaviour conforms to HTTP RFC
-     */
-    public function closeConnection()
-    {
-        $connection = $this->getHeader("connection");
-
-        if ($connection === "keep-alive" || ($connection === false && (float)$this->httpVersion >= 1.1)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Provides value for specified header name.
-     * Note: Some headers can be send multiple times. In this case this method will return all of them in array.
-     *
-     * @param $name
-     *
-     * @return string|false
-     */
-    public function getHeader($name)
-    {
-        $name = strtolower($name);
-
-        if (!isset($this->headers[$name])) {
-            return false;
-        }
-
-        return $this->headers[$name][1];
-    }
-
-    /**
-     * Returns HTTP protocol version of current request.
-     *
-     * @return string
-     */
-    public function getProtocolVersion()
-    {
-        return $this->httpVersion;
-    }
-
-    /**
-     * Provides all headers.
-     *
-     * @return string[] All headers
-     */
-    public function getHeaders()
-    {
-        $headers = array();
-        foreach ($this->headers as $header) {
-            $headers[$header[0]] = $header[1];
-        }
-
-        return $headers;
-    }
 
     /**
      * States whatever request has been fully received from client. Method will return true when all headers
@@ -188,5 +150,27 @@ class HttpRequest
     public function isReady()
     {
         return $this->isRequestCollected;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        if (empty($this->messageCache)) {
+            //@formatter:off PHPStorm formatter acts weird on such constructions and reformat it to single looong line
+            $requestUri = $this->uri;
+            if(!empty($this->queryString)) {
+                $requestUri .= "?".$this->queryString;
+            }
+
+            $this->messageCache = $this->method . " " . $requestUri . " HTTP/" . $this->protocolVersion . "\r\n" .
+                                  $this->getHeadersAsText() .
+                                  "\r\n" .
+                                  $this->body;
+            //@formatter:on
+        }
+
+        return $this->messageCache;
     }
 }

@@ -17,6 +17,7 @@ require_once("../src/StreamServerNode.php");
 require_once("../src/HttpClient.php");
 require_once("../src/HttpCode.php");
 require_once("../src/HttpException.php");
+require_once("../src/HttpMessage.php");
 require_once("../src/HttpRequest.php");
 require_once("../src/HttpRequestHandlerInterface.php");
 require_once("../src/HttpResponse.php");
