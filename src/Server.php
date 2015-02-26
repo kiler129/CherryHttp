@@ -105,7 +105,7 @@ class Server
     {
         try {
             if ($this->nodesCount >= $this->nodesLimit) {
-                $node->disconnect();
+                $node->disconnect(true);
                 $this->logger->warning("Node $node dropped - limit of " . $this->nodesLimit . " connections exceeded");
 
                 return;
