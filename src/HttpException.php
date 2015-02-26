@@ -32,7 +32,7 @@ class HttpException extends Exception
         $this->response = new HttpResponse($message, $extraHeaders, $code);
 
         if ($disconnect) {
-            $this->response->setHeader('connection', 'close');
+            $this->response->setHeader('Connection', 'close');
         }
 
         parent::__construct($message, $code);
