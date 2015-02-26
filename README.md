@@ -47,6 +47,12 @@ Notes:
 #### Does it work in HHVM environment?
 Unfortunately I don't have professional expedience with this platform and cannot make any guaranties.
 
+#### IPv6 support
+IPv6 is fully supported, however it comes with few quirks. By default server binds to `0.0.0.0` address, which means it will be available via IPv4 only.  
+You can use both IPv4 and IPv6 by passing `::` as first parameter to `Server::bind`, however there're two important drawbacks:
+  * IPv4 clients ips will present in IPv6 form (eg. `127.0.0.1` becames `::ffff:127.0.0.1`)
+  * On Windows XP and older binding to both IPv4 & IPv6 isn't possible on single port (it's OS limitation)
+
 #### Could you add *PLACE FEATURE NAME HERE*?
 Every feature request will be considered. Library is under active development, however I cannot implement everything right away myself, so pull-requests are kindly welcomed.
 

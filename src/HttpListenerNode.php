@@ -50,7 +50,7 @@ class HttpListenerNode extends StreamServerNode
         }
 
         /** @noinspection PhpUsageOfSilenceOperatorInspection This function raises PHP E_WARNING */
-        $this->socket = @stream_socket_server("tcp://$ip:$port", $errNo, $errStr);
+        $this->socket = @stream_socket_server("tcp://[$ip]:$port", $errNo, $errStr);
         if (!$this->socket) {
             throw new ServerException("Failed to launch server at tcp://$ip:$port [SSL: " . (int)$ssl . "] - $errStr (e: $errNo)");
         }
