@@ -31,7 +31,6 @@ abstract class StreamServerNode implements StreamServerNodeInterface
     /**
      * @param resource $socket Client socket returned by stream_socket_accept()
      * @param string $peerName IP:PORT of local socket returned by stream_socket_get_name()/stream_socket_accept()
-     *
      * @param LoggerInterface $logger
      *
      * @throws NodeDisconnectException
@@ -48,7 +47,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
             $this->peerName = $peerName;
         }
 
-        if (!is_resource($socket) || feof($socket)) {
+        if (!is_resource($this->socket) || feof($this->socket)) {
             $this->logger->error("Node $this is gone before handling (server overloaded?)");
             $this->disconnect(true);
         }
@@ -96,8 +95,10 @@ abstract class StreamServerNode implements StreamServerNodeInterface
     public function onReadReady()
     {
         $readContent = fread($this->socket, static::STREAM_CHUNK_SIZE); //Around 13% faster than stream_get_contents()
-        if ($readContent === '') { //Client disconnected
+        if (empty($readContent)) { //Client disconnected (fread() may return 0 bytes or false - depending on OS)
             if ($this->isDegenerated) { //It's only way to prevent client from begin dropped after using stream_socket_shutdown($this->socket, STREAM_SHUT_RD)
+                //Hmm but what if client disconnects right after stream_socket_shutdown() before sending output buffer?
+                //I think it'll get stuck - socket never be write-ready, it will starts returning read ready and this method will return without disconnecting ;|
                 return;
             }
 
@@ -125,12 +126,6 @@ abstract class StreamServerNode implements StreamServerNodeInterface
     public function onWriteReady()
     {
         $bytesWritten = fwrite($this->socket, $this->outputBuffer);
-        /*if ($bytesWritten === 0) { //This assumption can be wrong. It was observed but maybe due possible buggy pushData()?
-            $this->disconnect(true);
-            //$this->logger->debug("Client $this socket gone (client disconnected/W)");
-
-            return;
-        }*/
 
         /*
          * Fragment below looks weird at first, but it's perfectly logical.
