@@ -8,7 +8,6 @@ use InvalidArgumentException;
  * WebDav & exotic codes are NOT listed here.
  *
  * @package noFlash\CherryHttp
- * @todo Some (uncommon) codes are missing
  */
 class HttpCode
 {
