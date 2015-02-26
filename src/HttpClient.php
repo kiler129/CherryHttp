@@ -23,11 +23,11 @@ class HttpClient extends StreamServerNode
         //$this->logger->debug('Trying to process buffer of HttpClient');
 
         if ($this->request === null) { //New request
-            if (isset($this->inputBuffer[HttpRequest::MAX_ENTITY_LENGTH])) { //Much faster than strlen ;)
-                $this->logger->warning("Client $this sent headers larger than " . HttpRequest::MAX_ENTITY_LENGTH . ' bytes');
+            if (isset($this->inputBuffer[HttpRequest::MAX_HEADER_LENGTH])) { //Much faster than strlen ;)
+                $this->logger->warning("Client $this sent headers larger than " . HttpRequest::MAX_HEADER_LENGTH . ' bytes');
                 $this->inputBuffer = '';
-                throw new HttpException('Server refused request exceeding ' . HttpRequest::MAX_ENTITY_LENGTH . ' bytes',
-                    HttpCode::REQUEST_ENTITY_TOO_LARGE, array(), true);
+                throw new HttpException('Server refused request exceeding ' . HttpRequest::MAX_HEADER_LENGTH . ' bytes',
+                    HttpCode::REQUEST_HEADER_FIELDS_TOO_LARGE, array(), true);
             }
 
             $headersBreakpoint = strpos($this->inputBuffer, "\r\n\r\n"); //Try to find headers breakpoint
