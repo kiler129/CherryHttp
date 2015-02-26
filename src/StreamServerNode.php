@@ -98,7 +98,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
         if (empty($readContent)) { //Client disconnected (fread() may return 0 bytes or false - depending on OS)
             if ($this->isDegenerated) { //It's only way to prevent client from begin dropped after using stream_socket_shutdown($this->socket, STREAM_SHUT_RD)
                 //Hmm but what if client disconnects right after stream_socket_shutdown() before sending output buffer?
-                //I think it'll get stuck - socket never be write-ready, it will starts returning read ready and this method will return without disconnecting ;|
+                //I think it cannot get stuck bcs it'll be disconnected by isWriteReady() in next iteration, hmm...
                 return;
             }
 
