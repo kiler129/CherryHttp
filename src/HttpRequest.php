@@ -39,7 +39,7 @@ class HttpRequest extends HttpMessage
      *
      * @param string $header HTTP request header including status line & all headers
      *
-     * @throws HttpException Raised if request header is not RFC-compilant
+     * @throws HttpException Raised if request header is not RFC-complaint
      */
     private function parseHeader($header)
     {

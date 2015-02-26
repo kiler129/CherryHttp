@@ -29,6 +29,7 @@ class CustomRouter implements HttpRouterInterface
         $userAgent = $client->request->getHeader('user-agent');
         $isHandled = false;
 
+        /** @var HttpRequestHandlerInterface $object */
         foreach ($this->browsers as $name => $object) {
             if (strpos($userAgent, $name) !== false) {
                 $object->onRequest($client, $client->request);
