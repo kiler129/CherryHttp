@@ -33,7 +33,7 @@ class HttpListenerNode extends StreamServerNode
      */
     public function __construct(
         Server $server,
-        $ip = "0.0.0.0",
+        $ip = '0.0.0.0',
         $port = 8080,
         $ssl = false,
         LoggerInterface $logger = null
@@ -42,11 +42,11 @@ class HttpListenerNode extends StreamServerNode
         $this->logger = ($logger === null) ? new NullLogger() : $logger;
 
         if ($ssl) {
-            throw new ServerException("SSL support is not implemented");
+            throw new ServerException('SSL support is not implemented');
         }
 
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-            throw new InvalidArgumentException("Failed to create " . __CLASS__ . " - $ip is not valid IP address");
+            throw new InvalidArgumentException('Failed to create ' . __CLASS__ . " - $ip is not valid IP address");
         }
 
         /** @noinspection PhpUsageOfSilenceOperatorInspection This function raises PHP E_WARNING */
@@ -58,7 +58,7 @@ class HttpListenerNode extends StreamServerNode
 
         parent::__construct($this->socket, null, $logger);
 
-        $this->logger->info("Started server at tcp://" . $this->getPeerName() . " [SSL: " . (int)$ssl . "]");
+        $this->logger->info('Started server at tcp://' . $this->getPeerName() . ' [SSL: ' . (int)$ssl . ']');
     }
 
     /**
@@ -77,12 +77,12 @@ class HttpListenerNode extends StreamServerNode
     public function onReadReady()
     {
         if (!$this->socket) {
-            throw new ServerException("Server socked has gone away (external problem?)");
+            throw new ServerException('Server socked has gone away (external problem?)');
         }
 
         $clientSocket = stream_socket_accept($this->socket, null, $peerName);
         if ($clientSocket === false) {
-            throw new ServerException("Failed to accept client (didn't you run out of FDs?)");
+            throw new ServerException('Failed to accept client (didn\'t you run out of FDs?)');
         }
         stream_set_blocking($clientSocket, 0);
 
@@ -96,7 +96,7 @@ class HttpListenerNode extends StreamServerNode
      */
     public function onWriteReady()
     {
-        throw new RuntimeException("onWriteReady() called on listener (?!)");
+        throw new RuntimeException('onWriteReady() called on listener (?!)');
     }
 
     /**

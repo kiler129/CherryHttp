@@ -19,7 +19,7 @@ class NodeDisconnectException extends Exception
     public function __construct(StreamServerNodeInterface $node)
     {
         $this->node = $node;
-        parent::__construct("Node disconnected, it's no longer valid. All remaining resources bounded to it should be removed.");
+        parent::__construct('Node disconnected, it\'s no longer valid. All remaining resources bounded to it should be removed.');
     }
 
     /**

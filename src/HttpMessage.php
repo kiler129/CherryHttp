@@ -14,7 +14,7 @@ use LogicException;
 abstract class HttpMessage
 {
     protected $code;
-    protected $protocolVersion = "1.1";
+    protected $protocolVersion = '1.1';
 
     protected $headers = array();
     protected $body;
@@ -41,8 +41,8 @@ abstract class HttpMessage
     {
         $httpVersion = (string)$httpVersion;
 
-        if ($httpVersion !== "1.1" && $httpVersion !== "1.0") { //SPDY is not supported currently
-            throw new InvalidArgumentException("Invalid (non-RFC) HTTP version.");
+        if ($httpVersion !== '1.1' && $httpVersion !== '1.0') { //SPDY is not supported currently
+            throw new InvalidArgumentException('Invalid (non-RFC) HTTP version.');
         }
 
         $this->protocolVersion = $httpVersion;
@@ -73,7 +73,7 @@ abstract class HttpMessage
         $code = (int)$code;
 
         if (!empty($this->body) && !HttpCode::isBodyAllowed($this->code)) { //InvalidArgumentException can be thrown here
-            throw new LogicException("HTTP response already contains body - response \"" . HttpCode::getName($code) . "\" cannot contain body.");
+            throw new LogicException('HTTP response already contains body - response "' . HttpCode::getName($code) . '" cannot contain body.');
         }
 
         $this->code = $code;
@@ -174,11 +174,11 @@ abstract class HttpMessage
     public function setBody($body)
     {
         if (!empty($body) && !HttpCode::isBodyAllowed($this->code)) {
-            throw new LogicException("You cannot set non-empty body for currently set code");
+            throw new LogicException('You cannot set non-empty body for currently set code');
         }
 
         $this->body = (string)$body;
-        $this->setHeader("Content-Length", strlen($this->body));
+        $this->setHeader('Content-Length', strlen($this->body));
         $this->messageCache = null;
     }
 
@@ -189,10 +189,10 @@ abstract class HttpMessage
      */
     public function isConnectionClose()
     {
-        $connectionHeader = strtolower($this->getHeader("connection"));
+        $connectionHeader = strtolower($this->getHeader('connection'));
 
-        return ($connectionHeader === "close" || //Explicitly declared connection as close
-            ((float)$this->getProtocolVersion() <= 1.1 && $connectionHeader !== "keep-alive")); //Protocols older than 1.1 assumes "close" by default unless "keep-alive" specified
+        return ($connectionHeader === 'close' || //Explicitly declared connection as close
+            ((float)$this->getProtocolVersion() <= 1.1 && $connectionHeader !== 'keep-alive')); //Protocols older than 1.1 assumes "close" by default unless "keep-alive" specified
     }
 
     /**
@@ -207,11 +207,11 @@ abstract class HttpMessage
         foreach ($this->headers as $header) {
             if (is_array($header[1])) {
                 foreach ($header[1] as $multiHeader) {
-                    $headers .= $header[0] . ": " . $multiHeader . "\r\n";
+                    $headers .= $header[0] . ': ' . $multiHeader . "\r\n";
                 }
 
             } else {
-                $headers .= $header[0] . ": " . $header[1] . "\r\n";
+                $headers .= $header[0] . ': ' . $header[1] . "\r\n";
             }
         }
 

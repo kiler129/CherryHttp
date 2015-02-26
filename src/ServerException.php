@@ -13,8 +13,8 @@ class ServerException extends Exception
     /**
      * @param string $message Human-readable message
      */
-    public function __construct($message = "")
+    public function __construct($message = '')
     {
-        parent::__construct("Server occurred runtime error: " . $message);
+        parent::__construct("Server occurred runtime error: $message");
     }
 }

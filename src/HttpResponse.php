@@ -12,8 +12,8 @@ use LogicException;
 class HttpResponse extends HttpMessage
 {
     protected $headers = array(
-        "server" => array("Server", "CherryHttp/1.0"),
-        "connection" => array("Connection", "keep-alive")
+        'server' => array('Server', 'CherryHttp/1.0'),
+        'connection' => array('Connection', 'keep-alive')
     );
 
     /**
@@ -44,7 +44,7 @@ class HttpResponse extends HttpMessage
     {
         if (empty($this->messageCache)) {
             //@formatter:off PHPStorm formatter acts weird on such constructions and reformat it to single looong line
-            $this->messageCache = "HTTP/" . $this->protocolVersion . " " . HttpCode::getName($this->code) . "\r\n" .
+            $this->messageCache = 'HTTP/' . $this->protocolVersion . ' ' . HttpCode::getName($this->code) . "\r\n" .
                                   $this->getHeadersAsText() .
                                   "\r\n" .
                                   $this->body;

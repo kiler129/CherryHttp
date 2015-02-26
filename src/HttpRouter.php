@@ -33,7 +33,7 @@ class HttpRouter implements HttpRouterInterface
         $paths = $requestHandler->getHandledPaths();
         foreach ($paths as $path) {
             if (isset($this->pathHandlers[$path])) {
-                $this->logger->warning("Replacing path handler " . get_class($this->pathHandlers[$path]) . " with " . get_class($requestHandler) . " for path $path");
+                $this->logger->warning('Replacing path handler ' . get_class($this->pathHandlers[$path]) . ' with ' . get_class($requestHandler) . " for path $path");
             }
 
             $this->pathHandlers[$path] = $requestHandler;
@@ -57,7 +57,7 @@ class HttpRouter implements HttpRouterInterface
      */
     public function handleClientRequest(StreamServerNodeInterface $client)
     {
-        //$this->logger->debug("Request receiving from " . $client . " finished");
+        //$this->logger->debug("Request receiving from $client finished");
         $request = $client->request;
         $client->request = null;
 
@@ -65,12 +65,12 @@ class HttpRouter implements HttpRouterInterface
         if (isset($this->pathHandlers[$uri])) {
             $this->pathHandlers[$uri]->onRequest($client, $request);
 
-        } elseif (isset($this->pathHandlers["*"])) {
-            $this->pathHandlers["*"]->onRequest($client, $request);
+        } elseif (isset($this->pathHandlers['*'])) {
+            $this->pathHandlers['*']->onRequest($client, $request);
 
         } else {
-            throw new HttpException("No resource lives here.", HttpCode::NOT_FOUND,
-                array("X-Reason" => "no module for path"), $request->closeConnection());
+            throw new HttpException('No resource lives here.', HttpCode::NOT_FOUND,
+                array('X-Reason' => 'no module for path'), $request->closeConnection());
         }
     }
 }

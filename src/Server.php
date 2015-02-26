@@ -23,7 +23,7 @@ class Server
     /** @var EventsHandlerInterface|null */
     protected $eventsHandler = null;
     /** @var array Defines which events should be dispatched to eventsHandler - global array */
-    protected $subscribedEvents = array("heartbeat" => false, "writeBufferEmpty" => false, "httpException" => false);
+    protected $subscribedEvents = array('heartbeat' => false, 'writeBufferEmpty' => false, 'httpException' => false);
     /** @var StreamServerNodeInterface[] Contains all connected nodes (clients+listeners) objects */
     private $nodes = array();
     /** @var integer Current nodes counter (it's better than calling count($this->nodes) many times) */
@@ -55,7 +55,7 @@ class Server
      * @throws ServerException
      * @see ListenerNode
      */
-    public function bind($ip = "0.0.0.0", $port = 8080, $ssl = false)
+    public function bind($ip = '0.0.0.0', $port = 8080, $ssl = false)
     {
         $this->addNode(new HttpListenerNode($this, $ip, $port, $ssl, $this->logger));
     }
@@ -72,7 +72,7 @@ class Server
     public function setNodesLimit($limit)
     {
         if (!is_integer($limit) || $limit < 0) {
-            throw new InvalidArgumentException("Nodes limit must be integer >= 0");
+            throw new InvalidArgumentException('Nodes limit must be integer >= 0');
         }
 
         $this->nodesLimit = $limit;
@@ -84,7 +84,7 @@ class Server
      */
     public function __destruct()
     {
-        $this->logger->info("Server is going down");
+        $this->logger->info('Server is going down');
         foreach ($this->nodes as $node) {
             try {
                 $node->disconnect(true);
@@ -106,7 +106,7 @@ class Server
         try {
             if ($this->nodesCount >= $this->nodesLimit) {
                 $node->disconnect(true);
-                $this->logger->warning("Node $node dropped - limit of " . $this->nodesLimit . " connections exceeded");
+                $this->logger->warning("Node $node dropped - limit of " . $this->nodesLimit . ' connections exceeded');
 
                 return;
             }
@@ -114,10 +114,10 @@ class Server
             $this->nodes[(int)$node->socket] = $node;
             $this->nodes[(int)$node->socket]->subscribedEvents = $this->subscribedEvents; //TODO this should be moved to HttpListenerNode
             $this->nodesCount++;
-            $this->logger->info("New node added to server: " . $node->getPeerName());
+            $this->logger->info('New node added to server: ' . $node->getPeerName());
 
         } catch(Exception $e) {
-            $this->logger->error("Exception occurred during adding node - " . $e->getMessage() . "[" . $e->getFile() . "@" . $e->getLine() . "]");
+            $this->logger->error('Exception occurred during adding node - ' . $e->getMessage() . '[' . $e->getFile() . '@' . $e->getLine() . ']');
 
             $this->removeNode($node);
         }
@@ -133,7 +133,7 @@ class Server
     public function removeNode(StreamServerNodeInterface $node)
     {
         if (!isset($this->nodes[(int)$node->socket])) {
-            throw new ServerException("Tried to remove nonexistent node [bug?]");
+            throw new ServerException('Tried to remove nonexistent node [bug?]');
         }
 
         unset($this->nodes[(int)$node->socket]);
@@ -169,7 +169,7 @@ class Server
     public function setHearbeatInterval($interval)
     {
         if (!is_integer($interval) || $interval < 0) {
-            throw new InvalidArgumentException("Hearbeat interval MUST be integer >= 0");
+            throw new InvalidArgumentException('Hearbeat interval MUST be integer >= 0');
         }
 
         $this->nextHeartbeatTime = 0;
@@ -194,7 +194,7 @@ class Server
         }
 
         if ($this->eventsHandler === null) {
-            throw new ServerException("You have to specify events handler, using setEventHandler(), before subscribing");
+            throw new ServerException('You have to specify events handler, using setEventHandler(), before subscribing');
         }
 
         $this->subscribedEvents[$eventName] = true;
@@ -253,12 +253,12 @@ class Server
      */
     public function run()
     {
-        //$this->logger->debug("run() called - multiplexer is running");
+        //$this->logger->debug('run() called - multiplexer is running');
         while (true) {
             try {
                 //Fire callback before building sockets arrays (if callback decides to modify sth it will be catched right away)
-                if ($this->subscribedEvents["heartbeat"] && time() >= $this->nextHeartbeatTime) {
-                    //$this->logger->debug("Firing heartbeat event");
+                if ($this->subscribedEvents['heartbeat'] && time() >= $this->nextHeartbeatTime) {
+                    //$this->logger->debug('Firing heartbeat event');
                     $this->nextHeartbeatTime = time() + $this->heartbeatInterval;
                     $this->eventsHandler->onHeartbeat();
                 }
@@ -272,16 +272,16 @@ class Server
                     }
                 }
 
-                //$this->logger->debug("Calling select() for " . (int)$this->heartbeatInterval . "s");
+                //$this->logger->debug('Calling select() for ' . (int)$this->heartbeatInterval . 's');
                 $changedSocketsNum = stream_select($read, $write, $except = null, $this->heartbeatInterval);
                 if ($changedSocketsNum === false) { //It doesn't always mean error - it's normal when application is interrupted by signal
-                    throw new ServerException("select() call failed or interrupted");
+                    throw new ServerException('select() call failed or interrupted');
                 }
                 //$this->logger->debug("Select returned with $changedSocketsNum changed socket(s)");
                 try {
                     foreach ($read as $socket) {
                         /*if (!isset($this->nodes[(int)$socket])) { //TODO debug only, node have to be in this array. Remove it after debugging.
-                            throw new ServerException("Internal server error - failed to locate node for socket (?!)");
+                            throw new ServerException('Internal server error - failed to locate node for socket (?!)');
                         }*/
                         $socketId = (int)$socket;
                         $this->nodes[$socketId]->onReadReady();
@@ -294,7 +294,7 @@ class Server
                     foreach ($write as $socket) {
                         $socketId = (int)$socket;
 
-                        if ($this->nodes[$socketId]->onWriteReady() && $this->nodes[$socketId]->subscribedEvents["writeBufferEmpty"]) {
+                        if ($this->nodes[$socketId]->onWriteReady() && $this->nodes[$socketId]->subscribedEvents['writeBufferEmpty']) {
                             $this->eventsHandler->onWriteBufferEmpty($this->nodes[$socketId]);
                         }
                     }
@@ -319,9 +319,9 @@ class Server
      */
     private function handleHttpException(HttpException $exception, StreamServerNodeInterface $client)
     {
-        //$this->logger->debug("Handling HttpException [code: " . $exception->getCode() . ", reason: " . $exception->getMessage() . "]");
+        //$this->logger->debug('Handling HttpException [code: ' . $exception->getCode() . ', reason: ' . $exception->getMessage() . ']');
 
-        $errorResponse = ($client->subscribedEvents["httpException"]) ? $this->eventsHandler->onHttpException($exception,
+        $errorResponse = ($client->subscribedEvents['httpException']) ? $this->eventsHandler->onHttpException($exception,
             $client) : $exception->getResponse();
 
         $client->pushData($errorResponse);
@@ -345,7 +345,7 @@ class Server
 
         if (!isset($oldClient->socket, $this->nodes[(int)$oldClient->socket])) {
             $this->logger->emergency("Client $oldClient not found during upgrade");
-            throw new ServerException("Tried to upgrade non existing client!");
+            throw new ServerException('Tried to upgrade non existing client!');
         }
 
         $this->nodes[(int)$oldClient->socket] = $upgrade->getNewClient();

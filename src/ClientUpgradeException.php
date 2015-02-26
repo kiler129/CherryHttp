@@ -23,7 +23,7 @@ class ClientUpgradeException extends Exception
     {
         $this->oldClient = $oldNode;
         $this->newClient = $newClient;
-        parent::__construct("Upgrading client to new one.");
+        parent::__construct('Upgrading client to new one.');
     }
 
     /**

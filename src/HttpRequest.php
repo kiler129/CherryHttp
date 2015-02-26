@@ -43,22 +43,22 @@ class HttpRequest extends HttpMessage
      */
     private function parseHeader($header)
     {
-        //$this->logger->debug("Parsing request header");
+        //$this->logger->debug('Parsing request header');
         $header = explode("\r\n", $header); //Now it contains header lines
-        $statusLine = explode(" ", $header[0], 3); //Eg.: GET /file HTTP/1.1 will be parsed into [GET, /file, HTTP/1.1]
-        if (!isset($statusLine[2]) || substr($statusLine[2], 0, 5) !== "HTTP/") {
-            throw new HttpException("Request is not HTTP compliant.", HttpCode::BAD_REQUEST, array(), true);
+        $statusLine = explode(' ', $header[0], 3); //Eg.: GET /file HTTP/1.1 will be parsed into [GET, /file, HTTP/1.1]
+        if (!isset($statusLine[2]) || substr($statusLine[2], 0, 5) !== 'HTTP/') {
+            throw new HttpException('Request is not HTTP compliant.', HttpCode::BAD_REQUEST, array(), true);
         }
 
         if (isset($statusLine[1][self::MAX_URI_LENGTH])) { //Much faster than using strlen(...) > MAX_URI_LENGTH
-            throw new HttpException("URI should be equal or less than " . self::MAX_URI_LENGTH . " characters",
+            throw new HttpException('URI should be equal or less than ' . self::MAX_URI_LENGTH . ' characters',
                 HttpCode::REQUEST_URI_TOO_LONG);
         }
 
         //TODO shouldn't it convert method to uppercase?
         $this->method = $statusLine[0];
 
-        $fullUri = explode("?", $statusLine[1], 2); //URL + query string, eg. [/file, var1=test&var2=foo&bar=derp]
+        $fullUri = explode('?', $statusLine[1], 2); //URL + query string, eg. [/file, var1=test&var2=foo&bar=derp]
         $this->uri = $fullUri[0];
 
         if (isset($fullUri[1])) {
@@ -66,8 +66,8 @@ class HttpRequest extends HttpMessage
         }
 
         $this->protocolVersion = substr($statusLine[2], 5); //Everything after HTTP/ is http version number
-        if ($this->protocolVersion !== "1.1" && $this->protocolVersion !== "1.0") {
-            throw new HttpException("Requested HTTP version is not supported", HttpCode::VERSION_NOT_SUPPORTED, array(),
+        if ($this->protocolVersion !== '1.1' && $this->protocolVersion !== '1.0') {
+            throw new HttpException('Requested HTTP version is not supported', HttpCode::VERSION_NOT_SUPPORTED, array(),
                 true);
         }
 
@@ -75,7 +75,7 @@ class HttpRequest extends HttpMessage
         $this->populateHeaders($header); //Everything left from header is actually http headers
 
         $this->isRequestCollected = true;
-        //$this->logger->debug("Got HTTP headers, request is collected");
+        //$this->logger->debug('Got HTTP headers, request is collected');
     }
 
     /**
@@ -90,12 +90,12 @@ class HttpRequest extends HttpMessage
     {
         $this->headers = array();
 
-        //$this->logger->debug("Parsing HTTP request headers");
+        //$this->logger->debug('Parsing HTTP request headers');
         foreach ($header as $headersLine) {
-            $headersLine = explode(":", $headersLine, 2);
+            $headersLine = explode(':', $headersLine, 2);
             $headerName = trim($headersLine[0]);
             $lowercaseName = strtolower($headerName);
-            $headerValue = (isset($headersLine[1])) ? trim($headersLine[1]) : "";
+            $headerValue = (isset($headersLine[1])) ? trim($headersLine[1]) : '';
 
             if (isset($this->headers[$lowercaseName])) { //Duplicated header with the same name (eg. Set-Cookie)
                 if (is_array($this->headers[$lowercaseName][1])) {
@@ -161,10 +161,10 @@ class HttpRequest extends HttpMessage
             //@formatter:off PHPStorm formatter acts weird on such constructions and reformat it to single looong line
             $requestUri = $this->uri;
             if(!empty($this->queryString)) {
-                $requestUri .= "?".$this->queryString;
+                $requestUri .= '?'.$this->queryString;
             }
 
-            $this->messageCache = $this->method . " " . $requestUri . " HTTP/" . $this->protocolVersion . "\r\n" .
+            $this->messageCache = $this->method . ' ' . $requestUri . ' HTTP/' . $this->protocolVersion . "\r\n" .
                                   $this->getHeadersAsText() .
                                   "\r\n" .
                                   $this->body;

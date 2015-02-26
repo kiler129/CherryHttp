@@ -17,7 +17,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
     /** @var resource Client socket */
     public $socket;
     /** @var array Defines which events should be dispatched to eventsHandler by Server class */
-    public $subscribedEvents = array("writeBufferEmpty" => false, "httpException" => false);
+    public $subscribedEvents = array('writeBufferEmpty' => false, 'httpException' => false);
     /** @var LoggerInterface */
     protected $logger;
     protected $inputBuffer;
@@ -41,7 +41,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
         $this->socket = $socket;
 
         if (empty($peerName)) {
-            $this->peerName = (is_resource($this->socket)) ? stream_socket_get_name($this->socket, false) : "UNKNOWN:0";
+            $this->peerName = (is_resource($this->socket)) ? stream_socket_get_name($this->socket, false) : 'UNKNOWN:0';
 
         } else {
             $this->peerName = $peerName;
@@ -109,8 +109,8 @@ abstract class StreamServerNode implements StreamServerNodeInterface
         }
 
         $this->inputBuffer .= $readContent;
-        //$this->logger->debug("Got " . strlen($readContent) . " bytes from client $this");
-        //$this->logger->debug("Client $this contains " . strlen($this->inputBuffer) . " bytes in read buffer"); //Time consuming
+        //$this->logger->debug('Got ' . strlen($readContent) . " bytes from client $this");
+        //$this->logger->debug("Client $this contains " . strlen($this->inputBuffer) . ' bytes in read buffer'); //Time consuming
 
         //For explanation read "important note" for processInputBuffer()
         //@formatter:off
@@ -139,7 +139,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
             $bytesWritten);
 
         //$this->logger->debug("Sent $bytesWritten to client $this");
-        //$this->logger->debug("Client $this contains " . strlen($this->outputBuffer) . " bytes in write buffer"); //Time consuming
+        //$this->logger->debug("Client $this contains " . strlen($this->outputBuffer) . ' bytes in write buffer'); //Time consuming
 
         return ($this->outputBuffer === '');
     }
@@ -152,10 +152,10 @@ abstract class StreamServerNode implements StreamServerNodeInterface
     public function disconnect($drop = false)
     {
         if ($drop || ($this->isDegenerated && empty($this->outputBuffer))) {
-            //$this->logger->debug("Dropping client $this [buff: " . strlen($this->outputBuffer) . "]");
+            //$this->logger->debug("Dropping client $this [buff: " . strlen($this->outputBuffer) . ']');
 
-            $this->inputBuffer = "";
-            $this->outputBuffer = "";
+            $this->inputBuffer = '';
+            $this->outputBuffer = '';
             /** @noinspection PhpUsageOfSilenceOperatorInspection fclose() generates E_WARNING if socket is invalid, in this case we don't care if it's valid or not */
             @fclose($this->socket);
             throw new NodeDisconnectException($this);
@@ -172,7 +172,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
      */
     final public function __toString()
     {
-        return $this->peerName . " (" . __CLASS__ . ")";
+        return $this->peerName . ' (' . __CLASS__ . ')';
     }
 
     /**
@@ -186,7 +186,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
 
         $this->outputBuffer .= $data;
 
-        //$this->logger->debug("Added data to buffer, now contains " . strlen($this->outputBuffer) . " bytes"); //Time consuming
+        //$this->logger->debug('Added data to buffer, now contains ' . strlen($this->outputBuffer) . ' bytes'); //Time consuming
         return true;
     }
 

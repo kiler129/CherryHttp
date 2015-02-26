@@ -24,7 +24,7 @@ class HttpException extends Exception
      * @see HttpResponse
      */
     public function __construct(
-        $message = "",
+        $message = '',
         $code = HttpCode::INTERNAL_SERVER_ERROR,
         $extraHeaders = array(),
         $disconnect = false
@@ -32,7 +32,7 @@ class HttpException extends Exception
         $this->response = new HttpResponse($message, $extraHeaders, $code);
 
         if ($disconnect) {
-            $this->response->setHeader("connection", "close");
+            $this->response->setHeader('connection', 'close');
         }
 
         parent::__construct($message, $code);
