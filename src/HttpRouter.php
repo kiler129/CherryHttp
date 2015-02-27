@@ -70,7 +70,7 @@ class HttpRouter implements HttpRouterInterface
 
         } else {
             throw new HttpException('No resource lives here.', HttpCode::NOT_FOUND,
-                array('X-Reason' => 'no module for path'), $request->closeConnection());
+                array('X-Reason' => 'no module for path'), $request->isConnectionClose());
         }
     }
 }
