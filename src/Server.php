@@ -273,7 +273,7 @@ class Server
                 }
 
                 //$this->logger->debug('Calling select() for ' . (int)$this->heartbeatInterval . 's');
-                $except = null
+                $except = null;
                 $changedSocketsNum = stream_select($read, $write, $except, $this->heartbeatInterval);
                 if ($changedSocketsNum === false) { //It doesn't always mean error - it's normal when application is interrupted by signal
                     throw new ServerException('select() call failed or interrupted');
