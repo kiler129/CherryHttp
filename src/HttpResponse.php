@@ -11,6 +11,8 @@ use LogicException;
  */
 class HttpResponse extends HttpMessage
 {
+    protected $code;
+
     protected $headers = array(
         'server' => array('Server', 'CherryHttp/1.0'),
         'connection' => array('Connection', 'keep-alive')
@@ -35,6 +37,57 @@ class HttpResponse extends HttpMessage
         foreach ($headers as $headerName => $headerValue) {
             $this->headers[strtolower($headerName)] = array($headerName, $headerValue);
         }
+    }
+
+    /**
+     * Provides HTTP code set for request.
+     *
+     * @return integer
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * Sets HTTP code for response.
+     *
+     * @param integer $code Any valid HTTP code
+     *
+     * @throws InvalidArgumentException Exception is raised if you try to set invalid HTTP code.
+     * @throws LogicException Exception is raised if you try to set code which should not contain a body and body is
+     *     already present.
+     */
+    public function setCode($code)
+    {
+        $code = (int)$code;
+
+        if (!empty($this->body) && !HttpCode::isBodyAllowed($this->code)) { //InvalidArgumentException can be thrown here
+            throw new LogicException('HTTP response already contains body - response "' . HttpCode::getName($code) . '" cannot contain body.');
+        }
+
+        $this->code = $code;
+        $this->messageCache = null;
+    }
+
+    /**
+     * Sets body for response.
+     * It also automatically sets correct Content-Length header.
+     *
+     * @param string $body
+     *
+     * @throws LogicException Thrown when you try to set body, but request code (eg. 204) denotes that no body is
+     *     allowed.
+     */
+    public function setBody($body)
+    {
+        if (!empty($body) && !HttpCode::isBodyAllowed($this->code)) {
+            throw new LogicException('You cannot set non-empty body for currently set code');
+        }
+
+        $this->body = (string)$body;
+        $this->setHeader('Content-Length', strlen($this->body));
+        $this->messageCache = null;
     }
 
     /**

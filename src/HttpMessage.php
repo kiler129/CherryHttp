@@ -13,7 +13,7 @@ use LogicException;
  */
 abstract class HttpMessage
 {
-    protected $code;
+
     protected $protocolVersion = '1.1';
 
     protected $headers = array();
@@ -46,37 +46,6 @@ abstract class HttpMessage
         }
 
         $this->protocolVersion = $httpVersion;
-        $this->messageCache = null;
-    }
-
-    /**
-     * Provides HTTP code set for request.
-     *
-     * @return integer
-     */
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    /**
-     * Sets HTTP code for response.
-     *
-     * @param integer $code Any valid HTTP code
-     *
-     * @throws InvalidArgumentException Exception is raised if you try to set invalid HTTP code.
-     * @throws LogicException Exception is raised if you try to set code which should not contain a body and body is
-     *     already present.
-     */
-    public function setCode($code)
-    {
-        $code = (int)$code;
-
-        if (!empty($this->body) && !HttpCode::isBodyAllowed($this->code)) { //InvalidArgumentException can be thrown here
-            throw new LogicException('HTTP response already contains body - response "' . HttpCode::getName($code) . '" cannot contain body.');
-        }
-
-        $this->code = $code;
         $this->messageCache = null;
     }
 
@@ -153,33 +122,13 @@ abstract class HttpMessage
     }
 
     /**
-     * Returns request body (if set).
+     * Returns message body (if set).
      *
      * @return string|null
      */
     public function getBody()
     {
         return $this->body;
-    }
-
-    /**
-     * Sets body for response.
-     * It also automatically sets correct Content-Length header.
-     *
-     * @param string $body
-     *
-     * @throws LogicException Thrown when you try to set body, but request code (eg. 204) denotes that no body is
-     *     allowed.
-     */
-    public function setBody($body)
-    {
-        if (!empty($body) && !HttpCode::isBodyAllowed($this->code)) {
-            throw new LogicException('You cannot set non-empty body for currently set code');
-        }
-
-        $this->body = (string)$body;
-        $this->setHeader('Content-Length', strlen($this->body));
-        $this->messageCache = null;
     }
 
     /**
@@ -222,8 +171,6 @@ abstract class HttpMessage
      * Provides raw representation ready to be sent down the wire.
      *
      * @return string
-     * @throws InvalidArgumentException It could be theoretically thrown by HttpCode::getName() if $this->code is
-     *     unknown, but in normal circumstances is impossible
      */
     abstract public function __toString();
 }
