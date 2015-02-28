@@ -43,6 +43,7 @@ class PrettyErrors implements HttpRequestHandlerInterface, EventsHandlerInterfac
         if ((int)$exceptionResponse->getCode() >= 400) { //Do not catch eg. redirects
             $prettyBody = sprintf(self::ERROR_PAGE, $exceptionResponse->getCode(), $exceptionResponse->getBody());
             $exceptionResponse->setBody($prettyBody);
+            $exceptionResponse->setHeader("Content-Type", "text/html");
         }
 
         return $exceptionResponse;
