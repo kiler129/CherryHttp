@@ -55,7 +55,6 @@ class HttpRequest extends HttpMessage
                 HttpCode::REQUEST_URI_TOO_LONG);
         }
 
-        //TODO shouldn't it convert method to uppercase?
         $this->method = $statusLine[0];
 
         $fullUri = explode('?', $statusLine[1], 2); //URL + query string, eg. [/file, var1=test&var2=foo&bar=derp]
@@ -83,29 +82,23 @@ class HttpRequest extends HttpMessage
      * Note: This parser intentional doesn't implement folded headers (WTF is that anyway?!).
      *
      * @param $header
-     *
-     * @todo Check if fully conforms to RFC (trims)
      */
     private function populateHeaders($header)
     {
         $this->headers = array();
 
         //$this->logger->debug('Parsing HTTP request headers');
+        //It should call $this->setHeader() method but due to performance reasons it will process headers itself
         foreach ($header as $headersLine) {
             $headersLine = explode(':', $headersLine, 2);
-            $headerName = trim($headersLine[0]);
+            $headerName = trim($headersLine[0]); //In theory there should be no whitespaces around name... in theory.
             $lowercaseName = strtolower($headerName);
             $headerValue = (isset($headersLine[1])) ? trim($headersLine[1]) : '';
 
-            if (isset($this->headers[$lowercaseName])) { //Duplicated header with the same name (eg. Set-Cookie)
-                if (is_array($this->headers[$lowercaseName][1])) {
-                    $this->headers[$lowercaseName][1][] = $headerValue;
-                } else {
-                    $this->headers[$lowercaseName][1] = array($this->headers[$lowercaseName][1], $headerValue);
-                }
-
+            if (isset($this->headers[$lowercaseName])) {
+                $this->headers[$lowercaseName][1][] = $headerValue;
             } else {
-                $this->headers[$lowercaseName] = array($headerName, $headerValue);
+                $this->headers[$lowercaseName] = array($headerName, (array)$headerValue);
             }
         }
     }

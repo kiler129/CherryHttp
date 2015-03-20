@@ -14,8 +14,8 @@ class HttpResponse extends HttpMessage
     protected $code;
 
     protected $headers = array(
-        'server' => array('Server', 'CherryHttp/1.0'),
-        'connection' => array('Connection', 'keep-alive')
+        'server' => array('Server', array('CherryHttp/1.0')),
+        'connection' => array('Connection', array('keep-alive'))
     );
 
     /**
@@ -34,8 +34,9 @@ class HttpResponse extends HttpMessage
             $this->setBody($body);
         }
 
+        //It should call $this->setHeader($headerName, $headerValue, true), but this is a lot faster
         foreach ($headers as $headerName => $headerValue) {
-            $this->headers[strtolower($headerName)] = array($headerName, $headerValue);
+            $this->headers[strtolower($headerName)] = array($headerName, array($headerValue));
         }
     }
 

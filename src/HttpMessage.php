@@ -2,7 +2,6 @@
 namespace noFlash\CherryHttp;
 
 use InvalidArgumentException;
-use LogicException;
 
 /**
  * Generic representation of ane HTTP message, which consists of request line, headers and (sometimes non-empty) body.
@@ -16,7 +15,24 @@ abstract class HttpMessage
 
     protected $protocolVersion = '1.1';
 
+    /**
+     * Contains array of headers.
+     * Internal structure:
+     * $headers = [
+     *     'connection' => [ //Header name (lowercase)
+     *         'Connection', //Header name (original case)
+     *         ['close'] //Header values
+     *     ],
+     *     'set-cookie' => [
+     *         'Set-Cookie',
+     *         ['cookie1', 'cookie2', 'cookie3']
+     *     ]
+     * ];
+     *
+     * @var array
+     */
     protected $headers = array();
+
     protected $body;
 
     protected $messageCache;
@@ -57,7 +73,7 @@ abstract class HttpMessage
     public function getHeaders()
     {
         $headers = array();
-        foreach ($this->headers as $header) {
+        foreach($this->headers as $header) {
             $headers[$header[0]] = $header[1];
         }
 
@@ -65,19 +81,52 @@ abstract class HttpMessage
     }
 
     /**
+     * Returns raw headers array.
+     * Every key contain lowercase version of header name. Value contains 2 elements array where first one represents
+     * original header name. Second elements contains array of strings representing values of header.
+     *
+     * @return array Format defined by {@see HttpMessage::$headers}
+     */
+    public function getIndexedHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
      * Provides value for specified header name.
-     * Note: Some headers can be send multiple times. In this case this method will return all of them in array.
+     * Note: Some headers can be send multiple times. In this case this method will return all of them comma-separated.
      *
-     * @param $name
+     * @param string $name Case-insensitive header name
      *
-     * @return string|string[]|false
+     * @return string|null
+     *
+     * @see self::getHeaderLines()
      */
     public function getHeader($name)
     {
         $name = strtolower($name);
 
         if (!isset($this->headers[$name])) {
-            return false;
+            return null;
+        }
+
+        return implode(',', $this->headers[$name][1]);
+    }
+
+    /**
+     * Provides value for specified header name.
+     * If header doesn't exists it will return empty array.
+     *
+     * @param string $name Name of header
+     *
+     * @return string[]
+     */
+    public function getHeaderLines($name)
+    {
+        $name = strtolower($name);
+
+        if (!isset($this->headers[$name])) {
+            return array();
         }
 
         return $this->headers[$name][1];
@@ -95,15 +144,10 @@ abstract class HttpMessage
     public function setHeader($name, $value, $replace = true)
     {
         $lowercaseName = strtolower($name);
-        if ($replace || !isset($this->headers[$lowercaseName])) {
-            $this->headers[$lowercaseName] = array($name, $value);
-
+        if($replace) {
+            $this->headers[$lowercaseName] = array($name, array($value));
         } else {
-            if (is_array($this->headers[$lowercaseName][1])) {
-                $this->headers[$lowercaseName][1][] = $value;
-            } else {
-                $this->headers[$lowercaseName][1] = array($this->headers[$lowercaseName][1], $value);
-            }
+            $this->headers[$lowercaseName][1][] .= $value;
         }
 
         $this->messageCache = null;
@@ -133,6 +177,8 @@ abstract class HttpMessage
 
     /**
      * Provides information is TCP connection should be terminated after sending this request.
+     * Note: this function DOES NOT support headers like "Connection: close,keep-alive" and assumes default HTTP version
+     * behaviour (no RFC describes how to handle such values) for such values.
      *
      * @return bool
      */
@@ -154,13 +200,8 @@ abstract class HttpMessage
         $headers = '';
 
         foreach ($this->headers as $header) {
-            if (is_array($header[1])) {
-                foreach ($header[1] as $multiHeader) {
-                    $headers .= $header[0] . ': ' . $multiHeader . "\r\n";
-                }
-
-            } else {
-                $headers .= $header[0] . ': ' . $header[1] . "\r\n";
+            foreach($header[1] as $headerValue) {
+                $headers .= $header[0] . ': ' . $headerValue . "\r\n";
             }
         }
 
