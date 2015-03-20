@@ -133,7 +133,8 @@ class Server
     public function removeNode(StreamServerNodeInterface $node)
     {
         if (!isset($this->nodes[(int)$node->socket])) {
-            throw new ServerException('Tried to remove nonexistent node [bug?]');
+            $this->logger->error("Trying to remove nonexistent node - if there's no information regarding server overload it can indicate internal bug.");
+            return;
         }
 
         unset($this->nodes[(int)$node->socket]);

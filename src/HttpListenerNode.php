@@ -29,6 +29,7 @@ class HttpListenerNode extends StreamServerNode
      * @param bool $ssl
      * @param LoggerInterface $logger
      *
+     * @throws InvalidArgumentException Invalid IP address specified
      * @throws ServerException
      */
     public function __construct(
@@ -108,7 +109,12 @@ class HttpListenerNode extends StreamServerNode
      */
     public function disconnect($drop = false)
     {
-        @fclose($this->socket);
+        if(is_resource($this->socket)) {
+            fclose($this->socket);
+        } else {
+            $this->logger->warning("Socket is not resource in $this - cannot close it.");
+        }
+
         $this->logger->info("Listener $this closed");
 
         throw new NodeDisconnectException($this);
