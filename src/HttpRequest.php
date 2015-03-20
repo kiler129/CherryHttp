@@ -13,7 +13,7 @@ class HttpRequest extends HttpMessage
     /** @var integer Maximum URI length */
     const MAX_URI_LENGTH = 2048;
     /** @var integer Max allowed request headers length */
-    const MAX_HEADER_LENGTH = 8192; //If you need to mess with this value you have bigger problems than this :D
+    const MAX_HEADER_LENGTH = 16384; //If you need to mess with this value you have bigger problems than this :D
     /** @var LoggerInterface */
     protected $logger;
     protected $isRequestCollected = false;
