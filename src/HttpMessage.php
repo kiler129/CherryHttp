@@ -73,7 +73,7 @@ abstract class HttpMessage
     public function getHeaders()
     {
         $headers = array();
-        foreach($this->headers as $header) {
+        foreach ($this->headers as $header) {
             $headers[$header[0]] = $header[1];
         }
 
@@ -144,7 +144,7 @@ abstract class HttpMessage
     public function setHeader($name, $value, $replace = true)
     {
         $lowercaseName = strtolower($name);
-        if($replace) {
+        if ($replace) {
             $this->headers[$lowercaseName] = array($name, array($value));
         } else {
             $this->headers[$lowercaseName][1][] .= $value;
@@ -177,17 +177,18 @@ abstract class HttpMessage
 
     /**
      * Provides information is TCP connection should be terminated after sending this request.
-     * Note: this function DOES NOT support headers like "Connection: close,keep-alive" and assumes default HTTP version
-     * behaviour (no RFC describes how to handle such values) for such values.
      *
      * @return bool
      */
     public function isConnectionClose()
     {
-        $connectionHeader = strtolower($this->getHeader('connection'));
+        $connection = $this->getHeader('connection');
 
-        return ($connectionHeader === 'close' || //Explicitly declared connection as close
-            ((float)$this->getProtocolVersion() <= 1.1 && $connectionHeader !== 'keep-alive')); //Protocols older than 1.1 assumes "close" by default unless "keep-alive" specified
+        if ($this->protocolVersion === '1.1') {
+            return ($connection[0] === 'c' || $connection === 'C');
+        } else {
+            return ($connection[0] !== 'K' && $connection !== 'k');
+        }
     }
 
     /**
@@ -200,7 +201,7 @@ abstract class HttpMessage
         $headers = '';
 
         foreach ($this->headers as $header) {
-            foreach($header[1] as $headerValue) {
+            foreach ($header[1] as $headerValue) {
                 $headers .= $header[0] . ': ' . $headerValue . "\r\n";
             }
         }
