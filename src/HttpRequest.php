@@ -45,7 +45,7 @@ class HttpRequest extends HttpMessage
     {
         //$this->logger->debug('Parsing request header');
         $header = explode("\n", $header); //Now it contains header lines
-        $statusLine = explode(' ', $header[0], 3); //Eg.: GET /file HTTP/1.1 will be parsed into [GET, /file, HTTP/1.1]
+        $statusLine = explode(' ', trim($header[0]), 3); //Eg.: GET /file HTTP/1.1 will be parsed into [GET, /file, HTTP/1.1]
         if (!isset($statusLine[2]) || substr($statusLine[2], 0, 5) !== 'HTTP/') {
             throw new HttpException('Request is not HTTP complaint.', HttpCode::BAD_REQUEST, array(), true);
         }
