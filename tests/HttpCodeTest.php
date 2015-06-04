@@ -92,4 +92,44 @@ class HttpCodeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\InvalidArgumentException');
         HttpCode::getName(9999);
     }
+
+    public function testIsBodyAllowedPermitsBodyForHttpOk()
+    {
+        $this->assertTrue(HttpCode::isBodyAllowed(HttpCode::OK));
+    }
+
+    public function testIsBodyAllowedForbidsBodyForHttpNoContent()
+    {
+        $this->assertFalse(HttpCode::isBodyAllowed(HttpCode::NO_CONTENT));
+    }
+
+    public function testIsBodyAllowedForbidsBodyForHttpNotModified()
+    {
+        $this->assertFalse(HttpCode::isBodyAllowed(HttpCode::NOT_MODIFIED));
+    }
+
+    public function continuationCodesProvider()
+    {
+        return array(
+            array(HttpCode::HTTP_CONTINUE),
+            array(HttpCode::SWITCHING_PROTOCOLS),
+            array(HttpCode::PROCESSING),
+            array(HttpCode::CONNECTION_TIMEOUT),
+            array(HttpCode::CONNECTION_REFUSED)
+        );
+    }
+
+    /**
+     * @dataProvider continuationCodesProvider
+     */
+    public function testIsBodyAllowedForbidsBodyForContinuationCodes($code)
+    {
+        $this->assertFalse(HttpCode::isBodyAllowed($code), "isBodyAllowed() permitted body for continuation code $code");
+    }
+
+    public function testCheckingIfBodyAllowedWithInvalidCodeThrowsInvalidArgumentException()
+    {
+        $this->setExpectedException('\InvalidArgumentException');
+        HttpCode::isBodyAllowed(9999);
+    }
 }
