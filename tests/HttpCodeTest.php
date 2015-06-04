@@ -76,4 +76,14 @@ class HttpCodeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(defined($constantName), "Constant $constantName not found");
         $this->assertSame(constant($constantName), $code, "Invalid value for constant $constantName");
     }
+
+    /**
+     * @dataProvider httpCodesProvider
+     */
+    public function testFetchingNameReturnsProperValueForAllDefinedCodes($constantName, $codeNumber)
+    {
+        $codeName = HttpCode::getName($codeNumber);
+
+        $this->assertStringStartsWith((string)$codeNumber, $codeName);
+    }
 }
