@@ -86,4 +86,10 @@ class HttpCodeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith((string)$codeNumber, $codeName);
     }
+
+    public function testFetchingNameForInvalidCodeThrowsInvalidArgumentException()
+    {
+        $this->setExpectedException('\InvalidArgumentException');
+        HttpCode::getName(9999);
+    }
 }
