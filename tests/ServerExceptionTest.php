@@ -17,4 +17,10 @@ class ServerExceptionTest extends \PHPUnit_Framework_TestCase
         $serverException = new ServerException($message);
         $this->assertContains($message, $serverException->getMessage(), '', true);
     }
+
+    public function testAlwaysReturnZeroCode()
+    {
+        $serverException = new ServerException('test', 123);
+        $this->assertSame(0, $serverException->getCode());
+    }
 }
