@@ -16,8 +16,8 @@ class NodeDisconnectExceptionTest extends \PHPUnit_Framework_TestCase
 
     public function testClassExtendsException()
     {
-        $serverExceptionReflection = new \ReflectionClass('\noFlash\CherryHttp\NodeDisconnectException');
-        $this->assertTrue($serverExceptionReflection->isSubclassOf('\Exception'));
+        $nodeDisconnectExceptionReflection = new \ReflectionClass('\noFlash\CherryHttp\NodeDisconnectException');
+        $this->assertTrue($nodeDisconnectExceptionReflection->isSubclassOf('\Exception'));
     }
 
 }
