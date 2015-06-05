@@ -56,7 +56,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
         static $customNameIpV4 = "127.0.0.1:8080";
-        static $customNameIpV6 = "::ffff:127.0.0.1";
+        static $customNameIpV6 = "::ffff:127.0.0.1:8080";
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
             array($stream, $customNameIpV4, $this->loggerMock)
