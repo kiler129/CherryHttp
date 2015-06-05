@@ -2,7 +2,7 @@
 namespace noFlash\CherryHttp;
 
 
-class ClientUpgradeExceptionExceptionTest extends \PHPUnit_Framework_TestCase
+class ClientUpgradeExceptionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var StreamServerNodeInterface
