@@ -25,4 +25,14 @@ class ClientUpgradeExceptionExceptionTest extends \PHPUnit_Framework_TestCase
         $clientUpgradeExceptionReflection = new \ReflectionClass('\noFlash\CherryHttp\ClientUpgradeException');
         $this->assertTrue($clientUpgradeExceptionReflection->isSubclassOf('\Exception'));
     }
+
+
+    public function testProvidesNonEmptyExplanationAsMessage()
+    {
+        $clientUpgradeException = new ClientUpgradeException($this->oldNodeMock, $this->newNodeMock);
+        $message = $clientUpgradeException->getMessage();
+
+        $this->assertNotEmpty($message);
+        $this->assertInternalType('string', $message);
+    }
 }
