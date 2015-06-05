@@ -151,4 +151,30 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertContains($customName, (string)$streamServerNode);
     }
+
+    public function testFreshObjectWithValidSocketAllowsAddingDataToOutputBuffer()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $this->assertTrue($streamServerNode->pushData('test'));
+    }
+
+    public function testAddingDataAfterDisconnectFails()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $streamServerNode->disconnect();
+
+        $this->assertFalse($streamServerNode->pushData('test'));
+    }
+
+
 }
