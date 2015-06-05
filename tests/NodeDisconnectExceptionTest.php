@@ -28,4 +28,12 @@ class NodeDisconnectExceptionTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($message);
         $this->assertInternalType('string', $message);
     }
+
+    public function testAlwaysReturnZeroCode()
+    {
+        $nodeDisconnectException = new NodeDisconnectException($this->nodeMock, 123);
+        $this->assertSame(0, $nodeDisconnectException->getCode());
+    }
+
+
 }
