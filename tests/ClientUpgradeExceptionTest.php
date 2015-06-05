@@ -35,4 +35,10 @@ class ClientUpgradeExceptionTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($message);
         $this->assertInternalType('string', $message);
     }
+
+    public function testAlwaysReturnZeroCode()
+    {
+        $clientUpgradeException = new ClientUpgradeException($this->oldNodeMock, $this->newNodeMock);
+        $this->assertSame(0, $clientUpgradeException->getCode());
+    }
 }
