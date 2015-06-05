@@ -35,5 +35,9 @@ class NodeDisconnectExceptionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(0, $nodeDisconnectException->getCode());
     }
 
-
+    public function testReturnPassedNode()
+    {
+        $nodeDisconnectException = new NodeDisconnectException($this->nodeMock);
+        $this->assertSame($this->nodeMock, $nodeDisconnectException->getNode());
+    }
 }
