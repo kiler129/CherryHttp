@@ -15,6 +15,14 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->loggerMock = $this->getMockForAbstractClass('\Psr\Log\LoggerInterface');
     }
 
+    private function getSampleSocketStream()
+    {
+        $stream = stream_socket_server('tcp://0.0.0.0:0');
+        $this->assertNotFalse($stream, 'Failed to create socket for test (environment problem?)');
+
+        return $stream;
+    }
+
     public function testImplementsStreamServerNodeInterface()
     {
         $streamServerNodeReflection = new \ReflectionClass(self::CLASS_NAME);
@@ -23,8 +31,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
     public function testConstructorAssignsPassedSocketToSocketProperty()
     {
-        $stream = stream_socket_server('tcp://0.0.0.0:0');
-        $this->assertNotFalse($stream, 'Failed to create socket for test (environment problem?)');
+        $stream = $this->getSampleSocketStream();
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
             array($stream, '', $this->loggerMock)
@@ -32,5 +39,4 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame($stream, $streamServerNode->socket);
     }
-
 }
