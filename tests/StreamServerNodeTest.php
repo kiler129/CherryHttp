@@ -52,6 +52,37 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($customName, $streamServerNode->getPeerName());
     }
 
+    public function testConstructorAcceptsBothIpV4AndIpV6PeerNames()
+    {
+        $stream = $this->getSampleSocketStream();
+        static $customNameIpV4 = "127.0.0.1:8080";
+        static $customNameIpV6 = "::ffff:127.0.0.1";
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, $customNameIpV4, $this->loggerMock)
+        );
+
+        $this->assertSame($customNameIpV4, $streamServerNode->getPeerName(), 'IP v4 name not accepted');
+
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, $customNameIpV6, $this->loggerMock)
+        );
+
+        $this->assertSame($customNameIpV6, $streamServerNode->getPeerName(), 'IP v6 name not accepted');
+    }
+
+    public function testConstructorFailsOnPeerNameWithoutPort()
+    {
+        $stream = $this->getSampleSocketStream();
+        static $customName = "127.0.0.1";
+
+        $this->setExpectedException('\InvalidArgumentException');
+        $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, $customName, $this->loggerMock)
+        );
+    }
+
     public function testConstructorFetchesLocalPeerNameIfNotSpecified()
     {
         $stream = $this->getSampleSocketStream();
@@ -84,4 +115,5 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
             array($stream, null, $this->loggerMock)
         );
     }
+
 }
