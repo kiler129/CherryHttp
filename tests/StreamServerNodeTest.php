@@ -39,4 +39,17 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame($stream, $streamServerNode->socket);
     }
+
+    public function testConstructorHonorsCustomPeerName()
+    {
+        $stream = $this->getSampleSocketStream();
+        static $customName = "customName:8080";
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, $customName, $this->loggerMock)
+        );
+
+        $this->assertSame($customName, $streamServerNode->getPeerName());
+    }
+
 }
