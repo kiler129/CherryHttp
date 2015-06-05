@@ -20,4 +20,12 @@ class NodeDisconnectExceptionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($nodeDisconnectExceptionReflection->isSubclassOf('\Exception'));
     }
 
+    public function testProvidesNonEmptyExplanationAsMessage()
+    {
+        $nodeDisconnectException = new NodeDisconnectException($this->nodeMock);
+        $message = $nodeDisconnectException->getMessage();
+
+        $this->assertNotEmpty($message);
+        $this->assertInternalType('string', $message);
+    }
 }
