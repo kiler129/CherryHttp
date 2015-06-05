@@ -116,4 +116,27 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
+    public function testFetchingIpV4ReturnsValidIpAddress()
+    {
+        $stream = $this->getSampleSocketStream();
+        $customName = "127.0.0.1:8080";
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, $customName, $this->loggerMock)
+        );
+
+        $this->assertSame('127.0.0.1', $streamServerNode->getIp());
+    }
+
+    public function testFetchingIpV6ReturnsValidIpAddress()
+    {
+        $stream = $this->getSampleSocketStream();
+        $customName = "::ffff:127.0.0.1:8080";
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, $customName, $this->loggerMock)
+        );
+
+        $this->assertSame('::ffff:127.0.0.1', $streamServerNode->getIp());
+    }
 }
