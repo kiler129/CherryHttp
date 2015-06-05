@@ -41,4 +41,11 @@ class ClientUpgradeExceptionTest extends \PHPUnit_Framework_TestCase
         $clientUpgradeException = new ClientUpgradeException($this->oldNodeMock, $this->newNodeMock);
         $this->assertSame(0, $clientUpgradeException->getCode());
     }
+
+    public function testReturnPassedNodes()
+    {
+        $clientUpgradeException = new ClientUpgradeException($this->oldNodeMock, $this->newNodeMock);
+        $this->assertSame($this->oldNodeMock, $clientUpgradeException->getOldClient(), 'Invalid old node provided');
+        $this->assertSame($this->newNodeMock, $clientUpgradeException->getNewClient(), 'Invalid new node provided');
+    }
 }
