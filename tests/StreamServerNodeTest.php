@@ -64,4 +64,24 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($localName, $streamServerNode->getPeerName());
     }
 
+    public function testConstructorDisconnectsNodeWithClosedSocket()
+    {
+        $stream = $this->getSampleSocketStream();
+        fclose($stream);
+
+        $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
+        $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+    }
+
+    public function testConstructorDisconnectsNodeWithInvalidSocketValue()
+    {
+        $stream = 'boooo!';
+
+        $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
+        $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+    }
 }
