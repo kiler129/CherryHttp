@@ -20,4 +20,17 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $streamServerNodeReflection = new \ReflectionClass(self::CLASS_NAME);
         $this->assertTrue($streamServerNodeReflection->isSubclassOf('\noFlash\CherryHttp\StreamServerNodeInterface'));
     }
+
+    public function testConstructorAssignsPassedSocketToSocketProperty()
+    {
+        $stream = stream_socket_server('tcp://0.0.0.0:0');
+        $this->assertNotFalse($stream, 'Failed to create socket for test (environment problem?)');
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, '', $this->loggerMock)
+        );
+
+        $this->assertSame($stream, $streamServerNode->socket);
+    }
+
 }
