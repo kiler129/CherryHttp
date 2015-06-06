@@ -282,4 +282,46 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($streamServerNode->onWriteReady(), 'onWriteReady() didn\'t returned true on 3rd try');
         $this->assertSame('123456789', $streamMock->getContent(), 'Stream should get remaining bytes');
     }
+
+    public function testSubscribingBufferEmptyEventEnabledSubscriptionOnlyForThatEvent()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $eventsTable = $streamServerNode->subscribedEvents;
+        $eventsTable['writeBufferEmpty'] = true;
+
+        $streamServerNode->subscribeEvent('writeBufferEmpty');
+        $this->assertEquals($eventsTable, $streamServerNode->subscribedEvents);
+    }
+
+    public function testSubscribingHttpExceptionEventEnabledSubscriptionOnlyForThatEvent()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $eventsTable = $streamServerNode->subscribedEvents;
+        $eventsTable['httpException'] = true;
+
+        $streamServerNode->subscribeEvent('httpException');
+        $this->assertEquals($eventsTable, $streamServerNode->subscribedEvents);
+    }
+
+    public function testSubscribingUnknownEventThrowsInvalidArgumentException()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $this->setExpectedException('\InvalidArgumentException');
+        $streamServerNode->subscribeEvent('unknownEvent');
+    }
 }
