@@ -81,4 +81,31 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotEmpty($httpClient->request, 'No request found');
         $this->assertInstanceOf('\noFlash\CherryHttp\HttpRequest', $httpClient->request);
     }
+
+    public function testAfterReadingWholeBufferCompositedFromTwoChunksRequestIsPresent()
+    {
+        $request = "GET / HTTP/1.1\r\n";
+
+        $stream = $this->getStreamMockWithContent($request);
+
+        $httpClient = new HttpClient($stream, null, $this->loggerMock);
+
+        while (!feof($stream)) {
+            $httpClient->onReadReady();
+        }
+
+        $this->assertNull($httpClient->request, 'Request created after 1st chunk');
+
+        $restOfRequest = "Connection: close\r\n".
+                         "\r\n";
+        fwrite($stream, $restOfRequest);
+        fseek($stream, strlen($request), SEEK_SET);
+
+        while (!feof($stream)) {
+            $httpClient->onReadReady();
+        }
+
+        $this->assertNotEmpty($httpClient->request, 'No request found after 2nd chunk');
+        $this->assertInstanceOf('\noFlash\CherryHttp\HttpRequest', $httpClient->request);
+    }
 }
