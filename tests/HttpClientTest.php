@@ -63,4 +63,22 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
             throw $e;
         }
     }
+
+    public function testAfterReadingWholeBufferRequestIsPresent()
+    {
+        $request = "GET / HTTP/1.1\r\n".
+            "Connection: close\r\n".
+            "\r\n";
+
+        $stream = $this->getStreamMockWithContent($request);
+
+        $httpClient = new HttpClient($stream, null, $this->loggerMock);
+
+        while (!feof($stream)) {
+            $httpClient->onReadReady();
+        }
+
+        $this->assertNotEmpty($httpClient->request, 'No request found');
+        $this->assertInstanceOf('\noFlash\CherryHttp\HttpRequest', $httpClient->request);
+    }
 }
