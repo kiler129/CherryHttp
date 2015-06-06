@@ -9,7 +9,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     const CLASS_NAME = '\noFlash\CherryHttp\StreamServerNode';
 
     /**
-     * @var StreamServerNode.php:38
+     * @var \Psr\Log\LoggerInterface
      */
     private $loggerMock;
 
