@@ -324,4 +324,52 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\InvalidArgumentException');
         $streamServerNode->subscribeEvent('unknownEvent');
     }
+
+    public function testUnsubscribingBufferEmptyEventDisablesSubscriptionOnlyForThatEvent()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $streamServerNode->subscribeEvent('httpException');
+        $streamServerNode->subscribeEvent('writeBufferEmpty');
+
+        $eventsTable = $streamServerNode->subscribedEvents;
+        $eventsTable['writeBufferEmpty'] = false;
+
+        $streamServerNode->unsubscribeEvent('writeBufferEmpty');
+        $this->assertEquals($eventsTable, $streamServerNode->subscribedEvents);
+    }
+
+    public function testUnsubscribingHttpExceptionEventDisabledSubscriptionOnlyForThatEvent()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $streamServerNode->subscribeEvent('httpException');
+        $streamServerNode->subscribeEvent('writeBufferEmpty');
+
+        $eventsTable = $streamServerNode->subscribedEvents;
+        $eventsTable['httpException'] = false;
+
+        $streamServerNode->unsubscribeEvent('httpException');
+        $this->assertEquals($eventsTable, $streamServerNode->subscribedEvents);
+    }
+
+    public function testUnsubscribingUnknownEventThrowsInvalidArgumentException()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $this->setExpectedException('\InvalidArgumentException');
+        $streamServerNode->unsubscribeEvent('unknownEvent');
+    }
 }
