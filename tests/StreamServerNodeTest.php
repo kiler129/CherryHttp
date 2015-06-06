@@ -176,5 +176,43 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($streamServerNode->pushData('test'));
     }
 
+    public function testCheckIfNodeIsWriteReadyWithoutPopulatingAnyData()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $this->assertFalse($streamServerNode->isWriteReady());
+    }
+
+    public function testCheckIfNodeIsWriteReadyAfterSendingWholeBuffer()
+    {
+        $stream = fopen((defined('PHP_WINDOWS_VERSION_MAJOR')) ? 'nul' : '/dev/null', 'w');
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $streamServerNode->pushData('test');
+        $streamServerNode->onWriteReady();
+
+        $this->assertFalse($streamServerNode->isWriteReady());
+    }
+
+
+    public function testCheckIfNodeIsWriteReadyWithSingleNullCharacterInBuffer()
+    {
+        $stream = $this->getSampleSocketStream();
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $streamServerNode->pushData("\0");
+
+        $this->assertTrue($streamServerNode->isWriteReady());
+    }
 
 }
