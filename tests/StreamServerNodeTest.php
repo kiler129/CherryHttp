@@ -2,6 +2,7 @@
 namespace noFlash\CherryHttp;
 
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
@@ -12,9 +13,15 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
      */
     private $loggerMock;
 
+    /**
+     * @var vfsStreamDirectory
+     */
+    private $vfsRoot;
+
     public function setUp()
     {
         $this->loggerMock = $this->getMockForAbstractClass('\Psr\Log\LoggerInterface');
+        $this->vfsRoot = vfsStream::setup();
     }
 
     private function getSampleSocketStream()
@@ -203,6 +210,26 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($streamServerNode->isWriteReady());
     }
 
+    public function testDisconnectedNodeIsDroppedAfterWholeBufferIsWritten()
+    {
+        $streamMock = vfsStream::newFile('test')->withContent(' ')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $stream = fopen($streamMock->url(), 'r+');
+        rewind($stream);
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $streamServerNode->pushData('123456789');
+        $streamServerNode->disconnect();
+
+        $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
+        $streamServerNode->isWriteReady();
+        $streamServerNode->onWriteReady();
+        $streamServerNode->isWriteReady();
+
+        $this->assertSame('123456789', $streamMock->getContent());
+    }
 
     public function testCheckIfNodeIsWriteReadyWithSingleNullCharacterInBuffer()
     {
@@ -234,9 +261,8 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
      */
     public function testOnWriteReadyProperlyHandlesStreamBlockage()
     {
-        $vfsRoot = vfsStream::setup();
         vfsStream::setQuota(2);
-        $streamMock = vfsStream::newFile('test')->withContent(' ')->at($vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $streamMock = vfsStream::newFile('test')->withContent(' ')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
         $stream = fopen($streamMock->url(), 'r+');
         rewind($stream);
 
