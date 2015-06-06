@@ -283,6 +283,64 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('123456789', $streamMock->getContent(), 'Stream should get remaining bytes');
     }
 
+    public function testOnReadReadyDropsClientIfNoBytesCanBeRead()
+    {
+        $stream = $this->getSampleSocketStream();
+        stream_set_blocking($stream, 0);
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+
+        $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
+        $streamServerNode->onReadReady();
+    }
+
+    public function testOnReadReadyWillNotCallProcessInputBufferIfNoBytesCanBeRead()
+    {
+        $stream = $this->getSampleSocketStream();
+        stream_set_blocking($stream, 0);
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+        $streamServerNode->expects($this->never())->method('processInputBuffer');
+
+        $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
+        $streamServerNode->onReadReady();
+    }
+
+    public function testProcessInputBufferIsCalledAfterOnReadReady()
+    {
+        $streamMock = vfsStream::newFile('test')->withContent('1234')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $stream = fopen($streamMock->url(), 'r+');
+        rewind($stream);
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+        $streamServerNode->expects($this->atLeastOnce())->method('processInputBuffer');
+
+        $streamServerNode->onReadReady();
+    }
+
+    public function testProcessInputBufferIsCalledAgainIfReturnFalseAfterOnReadReady()
+    {
+        $streamMock = vfsStream::newFile('test')->withContent('1234')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $stream = fopen($streamMock->url(), 'r+');
+        rewind($stream);
+
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
+            array($stream, null, $this->loggerMock)
+        );
+        $streamServerNode->expects($this->at(0))->method('processInputBuffer')->willReturn(false);
+        $streamServerNode->expects($this->at(1))->method('processInputBuffer')->willReturn(false);
+        $streamServerNode->expects($this->at(2))->method('processInputBuffer')->willReturn(true);
+        $streamServerNode->expects($this->exactly(3))->method('processInputBuffer');
+
+        $streamServerNode->onReadReady();
+    }
+
     public function testSubscribingBufferEmptyEventEnabledSubscriptionOnlyForThatEvent()
     {
         $stream = $this->getSampleSocketStream();
