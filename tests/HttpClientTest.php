@@ -5,7 +5,8 @@ namespace noFlash\CherryHttp;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
-class HttpClientTest extends \PHPUnit_Framework_TestCase {
+class HttpClientTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var \Psr\Log\LoggerInterface
      */
@@ -30,9 +31,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
     public function getStreamMockWithContent($content, $name = 'test')
     {
-        $streamMock = vfsStream::newFile($name)
-            ->withContent($content)
-            ->at($this->vfsRoot);
+        $streamMock = vfsStream::newFile($name)->withContent($content)->at($this->vfsRoot);
         $stream = fopen($streamMock->url(), 'r+');
 
         $this->assertNotFalse($stream, 'Failed to open VFS stream (vfs bug?)');
@@ -43,10 +42,12 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
     public function testProperHttpExceptionIsThrownWhenHeadersAreLargerThanDefined()
     {
+        //@formatter:off PHPStorm formatter acts weird on such constructions and reformat it to single looong line
         $request = "GET / HTTP/1.1\r\n".
                    "Connection: close\r\n".
-                   "X-Test: ".str_repeat('x', HttpRequest::MAX_HEADER_LENGTH)."\r\n".
+                   "X-Test: " . str_repeat('x', HttpRequest::MAX_HEADER_LENGTH)."\r\n".
                    "\r\n";
+        //@formatter:on
 
         $stream = $this->getStreamMockWithContent($request);
 
@@ -66,10 +67,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
     public function testAfterReadingWholeBufferRequestIsPresent()
     {
-        $request = "GET / HTTP/1.1\r\n".
-            "Connection: close\r\n".
-            "\r\n";
-
+        $request = "GET / HTTP/1.1\r\nConnection: close\r\n\r\n";
         $stream = $this->getStreamMockWithContent($request);
 
         $httpClient = new HttpClient($stream, null, $this->loggerMock);
@@ -96,8 +94,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertNull($httpClient->request, 'Request created after 1st chunk');
 
-        $restOfRequest = "Connection: close\r\n".
-                         "\r\n";
+        $restOfRequest = "Connection: close\r\n\r\n";
         fwrite($stream, $restOfRequest);
         fseek($stream, strlen($request), SEEK_SET);
 
@@ -111,9 +108,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
     public function testRequestWithoutProperLineEndingsAreIgnored()
     {
-        $request = "GET / HTTP/1.1\n".
-                   "Connection: close\n".
-                   "\n";
+        $request = "GET / HTTP/1.1\nConnection: close\n\n";
 
         $stream = $this->getStreamMockWithContent($request);
 

@@ -2,7 +2,8 @@
 namespace noFlash\CherryHttp;
 
 
-class HttpExceptionTest extends \PHPUnit_Framework_TestCase {
+class HttpExceptionTest extends \PHPUnit_Framework_TestCase
+{
     public function testClassExtendsException()
     {
         $serverExceptionReflection = new \ReflectionClass('\noFlash\CherryHttp\HttpException');
@@ -62,6 +63,7 @@ class HttpExceptionTest extends \PHPUnit_Framework_TestCase {
     public function testCreatesHttpResponseWithProperCloseValue()
     {
         $httpException = new HttpException('', HttpCode::INTERNAL_SERVER_ERROR, array(), true);
-        $this->assertEquals('close', $httpException->getResponse()->getHeader('connection'), 'Invalid header for disconnect=false', 0.0, 10, false, true);
+        $this->assertEquals('close', $httpException->getResponse()->getHeader('connection'),
+            'Invalid header for disconnect=false', 0.0, 10, false, true);
     }
 }

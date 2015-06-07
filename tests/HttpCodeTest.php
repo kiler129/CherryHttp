@@ -124,7 +124,8 @@ class HttpCodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsBodyAllowedForbidsBodyForContinuationCodes($code)
     {
-        $this->assertFalse(HttpCode::isBodyAllowed($code), "isBodyAllowed() permitted body for continuation code $code");
+        $this->assertFalse(HttpCode::isBodyAllowed($code),
+            "isBodyAllowed() permitted body for continuation code $code");
     }
 
     public function testCheckingIfBodyAllowedWithInvalidCodeThrowsInvalidArgumentException()

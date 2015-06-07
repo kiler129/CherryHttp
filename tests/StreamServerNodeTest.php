@@ -4,7 +4,8 @@ namespace noFlash\CherryHttp;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
-class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
+class StreamServerNodeTest extends \PHPUnit_Framework_TestCase
+{
 
     const CLASS_NAME = '\noFlash\CherryHttp\StreamServerNode';
 
@@ -24,14 +25,6 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $this->vfsRoot = vfsStream::setup();
     }
 
-    private function getSampleSocketStream()
-    {
-        $stream = stream_socket_server('tcp://0.0.0.0:0');
-        $this->assertNotFalse($stream, 'Failed to create socket for test (environment problem?)');
-
-        return $stream;
-    }
-
     public function testImplementsStreamServerNodeInterface()
     {
         $streamServerNodeReflection = new \ReflectionClass(self::CLASS_NAME);
@@ -42,11 +35,17 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, '', $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, '', $this->loggerMock));
 
         $this->assertSame($stream, $streamServerNode->socket);
+    }
+
+    private function getSampleSocketStream()
+    {
+        $stream = stream_socket_server('tcp://0.0.0.0:0');
+        $this->assertNotFalse($stream, 'Failed to create socket for test (environment problem?)');
+
+        return $stream;
     }
 
     public function testConstructorHonorsCustomPeerName()
@@ -55,8 +54,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         static $customName = "customName:8080";
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, $customName, $this->loggerMock)
-        );
+            array($stream, $customName, $this->loggerMock));
 
         $this->assertSame($customName, $streamServerNode->getPeerName());
     }
@@ -68,15 +66,13 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         static $customNameIpV6 = "::ffff:127.0.0.1:8080";
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, $customNameIpV4, $this->loggerMock)
-        );
+            array($stream, $customNameIpV4, $this->loggerMock));
 
         $this->assertSame($customNameIpV4, $streamServerNode->getPeerName(), 'IP v4 name not accepted');
 
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, $customNameIpV6, $this->loggerMock)
-        );
+            array($stream, $customNameIpV6, $this->loggerMock));
 
         $this->assertSame($customNameIpV6, $streamServerNode->getPeerName(), 'IP v6 name not accepted');
     }
@@ -87,9 +83,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         static $customName = "127.0.0.1";
 
         $this->setExpectedException('\InvalidArgumentException');
-        $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, $customName, $this->loggerMock)
-        );
+        $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, $customName, $this->loggerMock));
     }
 
     public function testConstructorFetchesLocalPeerNameIfNotSpecified()
@@ -97,9 +91,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $stream = $this->getSampleSocketStream();
         $localName = stream_socket_get_name($stream, false);
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $this->assertSame($localName, $streamServerNode->getPeerName());
     }
@@ -110,9 +102,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         fclose($stream);
 
         $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
-        $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
     }
 
     public function testConstructorDisconnectsNodeWithInvalidSocketValue()
@@ -120,9 +110,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $stream = 'boooo!';
 
         $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
-        $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
     }
 
     public function testFetchingIpV4ReturnsValidIpAddress()
@@ -131,8 +119,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $customName = "127.0.0.1:8080";
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, $customName, $this->loggerMock)
-        );
+            array($stream, $customName, $this->loggerMock));
 
         $this->assertSame('127.0.0.1', $streamServerNode->getIp());
     }
@@ -143,8 +130,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $customName = "::ffff:127.0.0.1:8080";
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, $customName, $this->loggerMock)
-        );
+            array($stream, $customName, $this->loggerMock));
 
         $this->assertSame('::ffff:127.0.0.1', $streamServerNode->getIp());
     }
@@ -155,8 +141,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $customName = "127.0.0.1:8080";
 
         $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, $customName, $this->loggerMock)
-        );
+            array($stream, $customName, $this->loggerMock));
 
         $this->assertContains($customName, (string)$streamServerNode);
     }
@@ -165,9 +150,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $this->assertTrue($streamServerNode->pushData('test'));
     }
@@ -176,9 +159,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->disconnect();
 
@@ -189,9 +170,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $this->assertFalse($streamServerNode->isWriteReady());
     }
@@ -200,9 +179,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = fopen((defined('PHP_WINDOWS_VERSION_MAJOR')) ? 'nul' : '/dev/null', 'w');
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->pushData('test');
         $streamServerNode->onWriteReady();
@@ -212,13 +189,13 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
     public function testDisconnectedNodeIsDroppedAfterWholeBufferIsWritten()
     {
-        $streamMock = vfsStream::newFile('test')->withContent(' ')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $streamMock = vfsStream::newFile('test')
+            ->withContent(' ')
+            ->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
         $stream = fopen($streamMock->url(), 'r+');
         rewind($stream);
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->pushData('123456789');
         $streamServerNode->disconnect();
@@ -235,9 +212,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->pushData("\0");
 
@@ -248,9 +223,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = fopen((defined('PHP_WINDOWS_VERSION_MAJOR')) ? 'nul' : '/dev/null', 'w');
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->pushData('123456789');
         $this->assertTrue($streamServerNode->onWriteReady());
@@ -262,16 +235,17 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     public function testOnWriteReadyProperlyHandlesStreamBlockage()
     {
         vfsStream::setQuota(2);
-        $streamMock = vfsStream::newFile('test')->withContent(' ')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $streamMock = vfsStream::newFile('test')
+            ->withContent(' ')
+            ->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
         $stream = fopen($streamMock->url(), 'r+');
         rewind($stream);
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->pushData('123456789');
-        $this->assertFalse($streamServerNode->onWriteReady(), 'onWriteReady() didn\'t returned false on 1st try'); //This should write two bytes and return false (== not all data was written)
+        $this->assertFalse($streamServerNode->onWriteReady(),
+            'onWriteReady() didn\'t returned false on 1st try'); //This should write two bytes and return false (== not all data was written)
         $this->assertSame('12', $streamMock->getContent(), 'Stream should get first two bytes');
 
         vfsStream::setQuota(4); //Allow another two bytes to be written
@@ -288,9 +262,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $stream = $this->getSampleSocketStream();
         stream_set_blocking($stream, 0);
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
         $streamServerNode->onReadReady();
@@ -301,9 +273,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
         $stream = $this->getSampleSocketStream();
         stream_set_blocking($stream, 0);
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
         $streamServerNode->expects($this->never())->method('processInputBuffer');
 
         $this->setExpectedException('\noFlash\CherryHttp\NodeDisconnectException');
@@ -312,13 +282,13 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
     public function testProcessInputBufferIsCalledAfterOnReadReady()
     {
-        $streamMock = vfsStream::newFile('test')->withContent('1234')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $streamMock = vfsStream::newFile('test')
+            ->withContent('1234')
+            ->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
         $stream = fopen($streamMock->url(), 'r+');
         rewind($stream);
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
         $streamServerNode->expects($this->atLeastOnce())->method('processInputBuffer');
 
         $streamServerNode->onReadReady();
@@ -326,13 +296,13 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
 
     public function testProcessInputBufferIsCalledAgainIfReturnFalseAfterOnReadReady()
     {
-        $streamMock = vfsStream::newFile('test')->withContent('1234')->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
+        $streamMock = vfsStream::newFile('test')
+            ->withContent('1234')
+            ->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
         $stream = fopen($streamMock->url(), 'r+');
         rewind($stream);
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
         $streamServerNode->expects($this->at(0))->method('processInputBuffer')->willReturn(false);
         $streamServerNode->expects($this->at(1))->method('processInputBuffer')->willReturn(false);
         $streamServerNode->expects($this->at(2))->method('processInputBuffer')->willReturn(true);
@@ -345,9 +315,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $eventsTable = $streamServerNode->subscribedEvents;
         $eventsTable['writeBufferEmpty'] = true;
@@ -360,9 +328,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $eventsTable = $streamServerNode->subscribedEvents;
         $eventsTable['httpException'] = true;
@@ -375,9 +341,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $this->setExpectedException('\InvalidArgumentException');
         $streamServerNode->subscribeEvent('unknownEvent');
@@ -387,9 +351,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->subscribeEvent('httpException');
         $streamServerNode->subscribeEvent('writeBufferEmpty');
@@ -405,9 +367,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $streamServerNode->subscribeEvent('httpException');
         $streamServerNode->subscribeEvent('writeBufferEmpty');
@@ -423,9 +383,7 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase {
     {
         $stream = $this->getSampleSocketStream();
 
-        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME,
-            array($stream, null, $this->loggerMock)
-        );
+        $streamServerNode = $this->getMockForAbstractClass(self::CLASS_NAME, array($stream, null, $this->loggerMock));
 
         $this->setExpectedException('\InvalidArgumentException');
         $streamServerNode->unsubscribeEvent('unknownEvent');
