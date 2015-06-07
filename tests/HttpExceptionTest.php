@@ -58,4 +58,10 @@ class HttpExceptionTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($response->getHeader('test1'), 'value1', 'First header missmatch');
         $this->assertEquals($response->getHeader('test2'), 'value2', 'Second header missmatch');
     }
+
+    public function testCreatesHttpResponseWithProperCloseValue()
+    {
+        $httpException = new HttpException('', HttpCode::INTERNAL_SERVER_ERROR, array(), true);
+        $this->assertEquals('close', $httpException->getResponse()->getHeader('connection'), 'Invalid header for disconnect=false', 0.0, 10, false, true);
+    }
 }
