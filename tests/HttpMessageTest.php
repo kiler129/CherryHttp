@@ -56,6 +56,14 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('value', $httpMessage->getHeader('tEsT'));
     }
 
+    public function testSingleHeaderValueCaseIsPreserved()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('test', 'vAlUe');
+
+        $this->assertSame('vAlUe', $httpMessage->getHeader('test'));
+    }
+
     public function testFetchingUnknownHeaderReturnsNull()
     {
         $httpMessage = $this->getHttpMessageObject();
