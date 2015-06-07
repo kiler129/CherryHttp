@@ -48,4 +48,14 @@ class HttpExceptionTest extends \PHPUnit_Framework_TestCase {
         $httpException = new HttpException('', HttpCode::BAD_GATEWAY);
         $this->assertSame(HttpCode::BAD_GATEWAY, $httpException->getResponse()->getCode());
     }
+
+    public function testCreatesHttpResponseWithHeadersPassed()
+    {
+        $headers = array('test1' => 'value1', 'test2' => 'value2');
+        $httpException = new HttpException('', HttpCode::INTERNAL_SERVER_ERROR, $headers);
+        $response = $httpException->getResponse();
+
+        $this->assertEquals($response->getHeader('test1'), 'value1', 'First header missmatch');
+        $this->assertEquals($response->getHeader('test2'), 'value2', 'Second header missmatch');
+    }
 }
