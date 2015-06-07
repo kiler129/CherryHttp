@@ -15,4 +15,11 @@ class HttpExceptionTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('\noFlash\CherryHttp\HttpResponse', $httpException->getResponse());
     }
 
+    public function testProvidesPassedMessageUsingStandardExceptionInterface()
+    {
+        static $message = 'test message with utf ☃ snowman';
+
+        $httpException = new HttpException($message);
+        $this->assertEquals($message, $httpException->getMessage());
+    }
 }
