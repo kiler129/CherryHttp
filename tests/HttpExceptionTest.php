@@ -34,4 +34,12 @@ class HttpExceptionTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\Exception');
         new HttpException('', 9999);
     }
+
+    public function testCreatesHttpResponseWithMessagePassed()
+    {
+        static $message = 'test message with utf ☃ snowman';
+
+        $httpException = new HttpException($message);
+        $this->assertEquals($message, $httpException->getResponse()->getBody());
+    }
 }
