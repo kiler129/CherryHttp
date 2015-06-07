@@ -79,4 +79,65 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($httpMessage->getHeader('test'));
     }
+
+    public function testSettingHeaderWithTheSameNameReplacesPreviousValueByDefault()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('test', 'value1');
+        $httpMessage->setHeader('test', 'value2');
+        $httpMessage->setHeader('test', 'value3');
+
+        $this->assertSame('value3', $httpMessage->getHeader('test'));
+    }
+
+    public function testMultipleHeadersWithTheSameNameCanBeSet()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('test', 'value1', false);
+        $httpMessage->setHeader('test', 'value2', false);
+        $httpMessage->setHeader('test', 'value3', false);
+
+        $this->assertSame('value1,value2,value3', $httpMessage->getHeader('test'));
+    }
+
+    public function testMultipleHeadersWithTheSameNameCanBeGetByCaseInsensitiveName()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('tEsT', 'value1', false);
+        $httpMessage->setHeader('tEsT', 'value2', false);
+        $httpMessage->setHeader('tEsT', 'value3', false);
+
+        $this->assertSame('value1,value2,value3', $httpMessage->getHeader('teSt'));
+    }
+
+    public function testSetHeaderReplacesHeaderWithTheSameNameIgnoringNameCase()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('Test', 'value1', false);
+        $httpMessage->setHeader('tEst', 'value2', false);
+        $httpMessage->setHeader('teSt', 'value3', false);
+
+        $this->assertSame('value1,value2,value3', $httpMessage->getHeader('test'));
+    }
+
+    public function testMultipleHeadersWithTheSamePreservesValuesCase()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('test', 'Value1', false);
+        $httpMessage->setHeader('test', 'vAlue2', false);
+        $httpMessage->setHeader('test', 'vaLue3', false);
+
+        $this->assertSame('Value1,vAlue2,vaLue3', $httpMessage->getHeader('test'));
+    }
+
+    public function testMultipleHeadersCanBeRemovedUsingSingleRemoveCall()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('test', 'Value1', false);
+        $httpMessage->setHeader('test', 'vAlue2', false);
+        $httpMessage->setHeader('test', 'vaLue3', false);
+        $httpMessage->removeReader('test');
+
+        $this->assertNull($httpMessage->getHeader('test'));
+    }
 }
