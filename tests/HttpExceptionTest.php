@@ -22,4 +22,10 @@ class HttpExceptionTest extends \PHPUnit_Framework_TestCase {
         $httpException = new HttpException($message);
         $this->assertEquals($message, $httpException->getMessage());
     }
+
+    public function testProvidesPassedCodeUsingStandardExceptionInterface()
+    {
+        $httpException = new HttpException('', HttpCode::BAD_REQUEST);
+        $this->assertSame(HttpCode::BAD_REQUEST, $httpException->getCode());
+    }
 }
