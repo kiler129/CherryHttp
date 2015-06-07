@@ -39,4 +39,36 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\InvalidArgumentException');
         $httpMessage->setProtocolVersion('1.2');
     }
+
+    public function testSingleHeaderIsPersisted()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('test', 'value');
+
+        $this->assertSame('value', $httpMessage->getHeader('test'));
+    }
+
+    public function testSingleHeaderCanBeGetByCaseInsensitiveName()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('TeSt', 'value');
+
+        $this->assertSame('value', $httpMessage->getHeader('tEsT'));
+    }
+
+    public function testFetchingUnknownHeaderReturnsNull()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+
+        $this->assertNull($httpMessage->getHeader('test'));
+    }
+
+    public function testSingleHeaderCanBeRemoved()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('test', 'value');
+        $httpMessage->removeReader('test');
+
+        $this->assertNull($httpMessage->getHeader('test'));
+    }
 }
