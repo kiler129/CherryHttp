@@ -18,4 +18,17 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('1.1', $httpMessage->getProtocolVersion());
     }
+
+    public function testSettingKnownProtocolVersionsIsPersisted()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.0');
+
+        $this->assertEquals('1.0', $httpMessage->getProtocolVersion(), 'Failed to set HTTP/1.0');
+
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.1');
+
+        $this->assertEquals('1.1', $httpMessage->getProtocolVersion(), 'Failed to set HTTP/1.1');
+    }
 }
