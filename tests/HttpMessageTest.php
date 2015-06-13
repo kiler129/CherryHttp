@@ -180,4 +180,21 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($validOutput, $httpMessage->getIndexedHeaders());
     }
+
+    public function testGetHeaderLinesReturnsMultipleValuesAsArray()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('Test', 'Value1', false);
+        $httpMessage->setHeader('test', 'vAlue2', false);
+        $httpMessage->setHeader('test', 'vaLue3', false);
+
+        $this->assertSame(array('Value1', 'vAlue2', 'vaLue3'), $httpMessage->getHeaderLines('TeSt'));
+    }
+
+    public function testGetHeaderLinesReturnsEmptyArrayIfHeaderMissing()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+
+        $this->assertSame(array(), $httpMessage->getHeaderLines('non-existing-header'));
+    }
 }
