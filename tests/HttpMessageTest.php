@@ -197,4 +197,123 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(array(), $httpMessage->getHeaderLines('non-existing-header'));
     }
+
+    /**
+     * @testdox Connection is not closed for HTTP/1.1 by default
+     */
+    public function testConnectionIsNotClosedForHttp11ByDefault()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.1');
+
+        $this->assertFalse($httpMessage->isConnectionClose());
+    }
+
+    /**
+     * @testdox Connection is not closed for HTTP/1.1 after removing "Connection" header
+     */
+    public function testConnectionIsNotClosedForHttp11AfterRemovingConnectionHeader()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.1');
+        $httpMessage->removeReader('connection');
+
+        $this->assertFalse($httpMessage->isConnectionClose());
+    }
+
+    public function closeHeaderValueProvider()
+    {
+        return array(
+            array('close'),
+            array('CLOSE'),
+            array('Close'),
+            array('ClOsE'),
+        );
+    }
+
+    /**
+     * @testdox Connection is closed for HTTP/1.1 with "Connection: close" header
+     * @dataProvider closeHeaderValueProvider
+     */
+    public function testConnectionIsClosedForHttp11WithConnectionCloseHeader($connectionValue)
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.1');
+        $httpMessage->setHeader('connection', $connectionValue);
+
+        $this->assertTrue($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+    }
+
+    public function keepAliveHeaderValueProvider()
+    {
+        return array(
+            array('keep-alive'),
+            array('KEEP-ALIVE'),
+            array('Keep-alive'),
+            array('Keep-Alive'),
+            array('KeEp-AlIvE'),
+        );
+    }
+
+    /**
+     * @testdox Connection is not closed for HTTP/1.1 with "Connection: keep-alive" header
+     * @dataProvider keepAliveHeaderValueProvider
+     */
+    public function testConnectionIsNotClosedForHttp11WithConnectionKeepAliveHeader($connectionValue)
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.1');
+        $httpMessage->setHeader('connection', $connectionValue);
+
+        $this->assertFalse($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+    }
+
+    /**
+     * @testdox Connection is closed for HTTP/1.0 by default
+     */
+    public function testConnectionIsClosedForHttp10ByDefault()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.0');
+
+        $this->assertTrue($httpMessage->isConnectionClose());
+    }
+
+    /**
+     * @testdox Connection is closed for HTTP/1.0 after removing "Connection" header
+     */
+    public function testConnectionIsClosedForHttp10AfterRemovingConnectionHeader()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.0');
+        $httpMessage->removeReader('connection');
+
+        $this->assertTrue($httpMessage->isConnectionClose());
+    }
+
+    /**
+     * @testdox Connection is closed for HTTP/1.0 with "Connection: close" header
+     * @dataProvider closeHeaderValueProvider
+     */
+    public function testConnectionIsClosedForHttp10WithConnectionCloseHeader($connectionValue)
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.0');
+        $httpMessage->setHeader('connection', $connectionValue);
+
+        $this->assertTrue($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+    }
+
+    /**
+     * @testdox Connection is not closed for HTTP/1.0 with "Connection: keep-alive" header
+     * @dataProvider keepAliveHeaderValueProvider
+     */
+    public function testConnectionIsNotClosedForHttp10WithConnectionKeepAliveHeader($connectionValue)
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setProtocolVersion('1.0');
+        $httpMessage->setHeader('connection', $connectionValue);
+
+        $this->assertFalse($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+    }
 }
