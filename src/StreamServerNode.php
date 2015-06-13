@@ -33,6 +33,7 @@ abstract class StreamServerNode implements StreamServerNodeInterface
      * @param string $peerName IP:PORT of local socket returned by stream_socket_get_name()/stream_socket_accept()
      * @param LoggerInterface $logger
      *
+     * @throws InvalidArgumentException Invalid peer name specified
      * @throws NodeDisconnectException
      */
     public function __construct($socket, $peerName, LoggerInterface $logger)
@@ -44,6 +45,10 @@ abstract class StreamServerNode implements StreamServerNodeInterface
             $this->peerName = (is_resource($this->socket)) ? stream_socket_get_name($this->socket, false) : 'UNKNOWN:0';
 
         } else {
+            if (strrpos($peerName, ':') === false) {
+                throw new InvalidArgumentException('Invalid peerName specified');
+            }
+
             $this->peerName = $peerName;
         }
 
