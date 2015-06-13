@@ -144,7 +144,7 @@ abstract class HttpMessage
     public function setHeader($name, $value, $replace = true)
     {
         $lowercaseName = strtolower($name);
-        if ($replace) {
+        if ($replace || !isset($this->headers[$lowercaseName])) {
             $this->headers[$lowercaseName] = array($name, array($value));
         } else {
             $this->headers[$lowercaseName][1][] .= $value;
