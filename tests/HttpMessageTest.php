@@ -157,4 +157,27 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($validOutput, $httpMessage->getHeaders());
     }
+
+    public function testGetIndexedHeadersMethodReturnsWhatItSupposeToReturn()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+        $httpMessage->setHeader('Test', 'Value1', false);
+        $httpMessage->setHeader('test', 'vAlue2', false);
+        $httpMessage->setHeader('test', 'vaLue3', false);
+        $httpMessage->setHeader('Test2', 'value4');
+        $httpMessage->setHeader('tEst2', 'value5');
+
+        $validOutput = array(
+            'test' => array(
+                'Test', //Header name cases is determined by first call in addition mode
+                array('Value1', 'vAlue2', 'vaLue3')
+            ),
+            'test2' => array(
+                'tEst2', //Header name cases is determined by last call in replace mode
+                array('value5')
+            )
+        );
+
+        $this->assertSame($validOutput, $httpMessage->getIndexedHeaders());
+    }
 }
