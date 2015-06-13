@@ -185,9 +185,9 @@ abstract class HttpMessage
         $connection = $this->getHeader('connection');
 
         if ($this->protocolVersion === '1.1') {
-            return ($connection[0] === 'c' || $connection === 'C');
+            return ($connection[0] === 'C' || $connection[0] === 'c');
         } else {
-            return ($connection[0] !== 'K' && $connection !== 'k');
+            return ($connection[0] !== 'K' && $connection[0] !== 'k');
         }
     }
 
