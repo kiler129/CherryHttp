@@ -177,4 +177,20 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\\noFlash\CherryHttp\NodeDisconnectException');
         $listener->disconnect();
     }
+
+    /**
+     * @testdox Calling processInputBuffer() returns false
+     */
+    public function testProcessInputBufferReturnsFalse()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $listener = new HttpListenerNode($serverMock);
+
+        $processInputBufferReflection = (new \ReflectionObject($listener))->getMethod('processInputBuffer');
+        $processInputBufferReflection->setAccessible(true);
+
+        $this->assertFalse($processInputBufferReflection->invoke($listener));
+    }
+
 }
