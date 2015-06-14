@@ -151,4 +151,17 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $listener = new HttpListenerNode($serverMock);
         $this->assertFalse($listener->isWriteReady());
     }
+
+    /**
+     * @testdox Calling isWriteReady() throws RuntimeException()
+     */
+    public function testCallingOnWriteReadyThrowsRuntimeException()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $listener = new HttpListenerNode($serverMock);
+
+        $this->setExpectedException('\RuntimeException');
+        $listener->onWriteReady();
+    }
 }
