@@ -54,4 +54,48 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\InvalidArgumentException');
         new HttpListenerNode($serverMock, $ip);
     }
+
+    public function validPortsProvider()
+    {
+        return array(
+            array(8080),
+            array(1024),
+            array(9999),
+            array(65535),
+        );
+    }
+
+    /**
+     * @dataProvider validPortsProvider
+     */
+    public function testConstructorAcceptsValidPorts($port)
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $listener = new HttpListenerNode($serverMock, '127.0.0.1', $port);
+        $peername = $listener->getPeerName();
+        $actualPort = substr($peername, strrpos($peername, ':')+1);
+
+        $this->assertEquals($port, $actualPort);
+    }
+
+    public function invalidPortsProvider()
+    {
+        return array(
+            array(0),
+            array(-10),
+            array(65536),
+        );
+    }
+
+    /**
+     * @dataProvider invalidPortsProvider
+     */
+    public function testConstructorRejectsInvalidPorts($port)
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $this->setExpectedException('\Exception'); //Hmm, maybe it should be InvalidArgumentException?
+        new HttpListenerNode($serverMock, $port);
+    }
 }
