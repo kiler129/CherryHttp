@@ -98,4 +98,23 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\Exception'); //Hmm, maybe it should be InvalidArgumentException?
         new HttpListenerNode($serverMock, $port);
     }
+
+    public function testConstructorAllowDisabledSsl()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        new HttpListenerNode($serverMock, '127.0.0.1', 8080, false);
+        //No assertion - if connection is created no exception will be thrown, simple ;)
+    }
+
+    /**
+     * Since SSL is not implemented this test is required - it will be removed after issue #2 is fixed
+     */
+    public function testConstructorRejectsNotImplementedSsl()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $this->setExpectedException('\noFlash\CherryHttp\ServerException', 'not implemented');
+        new HttpListenerNode($serverMock, '127.0.0.1', 8080, true);
+    }
 }
