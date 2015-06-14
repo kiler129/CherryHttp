@@ -12,6 +12,16 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
         return $this->getMockForAbstractClass('\noFlash\CherryHttp\HttpMessage');
     }
 
+    /**
+     * @testdox Class provides abstract __toString() method
+     */
+    public function testClassProvidesAbstractToStringMethod()
+    {
+        $httpMessage = $this->getHttpMessageObject();
+
+        $this->assertTrue(method_exists($httpMessage, '__toString'));
+    }
+
     public function testDefaultMessageIsCreatedWithNewestProtocolVersion()
     {
         $httpMessage = $this->getHttpMessageObject();
