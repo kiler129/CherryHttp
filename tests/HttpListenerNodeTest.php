@@ -164,4 +164,17 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\RuntimeException');
         $listener->onWriteReady();
     }
+
+    /**
+     * @testdox disconnet() throws NodeDisconnectException()
+     */
+    public function testDisconnectThrowsNodeDisconnectException()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $listener = new HttpListenerNode($serverMock);
+
+        $this->setExpectedException('\\noFlash\CherryHttp\NodeDisconnectException');
+        $listener->disconnect();
+    }
 }
