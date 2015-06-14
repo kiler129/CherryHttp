@@ -5,11 +5,13 @@ namespace noFlash\CherryHttp;
 class HttpMessageTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @return HttpMessage|\PHPUnit_Framework_MockObject_MockObject
+     * @var HttpMessage|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function getHttpMessageObject()
+    private $httpMessage;
+
+    public function setUp()
     {
-        return $this->getMockForAbstractClass('\noFlash\CherryHttp\HttpMessage');
+        $this->httpMessage = $this->getMockForAbstractClass('\noFlash\CherryHttp\HttpMessage');
     }
 
     /**
@@ -17,16 +19,12 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testClassProvidesAbstractToStringMethod()
     {
-        $httpMessage = $this->getHttpMessageObject();
-
-        $this->assertTrue(method_exists($httpMessage, '__toString'));
+        $this->assertTrue(method_exists($this->httpMessage, '__toString'));
     }
 
     public function testDefaultMessageIsCreatedWithNewestProtocolVersion()
     {
-        $httpMessage = $this->getHttpMessageObject();
-
-        $this->assertEquals('1.1', $httpMessage->getProtocolVersion());
+        $this->assertEquals('1.1', $this->httpMessage->getProtocolVersion());
     }
 
     /**
@@ -34,10 +32,9 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetting10ProtocolVersionIsPersisted()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.0');
+        $this->httpMessage->setProtocolVersion('1.0');
 
-        $this->assertEquals('1.0', $httpMessage->getProtocolVersion());
+        $this->assertEquals('1.0', $this->httpMessage->getProtocolVersion());
     }
 
     /**
@@ -45,146 +42,129 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetting11ProtocolVersionIsPersisted()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.1');
+        $this->httpMessage->setProtocolVersion('1.1');
 
-        $this->assertEquals('1.1', $httpMessage->getProtocolVersion());
+        $this->assertEquals('1.1', $this->httpMessage->getProtocolVersion());
     }
 
     public function testSettingUnknownProtocolVersionThrowsException()
     {
-        $httpMessage = $this->getHttpMessageObject();
-
         $this->setExpectedException('\InvalidArgumentException');
-        $httpMessage->setProtocolVersion('1.2');
+        $this->httpMessage->setProtocolVersion('1.2');
     }
 
     public function testSingleHeaderIsPersisted()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('test', 'value');
+        $this->httpMessage->setHeader('test', 'value');
 
-        $this->assertSame('value', $httpMessage->getHeader('test'));
+        $this->assertSame('value', $this->httpMessage->getHeader('test'));
     }
 
     public function testSingleHeaderCanBeGetByCaseInsensitiveName()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('TeSt', 'value');
+        $this->httpMessage->setHeader('TeSt', 'value');
 
-        $this->assertSame('value', $httpMessage->getHeader('tEsT'));
+        $this->assertSame('value', $this->httpMessage->getHeader('tEsT'));
     }
 
     public function testSingleHeaderValueCaseIsPreserved()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('test', 'vAlUe');
+        $this->httpMessage->setHeader('test', 'vAlUe');
 
-        $this->assertSame('vAlUe', $httpMessage->getHeader('test'));
+        $this->assertSame('vAlUe', $this->httpMessage->getHeader('test'));
     }
 
     public function testFetchingUnknownHeaderReturnsNull()
     {
-        $httpMessage = $this->getHttpMessageObject();
-
-        $this->assertNull($httpMessage->getHeader('test'));
+        $this->assertNull($this->httpMessage->getHeader('test'));
     }
 
     public function testSingleHeaderCanBeRemoved()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('test', 'value');
-        $httpMessage->removeReader('test');
+        $this->httpMessage->setHeader('test', 'value');
+        $this->httpMessage->removeReader('test');
 
-        $this->assertNull($httpMessage->getHeader('test'));
+        $this->assertNull($this->httpMessage->getHeader('test'));
     }
 
     public function testSettingHeaderWithTheSameNameReplacesPreviousValueByDefault()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('test', 'value1');
-        $httpMessage->setHeader('test', 'value2');
-        $httpMessage->setHeader('test', 'value3');
+        $this->httpMessage->setHeader('test', 'value1');
+        $this->httpMessage->setHeader('test', 'value2');
+        $this->httpMessage->setHeader('test', 'value3');
 
-        $this->assertSame('value3', $httpMessage->getHeader('test'));
+        $this->assertSame('value3', $this->httpMessage->getHeader('test'));
     }
 
     public function testMultipleHeadersWithTheSameNameCanBeSet()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('test', 'value1', false);
-        $httpMessage->setHeader('test', 'value2', false);
-        $httpMessage->setHeader('test', 'value3', false);
+        $this->httpMessage->setHeader('test', 'value1', false);
+        $this->httpMessage->setHeader('test', 'value2', false);
+        $this->httpMessage->setHeader('test', 'value3', false);
 
-        $this->assertSame('value1,value2,value3', $httpMessage->getHeader('test'));
+        $this->assertSame('value1,value2,value3', $this->httpMessage->getHeader('test'));
     }
 
     public function testMultipleHeadersWithTheSameNameCanBeGetByCaseInsensitiveName()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('tEsT', 'value1', false);
-        $httpMessage->setHeader('tEsT', 'value2', false);
-        $httpMessage->setHeader('tEsT', 'value3', false);
+        $this->httpMessage->setHeader('tEsT', 'value1', false);
+        $this->httpMessage->setHeader('tEsT', 'value2', false);
+        $this->httpMessage->setHeader('tEsT', 'value3', false);
 
-        $this->assertSame('value1,value2,value3', $httpMessage->getHeader('teSt'));
+        $this->assertSame('value1,value2,value3', $this->httpMessage->getHeader('teSt'));
     }
 
     public function testSetHeaderReplacesHeaderWithTheSameNameIgnoringNameCase()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('Test', 'value1', false);
-        $httpMessage->setHeader('tEst', 'value2', false);
-        $httpMessage->setHeader('teSt', 'value3', false);
+        $this->httpMessage->setHeader('Test', 'value1', false);
+        $this->httpMessage->setHeader('tEst', 'value2', false);
+        $this->httpMessage->setHeader('teSt', 'value3', false);
 
-        $this->assertSame('value1,value2,value3', $httpMessage->getHeader('test'));
+        $this->assertSame('value1,value2,value3', $this->httpMessage->getHeader('test'));
     }
 
     public function testMultipleHeadersWithTheSamePreservesValuesCase()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('test', 'Value1', false);
-        $httpMessage->setHeader('test', 'vAlue2', false);
-        $httpMessage->setHeader('test', 'vaLue3', false);
+        $this->httpMessage->setHeader('test', 'Value1', false);
+        $this->httpMessage->setHeader('test', 'vAlue2', false);
+        $this->httpMessage->setHeader('test', 'vaLue3', false);
 
-        $this->assertSame('Value1,vAlue2,vaLue3', $httpMessage->getHeader('test'));
+        $this->assertSame('Value1,vAlue2,vaLue3', $this->httpMessage->getHeader('test'));
     }
 
     public function testMultipleHeadersCanBeRemovedUsingSingleRemoveCall()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('test', 'Value1', false);
-        $httpMessage->setHeader('test', 'vAlue2', false);
-        $httpMessage->setHeader('test', 'vaLue3', false);
-        $httpMessage->removeReader('test');
+        $this->httpMessage->setHeader('test', 'Value1', false);
+        $this->httpMessage->setHeader('test', 'vAlue2', false);
+        $this->httpMessage->setHeader('test', 'vaLue3', false);
+        $this->httpMessage->removeReader('test');
 
-        $this->assertNull($httpMessage->getHeader('test'));
+        $this->assertNull($this->httpMessage->getHeader('test'));
     }
 
     public function testGetHeadersMethodReturnsWhatItSupposeToReturn()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('Test', 'Value1', false);
-        $httpMessage->setHeader('test', 'vAlue2', false);
-        $httpMessage->setHeader('test', 'vaLue3', false);
-        $httpMessage->setHeader('Test2', 'value4');
-        $httpMessage->setHeader('tEst2', 'value5');
+        $this->httpMessage->setHeader('Test', 'Value1', false);
+        $this->httpMessage->setHeader('test', 'vAlue2', false);
+        $this->httpMessage->setHeader('test', 'vaLue3', false);
+        $this->httpMessage->setHeader('Test2', 'value4');
+        $this->httpMessage->setHeader('tEst2', 'value5');
 
         $validOutput = array(
             'Test' => array('Value1', 'vAlue2', 'vaLue3'), //Header name cases is determined by first call in addition mode
             'tEst2' => array('value5') //Header name cases is determined by last call in replace mode
         );
 
-        $this->assertSame($validOutput, $httpMessage->getHeaders());
+        $this->assertSame($validOutput, $this->httpMessage->getHeaders());
     }
 
     public function testGetIndexedHeadersMethodReturnsWhatItSupposeToReturn()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('Test', 'Value1', false);
-        $httpMessage->setHeader('test', 'vAlue2', false);
-        $httpMessage->setHeader('test', 'vaLue3', false);
-        $httpMessage->setHeader('Test2', 'value4');
-        $httpMessage->setHeader('tEst2', 'value5');
+        $this->httpMessage->setHeader('Test', 'Value1', false);
+        $this->httpMessage->setHeader('test', 'vAlue2', false);
+        $this->httpMessage->setHeader('test', 'vaLue3', false);
+        $this->httpMessage->setHeader('Test2', 'value4');
+        $this->httpMessage->setHeader('tEst2', 'value5');
 
         $validOutput = array(
             'test' => array(
@@ -197,24 +177,21 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertSame($validOutput, $httpMessage->getIndexedHeaders());
+        $this->assertSame($validOutput, $this->httpMessage->getIndexedHeaders());
     }
 
     public function testGetHeaderLinesReturnsMultipleValuesAsArray()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setHeader('Test', 'Value1', false);
-        $httpMessage->setHeader('test', 'vAlue2', false);
-        $httpMessage->setHeader('test', 'vaLue3', false);
+        $this->httpMessage->setHeader('Test', 'Value1', false);
+        $this->httpMessage->setHeader('test', 'vAlue2', false);
+        $this->httpMessage->setHeader('test', 'vaLue3', false);
 
-        $this->assertSame(array('Value1', 'vAlue2', 'vaLue3'), $httpMessage->getHeaderLines('TeSt'));
+        $this->assertSame(array('Value1', 'vAlue2', 'vaLue3'), $this->httpMessage->getHeaderLines('TeSt'));
     }
 
     public function testGetHeaderLinesReturnsEmptyArrayIfHeaderMissing()
     {
-        $httpMessage = $this->getHttpMessageObject();
-
-        $this->assertSame(array(), $httpMessage->getHeaderLines('non-existing-header'));
+        $this->assertSame(array(), $this->httpMessage->getHeaderLines('non-existing-header'));
     }
 
     /**
@@ -222,10 +199,9 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsNotClosedForHttp11ByDefault()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.1');
+        $this->httpMessage->setProtocolVersion('1.1');
 
-        $this->assertFalse($httpMessage->isConnectionClose());
+        $this->assertFalse($this->httpMessage->isConnectionClose());
     }
 
     /**
@@ -233,11 +209,10 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsNotClosedForHttp11AfterRemovingConnectionHeader()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.1');
-        $httpMessage->removeReader('connection');
+        $this->httpMessage->setProtocolVersion('1.1');
+        $this->httpMessage->removeReader('connection');
 
-        $this->assertFalse($httpMessage->isConnectionClose());
+        $this->assertFalse($this->httpMessage->isConnectionClose());
     }
 
     public function closeHeaderValueProvider()
@@ -256,11 +231,10 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsClosedForHttp11WithConnectionCloseHeader($connectionValue)
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.1');
-        $httpMessage->setHeader('connection', $connectionValue);
+        $this->httpMessage->setProtocolVersion('1.1');
+        $this->httpMessage->setHeader('connection', $connectionValue);
 
-        $this->assertTrue($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+        $this->assertTrue($this->httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
     }
 
     public function keepAliveHeaderValueProvider()
@@ -280,11 +254,10 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsNotClosedForHttp11WithConnectionKeepAliveHeader($connectionValue)
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.1');
-        $httpMessage->setHeader('connection', $connectionValue);
+        $this->httpMessage->setProtocolVersion('1.1');
+        $this->httpMessage->setHeader('connection', $connectionValue);
 
-        $this->assertFalse($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+        $this->assertFalse($this->httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
     }
 
     /**
@@ -292,10 +265,9 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsClosedForHttp10ByDefault()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.0');
+        $this->httpMessage->setProtocolVersion('1.0');
 
-        $this->assertTrue($httpMessage->isConnectionClose());
+        $this->assertTrue($this->httpMessage->isConnectionClose());
     }
 
     /**
@@ -303,11 +275,10 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsClosedForHttp10AfterRemovingConnectionHeader()
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.0');
-        $httpMessage->removeReader('connection');
+        $this->httpMessage->setProtocolVersion('1.0');
+        $this->httpMessage->removeReader('connection');
 
-        $this->assertTrue($httpMessage->isConnectionClose());
+        $this->assertTrue($this->httpMessage->isConnectionClose());
     }
 
     /**
@@ -316,11 +287,10 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsClosedForHttp10WithConnectionCloseHeader($connectionValue)
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.0');
-        $httpMessage->setHeader('connection', $connectionValue);
+        $this->httpMessage->setProtocolVersion('1.0');
+        $this->httpMessage->setHeader('connection', $connectionValue);
 
-        $this->assertTrue($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+        $this->assertTrue($this->httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
     }
 
     /**
@@ -329,10 +299,9 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnectionIsNotClosedForHttp10WithConnectionKeepAliveHeader($connectionValue)
     {
-        $httpMessage = $this->getHttpMessageObject();
-        $httpMessage->setProtocolVersion('1.0');
-        $httpMessage->setHeader('connection', $connectionValue);
+        $this->httpMessage->setProtocolVersion('1.0');
+        $this->httpMessage->setHeader('connection', $connectionValue);
 
-        $this->assertFalse($httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
+        $this->assertFalse($this->httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
     }
 }
