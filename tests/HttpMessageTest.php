@@ -304,4 +304,26 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($this->httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
     }
+
+    /**
+     * @testdox getHeadersAsText() produces HTTP complaint output
+     */
+    public function testGetHeadersAsTextProducesHttpComplaintOutput()
+    {
+        $this->httpMessage->setHeader('Test', 'Value1', false);
+        $this->httpMessage->setHeader('test', 'vAlue2', false);
+        $this->httpMessage->setHeader('test', 'vaLue3', false);
+        $this->httpMessage->setHeader('Test2', 'value4');
+        $this->httpMessage->setHeader('tEst2', 'value5');
+
+        $getHeadersAsTextReflection = (new \ReflectionObject($this->httpMessage))->getMethod('getHeadersAsText');
+        $getHeadersAsTextReflection->setAccessible(true);
+
+        $validOutput = "Test: Value1\r\n" .
+                       "Test: vAlue2\r\n" .
+                       "Test: vaLue3\r\n" .
+                       "tEst2: value5\r\n";
+
+        $this->assertSame($validOutput, $getHeadersAsTextReflection->invoke($this->httpMessage));
+    }
 }
