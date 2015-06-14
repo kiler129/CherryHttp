@@ -128,4 +128,16 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\noFlash\CherryHttp\ServerException', 'already in use');
         new HttpListenerNode($serverMock, '127.0.0.1', 8080);
     }
+
+    public function testCreatedStreamIsNonBlocking()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $listener = new HttpListenerNode($serverMock, '127.0.0.1', 8080);
+        $socketReflection = (new \ReflectionObject($listener))->getProperty('socket');
+        $socketReflection->setAccessible(true);
+
+        $streamMeta = stream_get_meta_data($socketReflection->getValue($listener));
+        $this->assertFalse($streamMeta['blocked']);
+    }
 }
