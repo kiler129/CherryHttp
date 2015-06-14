@@ -140,4 +140,15 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $streamMeta = stream_get_meta_data($socketReflection->getValue($listener));
         $this->assertFalse($streamMeta['blocked']);
     }
+
+    /**
+     * @testdox Calling isWriteReady() returns false
+     */
+    public function testCallingIsWriteReadyReturnsFalse()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $listener = new HttpListenerNode($serverMock);
+        $this->assertFalse($listener->isWriteReady());
+    }
 }
