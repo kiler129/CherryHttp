@@ -117,4 +117,15 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\noFlash\CherryHttp\ServerException', 'not implemented');
         new HttpListenerNode($serverMock, '127.0.0.1', 8080, true);
     }
+
+    public function testConstructorThrowsExceptionIfSocketCreationFailed()
+    {
+        $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
+
+        $dummyServer = stream_socket_server('tcp://[127.0.0.1]:8080', $errNo, $errStr);
+        $this->assertNotFalse($dummyServer, "Unable to create dummy listener - $errStr (e# $errNo)");
+
+        $this->setExpectedException('\noFlash\CherryHttp\ServerException', 'already in use');
+        new HttpListenerNode($serverMock, '127.0.0.1', 8080);
+    }
 }
