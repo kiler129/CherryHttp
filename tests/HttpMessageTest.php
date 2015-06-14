@@ -237,6 +237,18 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->httpMessage->isConnectionClose(), "Failed for \"$connectionValue\"");
     }
 
+    public function testBodyIsHeldWithoutModification()
+    {
+        static $body = 'Hello ☃!';
+
+        $httpMessageReflection = new \ReflectionObject($this->httpMessage);
+        $bodyReflection = $httpMessageReflection->getProperty('body');
+        $bodyReflection->setAccessible(true);
+        $bodyReflection->setValue($this->httpMessage, $body);
+
+        $this->assertSame($body, $this->httpMessage->getBody());
+    }
+
     public function keepAliveHeaderValueProvider()
     {
         return array(
