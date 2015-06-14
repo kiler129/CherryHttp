@@ -8,6 +8,7 @@ namespace noFlash\CherryHttp;
  * server.
  *
  * @package noFlash\CherryHttp
+ * @codeCoverageIgnore Interfaces aren't testable by definition
  */
 interface HttpRequestHandlerInterface
 {
