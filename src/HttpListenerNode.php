@@ -57,7 +57,7 @@ class HttpListenerNode extends StreamServerNode
         }
         stream_set_blocking($this->socket, 0);
 
-        parent::__construct($this->socket, null, $logger);
+        parent::__construct($this->socket, null, $this->logger);
 
         $this->logger->info('Started server at tcp://' . $this->getPeerName() . ' [SSL: ' . (int)$ssl . ']');
     }
