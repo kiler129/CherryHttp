@@ -38,4 +38,15 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame($body, $httpResponse->getBody());
     }
+
+    public function testCustomHeadersPassedToConstructorAreSet()
+    {
+        $headers = array('X-Test' => 'blah_blah', 'X-Something' => 'aaa');
+
+        $httpResponse = new HttpResponse(null, $headers);
+
+        $this->assertSame($headers['X-Test'], $httpResponse->getHeader('X-Test'));
+        $this->assertSame($headers['X-Something'], $httpResponse->getHeader('X-Something'));
+
+    }
 }
