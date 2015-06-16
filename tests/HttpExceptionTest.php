@@ -32,7 +32,7 @@ class HttpExceptionTest extends \PHPUnit_Framework_TestCase
 
     public function testFailsIfProvidedCodeIsInvalid()
     {
-        $this->setExpectedException('\Exception');
+        $this->setExpectedException('\InvalidArgumentException');
         new HttpException('', 9999);
     }
 
