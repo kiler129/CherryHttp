@@ -105,4 +105,26 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\LogicException');
         $httpResponse->setCode(HttpCode::NO_CONTENT);
     }
+
+    public function testContentLengthIsCalculatedForBody()
+    {
+        $httpResponse = new HttpResponse;
+        $this->assertEquals(0, $httpResponse->getHeader('content-length'), 'Invalid content-length with empty object');
+
+        $httpResponse = new HttpResponse('', array(), HttpCode::NO_CONTENT);
+        $this->assertEquals(0, $httpResponse->getHeader('content-length'), 'Invalid content-length with empty body & NO_CONTENT code');
+
+        $httpResponse = new HttpResponse('test');
+        $this->assertEquals(4, $httpResponse->getHeader('content-length'), 'Invalid content-length for ASCII text');
+
+        $httpResponse = new HttpResponse('☃');
+        $this->assertEquals(3, $httpResponse->getHeader('content-length'), 'Invalid content-length for UTF text');
+    }
+
+    public function testContentLenRgthIsRecalculateAfterBodyChange()
+    {
+        $httpResponse = new HttpResponse('test');
+        $httpResponse->setBody('derp-derp');
+        $this->assertEquals(9, $httpResponse->getHeader('content-length'));
+    }
 }
