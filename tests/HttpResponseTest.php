@@ -65,6 +65,14 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
         new HttpResponse('test', array(), HttpCode::NO_CONTENT);
     }
 
+    public function testBodyCanBeChangedOnRuntime()
+    {
+        $httpResponse = new HttpResponse('test');
+        $httpResponse->setBody('test2');
+
+        $this->assertSame('test2', $httpResponse->getBody());
+    }
+
     public function testBodyIsRejectedForNonBodyCodesInSetBody()
     {
         $httpResponse = new HttpResponse(null, array(), HttpCode::NO_CONTENT);
