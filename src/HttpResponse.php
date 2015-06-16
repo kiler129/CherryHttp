@@ -63,7 +63,7 @@ class HttpResponse extends HttpMessage
     {
         $code = (int)$code;
 
-        if (!empty($this->body) && !HttpCode::isBodyAllowed($this->code)) { //InvalidArgumentException can be thrown here
+        if (!empty($this->body) && !HttpCode::isBodyAllowed($code)) { //InvalidArgumentException can be thrown here
             throw new LogicException('HTTP response already contains body - response "' . HttpCode::getName($code) . '" cannot contain body.');
         }
 
