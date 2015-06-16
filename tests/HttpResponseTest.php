@@ -58,4 +58,18 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($headers['Connection'], $httpResponse->getHeader('Connection'));
         $this->assertSame($headers['Server'], $httpResponse->getHeader('Server'));
     }
+
+    public function testBodyIsRejectedForNonBodyCodesInConstructor()
+    {
+        $this->setExpectedException('\LogicException');
+        new HttpResponse('test', array(), HttpCode::NO_CONTENT);
+    }
+
+    public function testBodyIsRejectedForNonBodyCodesInSetBody()
+    {
+        $httpResponse = new HttpResponse(null, array(), HttpCode::NO_CONTENT);
+
+        $this->setExpectedException('\LogicException');
+        $httpResponse->setBody('test');
+    }
 }
