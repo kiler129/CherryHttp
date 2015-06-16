@@ -127,4 +127,21 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
         $httpResponse->setBody('derp-derp');
         $this->assertEquals(9, $httpResponse->getHeader('content-length'));
     }
+
+    public function testToStringGeneratesValidHttpResponse()
+    {
+        $httpResponse = new HttpResponse("Test\ncontent", array('X-test' => 'AbC'), HttpCode::IM_A_TEAPOT);
+        $response = (string)$httpResponse;
+
+        $responseLines = explode("\r\n", $response);
+        $this->assertCount(7, $responseLines, 'Invalid number of lines');
+
+        $this->assertSame('HTTP/' . $httpResponse->getProtocolVersion() . ' ' . HttpCode::getName($httpResponse->getCode()), $responseLines[0], 'Invalid status line');
+        $this->assertEquals('server: '.$httpResponse->getHeader('server'), $responseLines[1], 'Server header missing or misplaced', 0, 10, false, true);
+        $this->assertEquals('connection: '.$httpResponse->getHeader('connection'), $responseLines[2], 'Connection header missing or misplaced', 0, 10, false, true);
+        $this->assertEquals('content-length: '.$httpResponse->getHeader('content-length'), $responseLines[3], 'Content-Length header missing or misplaced', 0, 10, false, true);
+        $this->assertEquals('x-test: '.$httpResponse->getHeader('x-test'), $responseLines[4], 'Custom [X-test] header missing or misplaced', 0, 10, false, true);
+        $this->assertEmpty($responseLines[5], 'There are no empty line between headers and content');
+        $this->assertSame("Test\ncontent", $responseLines[6], 'Malformed content');
+    }
 }
