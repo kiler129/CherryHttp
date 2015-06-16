@@ -24,6 +24,13 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
         $this->assertNotNull($httpResponse->getHeader('connection'));
     }
 
+    public function testResponseContainsServerHeaderByDefault()
+    {
+        $httpResponse = new HttpResponse;
+
+        $this->assertContains('CherryHttp', $httpResponse->getHeader('server'), '', true);
+    }
+
     public function testBodyCanBeSetWithDefaultParameters()
     {
         static $body = '🍒CherryHttp';
