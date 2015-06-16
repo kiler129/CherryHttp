@@ -20,8 +20,8 @@ abstract class StreamServerNode implements StreamServerNodeInterface
     public $subscribedEvents = array('writeBufferEmpty' => false, 'httpException' => false);
     /** @var LoggerInterface */
     protected $logger;
-    protected $inputBuffer;
-    protected $outputBuffer;
+    protected $inputBuffer = '';
+    protected $outputBuffer = '';
     /** @var string Local socket IP:PORT */
     private $peerName;
     private $ip;
