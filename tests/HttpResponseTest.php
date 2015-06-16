@@ -16,4 +16,11 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEmpty($httpResponse->getBody());
     }
+
+    public function testResponseContainsConnectionHeaderByDefault()
+    {
+        $httpResponse = new HttpResponse;
+
+        $this->assertNotNull($httpResponse->getHeader('connection'));
+    }
 }
