@@ -80,4 +80,12 @@ class HttpResponseTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\LogicException');
         $httpResponse->setBody('test');
     }
+
+    public function testCodeCanBeChangedOnRuntime()
+    {
+        $httpResponse = new HttpResponse(null, array(), HttpCode::NO_CONTENT);
+        $httpResponse->setCode(HttpCode::OK);
+
+        $this->assertSame(HttpCode::OK, $httpResponse->getCode());
+    }
 }
