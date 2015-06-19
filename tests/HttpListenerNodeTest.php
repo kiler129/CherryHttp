@@ -103,8 +103,8 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
     {
         $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
 
-        new HttpListenerNode($serverMock, '127.0.0.1', 8080, false);
-        //No assertion - if connection is created no exception will be thrown, simple ;)
+        $listener = new HttpListenerNode($serverMock, '127.0.0.1', 8080, false);
+        $this->assertInstanceOf('\noFlash\CherryHttp\HttpListenerNode', $listener);
     }
 
     /**
