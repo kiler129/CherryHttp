@@ -134,7 +134,8 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
         $serverMock = $this->getMockBuilder('\noFlash\CherryHttp\Server')->getMock();
 
         $listener = new HttpListenerNode($serverMock, '127.0.0.1', 8080);
-        $socketReflection = (new \ReflectionObject($listener))->getProperty('socket');
+        $listenerReflection = new \ReflectionObject($listener);
+        $socketReflection = $listenerReflection->getProperty('socket');
         $socketReflection->setAccessible(true);
 
         $streamMeta = stream_get_meta_data($socketReflection->getValue($listener));
