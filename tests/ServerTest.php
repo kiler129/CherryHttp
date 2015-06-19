@@ -95,4 +95,10 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\InvalidArgumentException');
         $this->server->subscribeEvent('unknownEvent');
     }
+
+    public function testSubscribingEventWithoutSettingEventsHandlerThrowsServerException()
+    {
+        $this->setExpectedException('\noFlash\CherryHttp\ServerException');
+        $this->server->subscribeEvent('httpException');
+    }
 }
