@@ -145,4 +145,43 @@ class HttpRouterTest extends \PHPUnit_Framework_TestCase {
         $this->httpRouter->handleClientRequest($client);
         $this->assertNull($client->request);
     }
+
+    public function testHandlingClientRequestCallsCorrectRequestHandler()
+    {
+        $requestHandler1 = $this->getMockBuilder('\noFlash\CherryHttp\HttpRequestHandlerInterface')->getMock();
+        $requestHandler1
+            ->expects($this->atLeastOnce())
+            ->method('getHandledPaths')
+            ->willReturn(array('/test', '/test2'));
+
+        $requestHandler2 = $this->getMockBuilder('\noFlash\CherryHttp\HttpRequestHandlerInterface')->getMock();
+        $requestHandler2
+            ->expects($this->atLeastOnce())
+            ->method('getHandledPaths')
+            ->willReturn(array('/test3', '/test4'));
+
+
+        $this->httpRouter->addPathHandler($requestHandler1);
+        $this->httpRouter->addPathHandler($requestHandler2);
+
+        $client = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $request = $this->getMockBuilder('\noFlash\CherryHttp\HttpRequest')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request
+            ->expects($this->any())
+            ->method('getUri')
+            ->willReturn('/test2');
+        $client->request = $request;
+
+
+        $requestHandler1
+            ->expects($this->atLeastOnce())
+            ->method('onRequest')
+            ->with($this->equalTo($client), $this->equalTo($request));
+
+        $this->httpRouter->handleClientRequest($client);
+    }
+
+
 }
