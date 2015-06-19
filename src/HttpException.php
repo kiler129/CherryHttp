@@ -21,6 +21,7 @@ class HttpException extends Exception
      * implementation. However it's recommended to leave connection in case of "soft" errors like 404 or 401 and drop
      * it in case of codes which, likely, will client not recover (eg. 400)
      *
+     * @throws \InvalidArgumentException Thrown when invalid code was specified.
      * @see HttpResponse
      */
     public function __construct(
@@ -29,6 +30,10 @@ class HttpException extends Exception
         $extraHeaders = array(),
         $disconnect = false
     ) {
+        if (!isset(HttpCode::$codesDescriptions[$code])) {
+            throw new \InvalidArgumentException("Invalid HTTP code specified - there's no such code as $code");
+        }
+
         $this->response = new HttpResponse($message, $extraHeaders, $code);
 
         if ($disconnect) {
