@@ -26,4 +26,16 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
     {
         $this->assertInstanceOf('\noFlash\CherryHttp\HttpRouter', $this->server->router);
     }
+
+    public function testEventsHandlerCanBeSet()
+    {
+        $handler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
+        $this->server->setEventsHandler($handler);
+
+        $serverReflection = new \ReflectionObject($this->server);
+        $eventsHandlerReflection = $serverReflection->getProperty('eventsHandler');
+        $eventsHandlerReflection->setAccessible(true);
+
+        $this->assertSame($handler, $eventsHandlerReflection->getValue($this->server));
+    }
 }
