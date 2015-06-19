@@ -328,7 +328,8 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase
         $this->httpMessage->setHeader('Test2', 'value4');
         $this->httpMessage->setHeader('tEst2', 'value5');
 
-        $getHeadersAsTextReflection = (new \ReflectionObject($this->httpMessage))->getMethod('getHeadersAsText');
+        $httpMessageReflection = new \ReflectionObject($this->httpMessage);
+        $getHeadersAsTextReflection = $httpMessageReflection->getMethod('getHeadersAsText');
         $getHeadersAsTextReflection->setAccessible(true);
 
         $validOutput = "Test: Value1\r\n" .
