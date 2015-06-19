@@ -31,6 +31,10 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase
 
     public function getStreamMockWithContent($content, $name = 'test')
     {
+        if(defined('HHVM_VERSION')) {
+            $this->markTestSkipped(); //HHVM crashes when stream_socket_get_name() is used with VFS
+        }
+
         $streamMock = vfsStream::newFile($name)->withContent($content)->at($this->vfsRoot);
         $stream = fopen($streamMock->url(), 'r+');
 

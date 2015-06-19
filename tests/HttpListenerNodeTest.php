@@ -188,7 +188,8 @@ class HttpListenerNodeTest extends \PHPUnit_Framework_TestCase
 
         $listener = new HttpListenerNode($serverMock);
 
-        $processInputBufferReflection = (new \ReflectionObject($listener))->getMethod('processInputBuffer');
+        $listenerReflection = new \ReflectionObject($listener);
+        $processInputBufferReflection = $listenerReflection->getMethod('processInputBuffer');
         $processInputBufferReflection->setAccessible(true);
 
         $this->assertFalse($processInputBufferReflection->invoke($listener));
