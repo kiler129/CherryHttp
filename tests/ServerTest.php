@@ -1,7 +1,9 @@
 <?php
 namespace noFlash\CherryHttp;
 
-
+/**
+ * @todo Testing (un)subscribe with changeAll=true/false
+ */
 class ServerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @var Server
@@ -100,5 +102,36 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
     {
         $this->setExpectedException('\noFlash\CherryHttp\ServerException');
         $this->server->subscribeEvent('httpException');
+    }
+
+    public function testHearbeatIntervalCanBeSet()
+    {
+        $serverReflection = new \ReflectionObject($this->server);
+        $hbIntervalReflection = $serverReflection->getProperty('heartbeatInterval');
+        $hbIntervalReflection->setAccessible(true);
+
+        $this->server->setHearbeatInterval(5);
+
+        $this->assertSame(5, $hbIntervalReflection->getValue($this->server));
+    }
+
+    public function testHearbeatIntervalRejectsNonInteger()
+    {
+        $serverReflection = new \ReflectionObject($this->server);
+        $hbIntervalReflection = $serverReflection->getProperty('heartbeatInterval');
+        $hbIntervalReflection->setAccessible(true);
+
+        $this->setExpectedException('\InvalidArgumentException', 'integer');
+        $this->server->setHearbeatInterval(M_PI);
+    }
+
+    public function testHearbeatIntervalRejectsNegativeValues()
+    {
+        $serverReflection = new \ReflectionObject($this->server);
+        $hbIntervalReflection = $serverReflection->getProperty('heartbeatInterval');
+        $hbIntervalReflection->setAccessible(true);
+
+        $this->setExpectedException('\InvalidArgumentException');
+        $this->server->setHearbeatInterval(-3);
     }
 }
