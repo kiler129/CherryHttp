@@ -189,6 +189,10 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase
 
     public function testDisconnectedNodeIsDroppedAfterWholeBufferIsWritten()
     {
+        if(defined('HHVM_VERSION')) {
+            $this->markTestSkipped(); //HHVM crashes when stream_socket_get_name() is used with VFS
+        }
+
         $streamMock = vfsStream::newFile('test')
             ->withContent(' ')
             ->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
@@ -234,6 +238,10 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnWriteReadyProperlyHandlesStreamBlockage()
     {
+        if(defined('HHVM_VERSION')) {
+            $this->markTestSkipped(); //HHVM crashes when stream_socket_get_name() is used with VFS
+        }
+
         vfsStream::setQuota(2);
         $streamMock = vfsStream::newFile('test')
             ->withContent(' ')
@@ -282,6 +290,10 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase
 
     public function testProcessInputBufferIsCalledAfterOnReadReady()
     {
+        if(defined('HHVM_VERSION')) {
+            $this->markTestSkipped(); //HHVM crashes when stream_socket_get_name() is used with VFS
+        }
+
         $streamMock = vfsStream::newFile('test')
             ->withContent('1234')
             ->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
@@ -296,6 +308,10 @@ class StreamServerNodeTest extends \PHPUnit_Framework_TestCase
 
     public function testProcessInputBufferIsCalledAgainIfReturnFalseAfterOnReadReady()
     {
+        if(defined('HHVM_VERSION')) {
+            $this->markTestSkipped(); //HHVM crashes when stream_socket_get_name() is used with VFS
+        }
+
         $streamMock = vfsStream::newFile('test')
             ->withContent('1234')
             ->at($this->vfsRoot); //Using vfsStream for mocking network sockets has one drawbacks - it's a file, so feof() will return true, some content prevents that
