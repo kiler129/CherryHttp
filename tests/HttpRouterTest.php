@@ -122,5 +122,27 @@ class HttpRouterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame(array('/test3' => $requestHandler2, '/test4' => $requestHandler2), $handledPaths);
     }
 
+    public function testHandlingClientRequestRemovesItsRequest()
+    {
+        $requestHandler = $this->getMockBuilder('\noFlash\CherryHttp\HttpRequestHandlerInterface')->getMock();
+        $requestHandler
+            ->expects($this->atLeastOnce())
+            ->method('getHandledPaths')
+            ->willReturn(array('/test'));
+        $this->httpRouter->addPathHandler($requestHandler);
 
+
+        $client = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $request = $this->getMockBuilder('\noFlash\CherryHttp\HttpRequest')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request
+            ->expects($this->any())
+            ->method('getUri')
+            ->willReturn('/test');
+        $client->request = $request;
+
+        $this->httpRouter->handleClientRequest($client);
+        $this->assertNull($client->request);
+    }
 }
