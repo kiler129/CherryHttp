@@ -96,4 +96,31 @@ class HttpRouterTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('/test3', $handledPaths, 'Unique route from 2nd handler missing');
         $this->assertSame($handledPaths['/test3'], $requestHandler2, 'Unique router from 2nd handler refers to invalid handler');
     }
+
+    public function testPathHandlerCanBeRemoved()
+    {
+        $requestHandler1 = $this->getMockBuilder('\noFlash\CherryHttp\HttpRequestHandlerInterface')->getMock();
+        $requestHandler1
+            ->expects($this->atLeastOnce())
+            ->method('getHandledPaths')
+            ->willReturn(array('/test', '/test2'));
+
+        $requestHandler2 = $this->getMockBuilder('\noFlash\CherryHttp\HttpRequestHandlerInterface')->getMock();
+        $requestHandler2
+            ->expects($this->atLeastOnce())
+            ->method('getHandledPaths')
+            ->willReturn(array('/test3', '/test4'));
+
+        $this->httpRouter->addPathHandler($requestHandler1);
+        $this->httpRouter->addPathHandler($requestHandler2);
+        $this->httpRouter->removePathHandler($requestHandler1);
+
+        $routerReflection = new \ReflectionObject($this->httpRouter);
+        $pathHandlersReflection = $routerReflection->getProperty('pathHandlers');
+        $pathHandlersReflection->setAccessible(true);
+        $handledPaths = $pathHandlersReflection->getValue($this->httpRouter);
+        $this->assertSame(array('/test3' => $requestHandler2, '/test4' => $requestHandler2), $handledPaths);
+    }
+
+
 }
