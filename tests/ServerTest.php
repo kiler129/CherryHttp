@@ -38,4 +38,20 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame($handler, $eventsHandlerReflection->getValue($this->server));
     }
+
+    public function testSubscribingHttpExceptionEventEnabledSubscriptionOnlyForThatEvent()
+    {
+        $handler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
+        $this->server->setEventsHandler($handler);
+
+        $serverReflection = new \ReflectionObject($this->server);
+        $subscribedEventsReflection = $serverReflection->getProperty('subscribedEvents');
+        $subscribedEventsReflection->setAccessible(true);
+
+        $eventsTable = $subscribedEventsReflection->getValue($this->server);
+        $eventsTable['httpException'] = true;
+
+        $this->server->subscribeEvent('httpException');
+        $this->assertEquals($eventsTable, $subscribedEventsReflection->getValue($this->server));
+    }
 }
