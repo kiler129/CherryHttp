@@ -86,4 +86,13 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->server->subscribeEvent('heartbeat');
         $this->assertEquals($eventsTable, $subscribedEventsReflection->getValue($this->server));
     }
+
+    public function testSubscribingUnknownEventThrowsInvalidArgumentException()
+    {
+        $handler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
+        $this->server->setEventsHandler($handler);
+
+        $this->setExpectedException('\InvalidArgumentException');
+        $this->server->subscribeEvent('unknownEvent');
+    }
 }
