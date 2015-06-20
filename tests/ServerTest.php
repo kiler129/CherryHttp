@@ -142,4 +142,81 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\InvalidArgumentException');
         $this->server->setHearbeatInterval(-3);
     }
+
+    public function testHandlingHttpExceptionPushesResponseToClient()
+    {
+        $serverReflection = new \ReflectionObject($this->server);
+        $httpExceptionHandlerReflection = $serverReflection->getMethod('handleHttpException');
+        $httpExceptionHandlerReflection->setAccessible(true);
+
+        $response = $this->getMock('\noFlash\CherryHttp\HttpResponse');
+
+        $httpException = $this
+            ->getMockBuilder('\noFlash\CherryHttp\HttpException')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $httpException
+            ->expects($this->atLeastOnce())
+            ->method('getResponse')
+            ->willReturn($response);
+
+        $client = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $client->expects($this->atLeastOnce())->method('pushData')->with($response);
+
+        $httpExceptionHandlerReflection->invoke($this->server, $httpException, $client);
+    }
+
+    public function testClientIsDisconnectedAccordingToTheRequestDuringHttpExceptionHandling()
+    {
+        $serverReflection = new \ReflectionObject($this->server);
+        $httpExceptionHandlerReflection = $serverReflection->getMethod('handleHttpException');
+        $httpExceptionHandlerReflection->setAccessible(true);
+
+        $response = $this
+            ->getMock('\noFlash\CherryHttp\HttpResponse');
+        $response
+            ->expects($this->atLeastOnce())
+            ->method('isConnectionClose')
+            ->willReturn(true);
+
+        $httpException = $this
+            ->getMockBuilder('\noFlash\CherryHttp\HttpException')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $httpException
+            ->expects($this->atLeastOnce())
+            ->method('getResponse')
+            ->willReturn($response);
+
+        $client = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $client->expects($this->atLeastOnce())->method('disconnect');
+
+        $httpExceptionHandlerReflection->invoke($this->server, $httpException, $client);
+    }
+
+    public function testEventHandlerIsExecutedOnHttpException()
+    {
+        $serverReflection = new \ReflectionObject($this->server);
+        $httpExceptionHandlerReflection = $serverReflection->getMethod('handleHttpException');
+        $httpExceptionHandlerReflection->setAccessible(true);
+
+        $httpException = $this
+            ->getMockBuilder('\noFlash\CherryHttp\HttpException')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $client = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $client->subscribedEvents = array('httpException' => true);
+
+        $eventsHandler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
+        $eventsHandler
+            ->expects($this->atLeastOnce())
+            ->method('onHttpException')
+            ->with($httpException, $client)
+            ->willReturn($this->getMock('\noFlash\CherryHttp\HttpResponse'));
+        $this->server->setEventsHandler($eventsHandler);
+        $this->server->subscribeEvent('httpException');
+
+        $httpExceptionHandlerReflection->invoke($this->server, $httpException, $client);
+    }
 }
