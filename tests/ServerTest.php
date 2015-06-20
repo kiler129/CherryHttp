@@ -161,6 +161,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
             ->willReturn($response);
 
         $client = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $client->subscribedEvents = array('httpException' => false);
         $client->expects($this->atLeastOnce())->method('pushData')->with($response);
 
         $httpExceptionHandlerReflection->invoke($this->server, $httpException, $client);
@@ -189,6 +190,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
             ->willReturn($response);
 
         $client = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $client->subscribedEvents = array('httpException' => false);
         $client->expects($this->atLeastOnce())->method('disconnect');
 
         $httpExceptionHandlerReflection->invoke($this->server, $httpException, $client);
