@@ -84,6 +84,25 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->server->subscribeEvent('httpException');
     }
 
+    /**
+     * @dataProvider eventsProvider
+     */
+    public function testUnsubscribingEventEnablesSubscriptionOnlyForThatEvent($eventName)
+    {
+        $handler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
+        $this->server->setEventsHandler($handler);
+
+        $serverReflection = new \ReflectionObject($this->server);
+        $subscribedEventsReflection = $serverReflection->getProperty('subscribedEvents');
+        $subscribedEventsReflection->setAccessible(true);
+
+        $eventsTable = $subscribedEventsReflection->getValue($this->server);
+        $eventsTable[$eventName] = false;
+
+        $this->server->unsubscribeEvent($eventName);
+        $this->assertEquals($eventsTable, $subscribedEventsReflection->getValue($this->server));
+    }
+
     public function testHearbeatIntervalCanBeSet()
     {
         $serverReflection = new \ReflectionObject($this->server);
