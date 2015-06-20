@@ -41,23 +41,19 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($handler, $eventsHandlerReflection->getValue($this->server));
     }
 
-    public function testSubscribingBufferEmptyEventEnabledSubscriptionOnlyForThatEvent()
+    public function eventsProvider()
     {
-        $handler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
-        $this->server->setEventsHandler($handler);
-
-        $serverReflection = new \ReflectionObject($this->server);
-        $subscribedEventsReflection = $serverReflection->getProperty('subscribedEvents');
-        $subscribedEventsReflection->setAccessible(true);
-
-        $eventsTable = $subscribedEventsReflection->getValue($this->server);
-        $eventsTable['writeBufferEmpty'] = true;
-
-        $this->server->subscribeEvent('writeBufferEmpty');
-        $this->assertEquals($eventsTable, $subscribedEventsReflection->getValue($this->server));
+        return array(
+            array('writeBufferEmpty'),
+            array('httpException'),
+            array('heartbeat')
+        );
     }
 
-    public function testSubscribingHttpExceptionEventEnabledSubscriptionOnlyForThatEvent()
+    /**
+     * @dataProvider eventsProvider
+     */
+    public function testSubscribingEventEnablesSubscriptionOnlyForThatEvent($eventName)
     {
         $handler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
         $this->server->setEventsHandler($handler);
@@ -67,25 +63,9 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $subscribedEventsReflection->setAccessible(true);
 
         $eventsTable = $subscribedEventsReflection->getValue($this->server);
-        $eventsTable['httpException'] = true;
+        $eventsTable[$eventName] = true;
 
-        $this->server->subscribeEvent('httpException');
-        $this->assertEquals($eventsTable, $subscribedEventsReflection->getValue($this->server));
-    }
-
-    public function testSubscribingHeartbeatEventEnabledSubscriptionOnlyForThatEvent()
-    {
-        $handler = $this->getMockBuilder('\noFlash\CherryHttp\EventsHandlerInterface')->getMock();
-        $this->server->setEventsHandler($handler);
-
-        $serverReflection = new \ReflectionObject($this->server);
-        $subscribedEventsReflection = $serverReflection->getProperty('subscribedEvents');
-        $subscribedEventsReflection->setAccessible(true);
-
-        $eventsTable = $subscribedEventsReflection->getValue($this->server);
-        $eventsTable['heartbeat'] = true;
-
-        $this->server->subscribeEvent('heartbeat');
+        $this->server->subscribeEvent($eventName);
         $this->assertEquals($eventsTable, $subscribedEventsReflection->getValue($this->server));
     }
 
