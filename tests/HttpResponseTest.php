@@ -3,6 +3,12 @@ namespace noFlash\CherryHttp;
 
 
 class HttpResponseTest extends \PHPUnit_Framework_TestCase {
+    public function testClassExtendsHttpMessage()
+    {
+        $clientUpgradeExceptionReflection = new \ReflectionClass('\noFlash\CherryHttp\HttpResponse');
+        $this->assertTrue($clientUpgradeExceptionReflection->isSubclassOf('\noFlash\CherryHttp\HttpMessage'));
+    }
+
     public function testResponseUsesHttpOkCodeByDefault()
     {
         $httpResponse = new HttpResponse;
