@@ -1,6 +1,6 @@
 # &#127826; CherryHttp
 [![Build Status](https://travis-ci.org/kiler129/CherryHttp.svg)](https://travis-ci.org/kiler129/CherryHttp)
-[![Code Climate](https://codeclimate.com/github/kiler129/CherryHttp/badges/gpa.svg)](https://codeclimate.com/github/kiler129/CherryHttp)
+[![Code Climate](https://codeclimate.com/github/kiler129/CherryHttp/badges/gpa.svg)](https://codeclimate.com/github/kiler129/CherryHttp)  
 Fast, secure, customizable and easy to use HTTP/1.1 server implementation. It's also licensed under MIT, so feel free to use it in your commercial project ;)  
 Originally it was part of [TinyWs](https://github.com/kiler129/TinyWs), but it evolved into standalone project to provide modular architecture.
 
