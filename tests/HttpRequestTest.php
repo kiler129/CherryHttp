@@ -132,6 +132,17 @@ class HttpRequestTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('TeSt,TeSt2,TeSt3', $request->getHeader('X-Test'));
     }
 
+    public function testRequestIsConsideredReadyAfterParsingHeaders()
+    {
+        $requestText = "GET /test?a=b&c=d HTTP/1.1\r\n".
+            "X-Test: TeSt\r\n".
+            "X-Test: TeSt2\r\n".
+            "X-Test: TeSt3\r\n\r\n";
+
+        $request = new HttpRequest($requestText, $this->loggerMock);
+        $this->assertTrue($request->isReady());
+    }
+
     public function testConvertingRequestToStringGivesValidHttpRequestRepresentation()
     {
         $requestText = "GET /test?a=b&c=d HTTP/1.1\r\n".
