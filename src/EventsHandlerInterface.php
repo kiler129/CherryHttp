@@ -6,6 +6,7 @@ namespace noFlash\CherryHttp;
  * can be registered for single server instance.
  *
  * @package noFlash\CherryHttp
+ * @codeCoverageIgnore Interfaces aren't testable by definition
  */
 interface EventsHandlerInterface
 {

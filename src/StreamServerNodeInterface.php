@@ -5,6 +5,7 @@ namespace noFlash\CherryHttp;
  * Interface for stream server nodes (nodes & listeners)
  *
  * @package noFlash\CherryHttp
+ * @codeCoverageIgnore Interfaces aren't testable by definition
  *
  * @property resource $socket Client socket returned by stream_socket_accept()
  * @property string[] $subscribedEvents Contains subscription status for events of client

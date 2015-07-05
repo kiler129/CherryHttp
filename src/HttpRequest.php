@@ -90,6 +90,10 @@ class HttpRequest extends HttpMessage
         //$this->logger->debug('Parsing HTTP request headers');
         //It should call $this->setHeader() method but due to performance reasons it will process headers itself
         foreach ($header as $headersLine) {
+            if($headersLine === "\r" || $headersLine == '') {
+                return;
+            }
+
             $headersLine = explode(':', $headersLine, 2);
             $headerName = trim($headersLine[0]); //In theory there should be no whitespaces around name... in theory.
             $lowercaseName = strtolower($headerName);
