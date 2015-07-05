@@ -243,4 +243,17 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->assertContains($node, $nodes->getValue($this->server));
     }
 
+    public function testNodeCanBeRemoved()
+    {
+        $node = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $node->socket = $this->getSampleSocketStream();
+
+        $serverReflection = new \ReflectionObject($this->server);
+        $nodes = $serverReflection->getProperty('nodes');
+        $nodes->setAccessible(true);
+
+        $this->server->addNode($node);
+        $this->server->removeNode($node);
+        $this->assertNotContains($node, $nodes->getValue($this->server));
+    }
 }
