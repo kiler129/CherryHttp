@@ -268,4 +268,45 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $server = new Server($logger);
         $server->removeNode($node);
     }
+
+    public function testNodesLimitIsEnforced()
+    {
+        $node1 = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $node1->socket = $this->getSampleSocketStream();
+
+        $node2 = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $node2->socket = $this->getSampleSocketStream();
+        $node2->expects($this->atLeastOnce())->method('disconnect')->with(true);
+
+        $logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')->getMock();
+
+        $server = new Server($logger);
+        $server->setNodesLimit(1);
+        $server->addNode($node1);
+
+        $logger->expects($this->atLeastOnce())->method('warning');
+        $server->addNode($node2);
+    }
+
+    public function invalidNodesLimitValues()
+    {
+        return array(
+            array(-1),
+            array(M_PI),
+            array('1'),
+            array('0'),
+            array(null),
+            array(true),
+            array(false)
+        );
+    }
+
+    /**
+     * @dataProvider invalidNodesLimitValues
+     */
+    public function testNodesLimitRejectsInvalidValues($value)
+    {
+        $this->setExpectedException('\InvalidArgumentException');
+        $this->server->setNodesLimit($value);
+    }
 }
