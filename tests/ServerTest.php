@@ -15,6 +15,14 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->server = new Server();
     }
 
+    private function getSampleSocketStream()
+    {
+        $stream = stream_socket_server('tcp://0.0.0.0:0');
+        $this->assertNotFalse($stream, 'Failed to create socket for test (environment problem?)');
+
+        return $stream;
+    }
+
     public function testIfNoLoggerWasGivenDefaultIsUsed()
     {
         $serverReflection = new \ReflectionObject($this->server);
@@ -221,4 +229,18 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
 
         $httpExceptionHandlerReflection->invoke($this->server, $httpException, $client);
     }
+
+    public function testNodeCanBeAdded()
+    {
+        $node = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $node->socket = $this->getSampleSocketStream();
+
+        $serverReflection = new \ReflectionObject($this->server);
+        $nodes = $serverReflection->getProperty('nodes');
+        $nodes->setAccessible(true);
+
+        $this->server->addNode($node);
+        $this->assertContains($node, $nodes->getValue($this->server));
+    }
+
 }
