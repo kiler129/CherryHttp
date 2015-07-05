@@ -309,4 +309,20 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\InvalidArgumentException');
         $this->server->setNodesLimit($value);
     }
+
+    public function testBindAddsListenerWithGivenParameters()
+    {
+        $serverReflection = new \ReflectionObject($this->server);
+        $nodes = $serverReflection->getProperty('nodes');
+        $nodes->setAccessible(true);
+
+        $this->server->bind('127.0.0.1', 9999, false);
+        $this->assertCount(1, $nodes->getValue($this->server), 'More than single node found');
+
+        /** @var \noFlash\CherryHttp\StreamServerNode $listenerNode */
+        $listenerNode = reset($nodes->getValue($this->server));
+        $this->assertInstanceOf('\noFlash\CherryHttp\StreamServerNode', $listenerNode);
+        $this->assertSame('127.0.0.1', $listenerNode->getIp(), 'Invalid listening IP');
+        $this->assertSame('127.0.0.1:9999', $listenerNode->getPeerName(), 'Invalid peername (perhaps port missmatch)');
+    }
 }
