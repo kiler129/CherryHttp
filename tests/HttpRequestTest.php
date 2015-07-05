@@ -86,4 +86,49 @@ class HttpRequestTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\noFlash\CherryHttp\HttpException', 'HTTP version', HttpCode::VERSION_NOT_SUPPORTED);
         new HttpRequest('GET / HTTP/69.0', $this->loggerMock);
     }
+
+    public function testSimpleHeaderIsParsed()
+    {
+        $requestText = "GET / HTTP/1.1\r\n".
+                       "X-Test: TeSt\r\n".
+                       "X-Test2:tEsT\r\n\r\n";
+
+        $request = new HttpRequest($requestText, $this->loggerMock);
+        $this->assertSame('TeSt', $request->getHeader('X-Test'));
+        $this->assertSame('tEsT', $request->getHeader('X-Test2'));
+    }
+
+    public function testHeaderWithoutValueIsAvailable()
+    {
+        $requestText = "GET / HTTP/1.1\r\n".
+                       "X-Test:\r\n".
+                       "X-Test2: test\r\n\r\n";
+
+        $request = new HttpRequest($requestText, $this->loggerMock);
+        $this->assertNotNull($request->getHeader('X-Test'), 'Header missing');
+        $this->assertEmpty($request->getHeader('X-Test'), 'Header has invalid value');
+        $this->assertNotEmpty($request->getHeader('X-Test2'), 'Header following empty header missing');
+    }
+
+    public function testMultipleHeadersWithTheSameNameAreParsed()
+    {
+        $requestText = "GET / HTTP/1.1\r\n".
+                       "X-Test: TeSt\r\n".
+                       "X-Test:TeSt2\r\n".
+                       "X-Test: TeSt3\r\n\r\n";
+
+        $request = new HttpRequest($requestText, $this->loggerMock);
+        $this->assertSame('TeSt,TeSt2,TeSt3', $request->getHeader('X-Test'));
+    }
+
+    public function testMultipleHeadersWithTheSameNameWithDifferentCasesAreParsed()
+    {
+        $requestText = "GET / HTTP/1.1\r\n".
+            "X-Test: TeSt\r\n".
+            "x-Test:TeSt2\r\n".
+            "X-TESt: TeSt3\r\n\r\n";
+
+        $request = new HttpRequest($requestText, $this->loggerMock);
+        $this->assertSame('TeSt,TeSt2,TeSt3', $request->getHeader('X-Test'));
+    }
 }
