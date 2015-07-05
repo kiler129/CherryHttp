@@ -256,4 +256,16 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->server->removeNode($node);
         $this->assertNotContains($node, $nodes->getValue($this->server));
     }
+
+    public function testRemovingNotExistingNodeProducesError()
+    {
+        $node = $this->getMockBuilder('\noFlash\CherryHttp\StreamServerNodeInterface')->getMock();
+        $node->socket = $this->getSampleSocketStream();
+
+        $logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')->getMock();
+        $logger->expects($this->atLeastOnce())->method('error');
+
+        $server = new Server($logger);
+        $server->removeNode($node);
+    }
 }
