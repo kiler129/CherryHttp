@@ -19,7 +19,7 @@ For more information see FAQ note `Is it stable?`.
 Composer is preferred method of installation due to it's simplicity and automatic dependencies management.
 
   0. You need composer of course - [installation takes less than a minute](https://getcomposer.org/download/)
-  1. Run `php composer.phar require noflash/cherryhttp:dev-master` in your favourite terminal to install CherryHttp with dependencies
+  1. Run `php composer.phar require noflash/cherryhttp` in your favourite terminal to install CherryHttp with dependencies
   2. Include `vendor/autoload.php` in your application source code
   3. If you want to see logs from server you need to install [PSR-3 complaint logger](https://packagist.org/search/?tags=psr-3), eg. `php composer.phar require noflash/shout` 
  
