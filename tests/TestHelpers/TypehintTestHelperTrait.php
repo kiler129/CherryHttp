@@ -40,7 +40,5 @@ trait TypehintTestHelperTrait
         } else {
             $this->setExpectedException('\TypeError');
         }
-
-        $this->setExpectedException('\TypeError');
     }
 }
