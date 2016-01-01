@@ -100,7 +100,7 @@ final class ResponseCode
     const NETWORK_AUTHENTICATION_REQUIRED = 511;
     //512-599 => 'Unassigned'
 
-    private static $code_groups = [
+    private static $codeGroups = [
         0   => 'Unknown', //Internally reserved group for out-of-spec response codes
         100 => 'Information', //Request received, continuing process
         200 => 'Success', //The action was successfully received, understood, and accepted
@@ -109,7 +109,7 @@ final class ResponseCode
         500 => 'Server Error' //The server failed to fulfill an apparently valid request
     ];
 
-    private static $codes_description = [
+    private static $codesDescription = [
         /******* Information group *******/
         self::CONTINUE_INFORMATION            => 'Continue',
         self::SWITCHING_PROTOCOLS             => 'Switching Protocols',
@@ -206,7 +206,6 @@ final class ResponseCode
         return (!($code < 100 || $code > 999) && is_integer($code));
     }
 
-
     /**
      * Verifies if given code is valid HTTP code registered by IANA.
      *
@@ -216,7 +215,7 @@ final class ResponseCode
      */
     public static function isCodeRegistered($code)
     {
-        return (isset(self::$codes_description[$code]) && (int)$code == $code . '');
+        return (isset(self::$codesDescription[$code]) && (int)$code == $code . '');
     }
 
     /**
@@ -232,7 +231,7 @@ final class ResponseCode
     {
         $code = (int)($code - ($code % 100)); //Am I crazy using the same variable to save CPU cycles?
 
-        return (isset(self::$code_groups[$code])) ? $code : 0;
+        return (isset(self::$codeGroups[$code])) ? $code : 0;
     }
 
     /**
@@ -245,11 +244,11 @@ final class ResponseCode
      */
     public static function getGroupDescription($group)
     {
-        if (!isset(self::$code_groups[$group])) {
+        if (!isset(self::$codeGroups[$group])) {
             $group = 0;
         }
 
-        return self::$code_groups[$group];
+        return self::$codeGroups[$group];
     }
 
     /**
@@ -262,8 +261,8 @@ final class ResponseCode
      */
     public static function getCodeDescription($code)
     {
-        if (isset(self::$codes_description[$code])) {
-            return self::$codes_description[$code];
+        if (isset(self::$codesDescription[$code])) {
+            return self::$codesDescription[$code];
         }
 
         $group = self::getGroupFromCode($code);
