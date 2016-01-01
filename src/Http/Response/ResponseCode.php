@@ -193,9 +193,6 @@ final class ResponseCode
         //512-599 => 'Unassigned'
     ];
 
-    //Formatter have to be disabled for now due to PHPStorm bug WI-30239
-    //@formatter:off
-
     /**
      * Verifies if given code can be used as HTTP code.
      * Please note this method DO NOT verify whatever code was registered by IANA.
@@ -219,7 +216,7 @@ final class ResponseCode
      */
     public static function isCodeRegistered($code)
     {
-        return (isset(self::$codes_description[$code]) && (int)$code == $code.'');
+        return (isset(self::$codes_description[$code]) && (int)$code == $code . '');
     }
 
     /**
@@ -273,6 +270,4 @@ final class ResponseCode
 
         return self::getGroupDescription($group);
     }
-
-    //@formatter:on
 }
