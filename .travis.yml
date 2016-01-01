@@ -2,14 +2,16 @@ language: php
 php:
   - 5.6
   - 7.0
-  - hhvm
   - nightly
+  - hhvm
+  - hhvm-nightly
 
 matrix:
   allow_failures:
     - php: hhvm
+    - php: hhvm-nightly
 
-before_script: echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+before_script: phpenv config-add .travis.php.ini
 install: composer install --dev
-script: php ./vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml
+script: php ./vendor/phpunit/phpunit/phpunit --configuration phpunit.xml
 after_script: php ./vendor/bin/test-reporter --stdout --coverage-report build/logs/clover.xml
