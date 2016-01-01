@@ -39,6 +39,11 @@
       "noFlash\\CherryHttp\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "noFlash\\CherryHttp\\Tests\\": "tests"
+    }
+  },
   "extra": {
     "branch-alias": {
       "dev-master": "2.0.x-dev"
