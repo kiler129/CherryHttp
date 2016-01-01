@@ -1,7 +1,10 @@
-languages:
-  PHP: true
-
 exclude_paths:
   - "examples/*"
   - "tests/*"
+  - "old-tests/*"
   - "src/_legacyCode/*"
+
+engines:
+  duplication:
+    enabled: true
+    config:
