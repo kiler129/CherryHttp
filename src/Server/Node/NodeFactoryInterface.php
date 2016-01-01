@@ -12,7 +12,14 @@
 
 namespace noFlash\CherryHttp\Server\Node;
 
+use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
+
 interface NodeFactoryInterface
 {
-
+    /**
+     * Returns ready-to-use node.
+     *
+     * @return LoopNodeInterface
+     */
+    public function getNode();
 }

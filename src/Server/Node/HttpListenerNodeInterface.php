@@ -12,7 +12,14 @@
 
 namespace noFlash\CherryHttp\Server\Node;
 
+use noFlash\CherryHttp\Http\Response\ResponseFactoryInterface;
+
 interface HttpListenerNodeInterface extends TcpListenerNodeInterface
 {
+    /**
+     * Returns factory used to create HTTP responses.
+     *
+     * @return ResponseFactoryInterface
+     */
     public function getResponseFactory();
 }
