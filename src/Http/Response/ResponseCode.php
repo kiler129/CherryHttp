@@ -100,7 +100,7 @@ final class ResponseCode
     const NETWORK_AUTHENTICATION_REQUIRED = 511;
     //512-599 => 'Unassigned'
 
-    const CODE_GROUPS = [
+    private static $code_groups = [
         0   => 'Unknown', //Internally reserved group for out-of-spec response codes
         100 => 'Information', //Request received, continuing process
         200 => 'Success', //The action was successfully received, understood, and accepted
@@ -109,7 +109,7 @@ final class ResponseCode
         500 => 'Server Error' //The server failed to fulfill an apparently valid request
     ];
 
-    const CODES_DESCRIPTION = [
+    private static $codes_description = [
         /******* Information group *******/
         self::CONTINUE_INFORMATION            => 'Continue',
         self::SWITCHING_PROTOCOLS             => 'Switching Protocols',
@@ -219,7 +219,7 @@ final class ResponseCode
      */
     public static function isCodeRegistered($code)
     {
-        return (isset(self::CODES_DESCRIPTION[$code]) && (int)$code == $code.'');
+        return (isset(self::$codes_description[$code]) && (int)$code == $code.'');
     }
 
     /**
@@ -235,7 +235,7 @@ final class ResponseCode
     {
         $code = (int)($code - ($code % 100)); //Am I crazy using the same variable to save CPU cycles?
 
-        return (isset(self::CODE_GROUPS[$code])) ? $code : 0;
+        return (isset(self::$code_groups[$code])) ? $code : 0;
     }
 
     /**
@@ -248,11 +248,11 @@ final class ResponseCode
      */
     public static function getGroupDescription($group)
     {
-        if (!isset(self::CODE_GROUPS[$group])) {
+        if (!isset(self::$code_groups[$group])) {
             $group = 0;
         }
 
-        return self::CODE_GROUPS[$group];
+        return self::$code_groups[$group];
     }
 
     /**
@@ -265,8 +265,8 @@ final class ResponseCode
      */
     public static function getCodeDescription($code)
     {
-        if (isset(self::CODES_DESCRIPTION[$code])) {
-            return self::CODES_DESCRIPTION[$code];
+        if (isset(self::$codes_description[$code])) {
+            return self::$codes_description[$code];
         }
 
         $group = self::getGroupFromCode($code);
