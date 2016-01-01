@@ -1,10 +1,23 @@
-exclude_paths:
-  - "examples/*"
-  - "tests/*"
-  - "old-tests/*"
-  - "src/_legacyCode/*"
-
+---
 engines:
   duplication:
     enabled: true
     config:
+      languages:
+        - php
+
+  fixme:
+    enabled: true
+
+  phpmd:
+    enabled: true
+
+ratings:
+  paths:
+    - "**.php"
+
+exclude_paths:
+  - examples/*
+  - tests/*
+  - old-tests/*
+  - src/_legacyCode/*
