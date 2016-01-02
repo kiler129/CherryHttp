@@ -203,7 +203,7 @@ final class ResponseCode
      */
     public static function isCodeValid($code)
     {
-        return (!($code < 100 || $code > 999) && is_integer($code));
+        return (!($code < 100 || $code > 999) && (int)$code === $code);
     }
 
     /**
@@ -215,7 +215,7 @@ final class ResponseCode
      */
     public static function isCodeRegistered($code)
     {
-        return (isset(self::$codesDescription[$code]) && (int)$code == $code . '');
+        return (isset(self::$codesDescription[$code]) && (int)$code === $code);
     }
 
     /**
