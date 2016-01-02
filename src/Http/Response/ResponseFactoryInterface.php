@@ -17,7 +17,7 @@ interface ResponseFactoryInterface
     /**
      * Produces response with default values.
      *
-     * @return MutableResponseInterface
+     * @return ResponseInterface
      */
     public function getResponse($code = ResponseCode::NO_CONTENT, $content = null, $headers = []);
 

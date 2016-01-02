@@ -12,14 +12,22 @@
 
 namespace noFlash\CherryHttp\Http\Message;
 
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\StreamInterface;
-
 /**
- * Mutable version of PSR-7 message.
+ * Generic representation of ane HTTP message, which consists of request line, headers and (sometimes non-empty) body.
  */
-interface MutableMessageInterface extends MessageInterface
+interface MessageInterface
 {
+    const HTTP_10 = '1.0';
+    const HTTP_11 = '1.1';
+
+    /**
+     * Returns HTTP protocol version as string.
+     * Result of that method can be compared to MessageInterface::HTTP_10 and MessageInterface::HTTP_11 constants.
+     *
+     * @return string 1.0 or 1.1
+     */
+    public function getProtocolVersion();
+
     /**
      * Sets specified HTTP protocol version on current instance.
      *
@@ -35,6 +43,46 @@ interface MutableMessageInterface extends MessageInterface
      * @throws \InvalidArgumentException for semantically invalid HTTP version.
      */
     public function setProtocolVersion($version);
+
+    /**
+     * Retrieves all headers.
+     *
+     * While headers are generally case-insensitive according to RFCs cases should be preserved.
+     * However implementation MAY preserve only one variation of header cases (e.g. setting X-Test and x-Test you may
+     * either get two separate headers or just X-Test with two values.
+     *
+     * Method returns array where every key represents header name as it will be sent over the wire and each value is
+     * an array of header values.
+     * Example output of that method may look like following array:
+     * [
+     *  'X-Test' => ['foo'],
+     *  'X-Foo' => ['foo', 'baz']
+     *  'Server' => ['CherryHttp/2.0-dev']
+     * ]
+     *
+     * @return array
+     */
+    public function getHeaders();
+
+    /**
+     * Returns all known values for given header name.
+     * Header lookup MUST be done using case-insensitive routing.
+     *
+     * @param string $name Case-insensitive header name.
+     *
+     * @return string[] Array of header values. If headers doesn't exists empty array will be returned.
+     */
+    public function getHeader($name);
+
+    /**
+     * Checks if a header exists in current instance.
+     * Name MUST be compared using case-insensitive routine.
+     *
+     * @param string $name Case-insensitive header name.
+     *
+     * @return bool
+     */
+    public function hasHeader($name);
 
     /**
      * Sets given header value on current instance replacing existing one.
@@ -78,14 +126,20 @@ interface MutableMessageInterface extends MessageInterface
     public function unsetHeader($name);
 
     /**
-     * Sets given message body on current instance.
-     * The body MUST be a StreamInterface object.
+     * Returns message body.
      *
-     * @param StreamInterface $body Body.
+     * @return -undetermined-
+     * @todo
+     */
+    public function getBody();
+
+    /**
+     * Sets given message body on current instance.
+     *
+     * @param -undetermined- $body Message body.
      *
      * @return void
-     *
-     * @throws \InvalidArgumentException When the body is not valid.
+     * @todo
      */
-    public function setBody(StreamInterface $body);
+    public function setBody($body);
 }

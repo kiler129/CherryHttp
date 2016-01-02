@@ -12,8 +12,8 @@
 
 namespace noFlash\CherryHttp\Http;
 
+use noFlash\CherryHttp\Http\Response\ResponseInterface;
 use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
-use Psr\Http\Message\ResponseInterface;
 
 interface HttpNodeInterface extends NetworkNodeInterface
 {
