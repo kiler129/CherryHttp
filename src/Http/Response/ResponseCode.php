@@ -242,7 +242,7 @@ final class ResponseCode
      *
      * @return string
      */
-    public static function getGroupDescription($group)
+    public static function getReasonPhraseByGroup($group)
     {
         if (!isset(self::$codeGroups[$group])) {
             $group = 0;
@@ -259,7 +259,7 @@ final class ResponseCode
      *
      * @return string
      */
-    public static function getCodeDescription($code)
+    public static function getReasonPhraseByCode($code)
     {
         if (isset(self::$codesDescription[$code])) {
             return self::$codesDescription[$code];
@@ -267,6 +267,6 @@ final class ResponseCode
 
         $group = self::getGroupFromCode($code);
 
-        return self::getGroupDescription($group);
+        return self::getReasonPhraseByGroup($group);
     }
 }

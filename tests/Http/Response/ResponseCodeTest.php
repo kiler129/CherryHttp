@@ -287,28 +287,28 @@ class ResponseCodeTest extends \PHPUnit_Framework_TestCase
 
     public function testRegisteredGroupsGetsProperDescription()
     {
-        $this->assertSame('Information', ResponseCode::getGroupDescription(100));
-        $this->assertSame('Success', ResponseCode::getGroupDescription(200));
-        $this->assertSame('Redirecting', ResponseCode::getGroupDescription(300));
-        $this->assertSame('Client Error', ResponseCode::getGroupDescription(400));
-        $this->assertSame('Server Error', ResponseCode::getGroupDescription(500));
+        $this->assertSame('Information', ResponseCode::getReasonPhraseByGroup(100));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByGroup(200));
+        $this->assertSame('Redirecting', ResponseCode::getReasonPhraseByGroup(300));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByGroup(400));
+        $this->assertSame('Server Error', ResponseCode::getReasonPhraseByGroup(500));
     }
 
     public function testUnknownGroupsGetsDefaultDescription()
     {
         static $defaultDescription = 'Unknown';
 
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(false));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(true));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(null));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(0));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(9));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(99));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(999));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(600));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(700));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(800));
-        $this->assertSame($defaultDescription, ResponseCode::getGroupDescription(900));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(false));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(true));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(null));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(0));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(9));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(99));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(999));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(600));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(700));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(800));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByGroup(900));
     }
 
     public function ianaCodesDescriptionsProvider()
@@ -386,49 +386,49 @@ class ResponseCodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testAllRegisteredCodesGetsValidDescription($code, $rfcDescription)
     {
-        $this->assertSame($rfcDescription, ResponseCode::getCodeDescription($code));
+        $this->assertSame($rfcDescription, ResponseCode::getReasonPhraseByCode($code));
     }
 
     public function testNotRegisteredCodesGetsGroupDescription()
     {
         //All codes below are unassigned, but belongs to valid groups
-        $this->assertSame('Information', ResponseCode::getCodeDescription(103));
-        $this->assertSame('Information', ResponseCode::getCodeDescription(110));
-        $this->assertSame('Information', ResponseCode::getCodeDescription(199));
-        $this->assertSame('Success', ResponseCode::getCodeDescription(209));
-        $this->assertSame('Success', ResponseCode::getCodeDescription(211));
-        $this->assertSame('Success', ResponseCode::getCodeDescription(225));
-        $this->assertSame('Success', ResponseCode::getCodeDescription(227));
-        $this->assertSame('Success', ResponseCode::getCodeDescription(260));
-        $this->assertSame('Success', ResponseCode::getCodeDescription(299));
-        $this->assertSame('Redirecting', ResponseCode::getCodeDescription(309));
-        $this->assertSame('Redirecting', ResponseCode::getCodeDescription(372));
-        $this->assertSame('Redirecting', ResponseCode::getCodeDescription(399));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(418));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(419));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(420));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(432));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(438));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(450));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(452));
-        $this->assertSame('Client Error', ResponseCode::getCodeDescription(499));
-        $this->assertSame('Server Error', ResponseCode::getCodeDescription(512));
-        $this->assertSame('Server Error', ResponseCode::getCodeDescription(530));
-        $this->assertSame('Server Error', ResponseCode::getCodeDescription(599));
+        $this->assertSame('Information', ResponseCode::getReasonPhraseByCode(103));
+        $this->assertSame('Information', ResponseCode::getReasonPhraseByCode(110));
+        $this->assertSame('Information', ResponseCode::getReasonPhraseByCode(199));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByCode(209));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByCode(211));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByCode(225));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByCode(227));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByCode(260));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByCode(299));
+        $this->assertSame('Redirecting', ResponseCode::getReasonPhraseByCode(309));
+        $this->assertSame('Redirecting', ResponseCode::getReasonPhraseByCode(372));
+        $this->assertSame('Redirecting', ResponseCode::getReasonPhraseByCode(399));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(418));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(419));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(420));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(432));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(438));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(450));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(452));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByCode(499));
+        $this->assertSame('Server Error', ResponseCode::getReasonPhraseByCode(512));
+        $this->assertSame('Server Error', ResponseCode::getReasonPhraseByCode(530));
+        $this->assertSame('Server Error', ResponseCode::getReasonPhraseByCode(599));
     }
 
     public function testUnknownCodesGetsDefaultGroupDescription()
     {
         static $defaultDescription = 'Unknown';
 
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(false));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(true));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(null));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(0));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(99));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(600));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(700));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(898));
-        $this->assertSame($defaultDescription, ResponseCode::getCodeDescription(999));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(false));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(true));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(null));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(0));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(99));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(600));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(700));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(898));
+        $this->assertSame($defaultDescription, ResponseCode::getReasonPhraseByCode(999));
     }
 }
