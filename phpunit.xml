@@ -41,5 +41,6 @@
     </filter>
     <logging>
         <log type="coverage-clover" target="build/logs/clover.xml"/>
+        <log type="testdox-text" target="php://stdout"/>
     </logging>
 </phpunit>
