@@ -56,7 +56,7 @@ interface MessageInterface
      * Example output of that method may look like following array:
      * [
      *  'X-Test' => ['foo'],
-     *  'X-Foo' => ['foo', 'baz']
+     *  'X-Foo'  => ['foo', 'baz']
      *  'Server' => ['CherryHttp/2.0-dev']
      * ]
      *
