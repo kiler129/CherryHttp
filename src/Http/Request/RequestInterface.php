@@ -55,6 +55,8 @@ interface RequestInterface extends MessageInterface
      * @param string $requestTarget
      *
      * @return void
+     *
+     * @throws \InvalidArgumentException Thrown if path specified is invalid.
      */
     public function setRequestTarget($requestTarget);
 
@@ -71,7 +73,9 @@ interface RequestInterface extends MessageInterface
      *
      * @param string $path
      *
-     * @return string
+     * @return void
+     *
+     * @throws \InvalidArgumentException Thrown if path specified is invalid.
      */
     public function setPath($path);
 
@@ -86,7 +90,6 @@ interface RequestInterface extends MessageInterface
      */
     public function getQueryString();
 
-
     /**
      * Sets URI query string.
      *
@@ -97,6 +100,8 @@ interface RequestInterface extends MessageInterface
      * @param string $queryString
      *
      * @return void
+     *
+     * @throws \InvalidArgumentException Thrown if path specified is invalid.
      */
     public function setQueryString($queryString);
 }
