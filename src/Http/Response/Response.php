@@ -30,13 +30,7 @@ class Response extends Message implements ResponseInterface
     private $reasonPhrase = 'No Content';
 
     /**
-     * Gets the response status code.
-     *
-     * The status code is a 3-digit integer result code of the server's attempt
-     * to understand and satisfy the request.
-     *
-     * @return int Status code.
-     * @see ResponseCode
+     * {@inheritdoc}
      */
     public function getStatusCode()
     {
@@ -44,12 +38,7 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * Returns reason phrase set for current status code.
-     *
-     * @return string Reason phrase; must return an empty string if none present.
-     *
-     * @link http://tools.ietf.org/html/rfc7231#section-6
-     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     * {@inheritdoc}
      */
     public function getReasonPhrase()
     {
@@ -57,20 +46,7 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * Sets new status code, and optionally, reason phrase.
-     *
-     * If empty reason phrase is specified implementation SHOULD choose IANA recommended phrase for given code.
-     * If specified code is unknown (not registered by IANA but semantically valid) implementation MAY use group
-     * reason phrase instead.
-     *
-     * @param int    $code         The 3-digit integer result code to set.
-     * @param string $reasonPhrase The reason phrase to use. Leave empty to assign IANA one.
-     *
-     * @return void
-     * @throws \InvalidArgumentException Thrown for semantically invalid code.
-     *
-     * @link http://tools.ietf.org/html/rfc7231#section-6
-     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     * {@inheritdoc}
      */
     public function setStatus($code, $reasonPhrase = '')
     {
