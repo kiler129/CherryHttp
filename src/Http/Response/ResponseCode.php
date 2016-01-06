@@ -23,6 +23,15 @@ namespace noFlash\CherryHttp\Http\Response;
 
 final class ResponseCode
 {
+    /******* Groups *******/
+    const GROUP_UNKNOWN       = 0;
+    const GROUP_INFORMATIONAL = 100;
+    const GROUP_SUCCESS       = 200;
+    const GROUP_REDIRECTION   = 300;
+    const GROUP_CLIENT_ERROR  = 400;
+    const GROUP_SERVER_ERROR  = 500;
+
+
     /******* Information group *******/
     const CONTINUE_INFORMATION = 100;
     const SWITCHING_PROTOCOLS  = 101;
@@ -101,12 +110,12 @@ final class ResponseCode
     //512-599 => 'Unassigned'
 
     private static $codeGroups = [
-        0   => 'Unknown', //Internally reserved group for out-of-spec response codes
-        100 => 'Information', //Request received, continuing process
-        200 => 'Success', //The action was successfully received, understood, and accepted
-        300 => 'Redirecting', //Further action must be taken in order to complete the request
-        400 => 'Client Error', //The request contains bad syntax or cannot be fulfilled
-        500 => 'Server Error' //The server failed to fulfill an apparently valid request
+        self::GROUP_UNKNOWN       => 'Unknown', //Internally reserved group for out-of-spec response codes
+        self::GROUP_INFORMATIONAL => 'Information', //Request received, continuing process
+        self::GROUP_SUCCESS       => 'Success', //The action was successfully received, understood, and accepted
+        self::GROUP_REDIRECTION   => 'Redirecting', //Further action must be taken in order to complete the request
+        self::GROUP_CLIENT_ERROR  => 'Client Error', //The request contains bad syntax or cannot be fulfilled
+        self::GROUP_SERVER_ERROR  => 'Server Error' //The server failed to fulfill an apparently valid request
     ];
 
     private static $codesDescription = [

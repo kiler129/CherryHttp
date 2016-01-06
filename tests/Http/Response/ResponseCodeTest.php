@@ -16,6 +16,16 @@ use noFlash\CherryHttp\Http\Response\ResponseCode;
 
 class ResponseCodeTest extends \PHPUnit_Framework_TestCase
 {
+    public function testClassContainsConstantsForCodesGroups()
+    {
+        $this->assertSame(0, ResponseCode::GROUP_UNKNOWN);
+        $this->assertSame(100, ResponseCode::GROUP_INFORMATIONAL);
+        $this->assertSame(200, ResponseCode::GROUP_SUCCESS);
+        $this->assertSame(300, ResponseCode::GROUP_REDIRECTION);
+        $this->assertSame(400, ResponseCode::GROUP_CLIENT_ERROR);
+        $this->assertSame(500, ResponseCode::GROUP_SERVER_ERROR);
+    }
+
     public function testClassContainsConstantsForAllAssignedCodesWithProperValues()
     {
         $this->assertSame(100, ResponseCode::CONTINUE_INFORMATION);
@@ -84,70 +94,70 @@ class ResponseCodeTest extends \PHPUnit_Framework_TestCase
     public function ianaCodesWithGroupsProvider()
     {
         return [
-            [100, 100],
-            [101, 100],
-            [102, 100],
-            [200, 200],
-            [201, 200],
-            [202, 200],
-            [203, 200],
-            [204, 200],
-            [205, 200],
-            [206, 200],
-            [207, 200],
-            [208, 200],
-            [226, 200],
-            [300, 300],
-            [301, 300],
-            [302, 300],
-            [303, 300],
-            [304, 300],
-            [305, 300],
-            [306, 300],
-            [307, 300],
-            [308, 300],
-            [400, 400],
-            [401, 400],
-            [402, 400],
-            [403, 400],
-            [404, 400],
-            [405, 400],
-            [406, 400],
-            [407, 400],
-            [408, 400],
-            [409, 400],
-            [410, 400],
-            [411, 400],
-            [412, 400],
-            [413, 400],
-            [414, 400],
-            [415, 400],
-            [416, 400],
-            [417, 400],
-            [421, 400],
-            [422, 400],
-            [423, 400],
-            [424, 400],
-            [425, 400],
-            [426, 400],
-            [427, 400],
-            [428, 400],
-            [429, 400],
-            [430, 400],
-            [431, 400],
-            [451, 400],
-            [500, 500],
-            [501, 500],
-            [502, 500],
-            [503, 500],
-            [504, 500],
-            [505, 500],
-            [506, 500],
-            [507, 500],
-            [508, 500],
-            [509, 500],
-            [510, 500],
-            [511, 500]
+            [100, ResponseCode::GROUP_INFORMATIONAL],
+            [101, ResponseCode::GROUP_INFORMATIONAL],
+            [102, ResponseCode::GROUP_INFORMATIONAL],
+            [200, ResponseCode::GROUP_SUCCESS],
+            [201, ResponseCode::GROUP_SUCCESS],
+            [202, ResponseCode::GROUP_SUCCESS],
+            [203, ResponseCode::GROUP_SUCCESS],
+            [204, ResponseCode::GROUP_SUCCESS],
+            [205, ResponseCode::GROUP_SUCCESS],
+            [206, ResponseCode::GROUP_SUCCESS],
+            [207, ResponseCode::GROUP_SUCCESS],
+            [208, ResponseCode::GROUP_SUCCESS],
+            [226, ResponseCode::GROUP_SUCCESS],
+            [300, ResponseCode::GROUP_REDIRECTION],
+            [301, ResponseCode::GROUP_REDIRECTION],
+            [302, ResponseCode::GROUP_REDIRECTION],
+            [303, ResponseCode::GROUP_REDIRECTION],
+            [304, ResponseCode::GROUP_REDIRECTION],
+            [305, ResponseCode::GROUP_REDIRECTION],
+            [306, ResponseCode::GROUP_REDIRECTION],
+            [307, ResponseCode::GROUP_REDIRECTION],
+            [308, ResponseCode::GROUP_REDIRECTION],
+            [400, ResponseCode::GROUP_CLIENT_ERROR],
+            [401, ResponseCode::GROUP_CLIENT_ERROR],
+            [402, ResponseCode::GROUP_CLIENT_ERROR],
+            [403, ResponseCode::GROUP_CLIENT_ERROR],
+            [404, ResponseCode::GROUP_CLIENT_ERROR],
+            [405, ResponseCode::GROUP_CLIENT_ERROR],
+            [406, ResponseCode::GROUP_CLIENT_ERROR],
+            [407, ResponseCode::GROUP_CLIENT_ERROR],
+            [408, ResponseCode::GROUP_CLIENT_ERROR],
+            [409, ResponseCode::GROUP_CLIENT_ERROR],
+            [410, ResponseCode::GROUP_CLIENT_ERROR],
+            [411, ResponseCode::GROUP_CLIENT_ERROR],
+            [412, ResponseCode::GROUP_CLIENT_ERROR],
+            [413, ResponseCode::GROUP_CLIENT_ERROR],
+            [414, ResponseCode::GROUP_CLIENT_ERROR],
+            [415, ResponseCode::GROUP_CLIENT_ERROR],
+            [416, ResponseCode::GROUP_CLIENT_ERROR],
+            [417, ResponseCode::GROUP_CLIENT_ERROR],
+            [421, ResponseCode::GROUP_CLIENT_ERROR],
+            [422, ResponseCode::GROUP_CLIENT_ERROR],
+            [423, ResponseCode::GROUP_CLIENT_ERROR],
+            [424, ResponseCode::GROUP_CLIENT_ERROR],
+            [425, ResponseCode::GROUP_CLIENT_ERROR],
+            [426, ResponseCode::GROUP_CLIENT_ERROR],
+            [427, ResponseCode::GROUP_CLIENT_ERROR],
+            [428, ResponseCode::GROUP_CLIENT_ERROR],
+            [429, ResponseCode::GROUP_CLIENT_ERROR],
+            [430, ResponseCode::GROUP_CLIENT_ERROR],
+            [431, ResponseCode::GROUP_CLIENT_ERROR],
+            [451, ResponseCode::GROUP_CLIENT_ERROR],
+            [500, ResponseCode::GROUP_SERVER_ERROR],
+            [501, ResponseCode::GROUP_SERVER_ERROR],
+            [502, ResponseCode::GROUP_SERVER_ERROR],
+            [503, ResponseCode::GROUP_SERVER_ERROR],
+            [504, ResponseCode::GROUP_SERVER_ERROR],
+            [505, ResponseCode::GROUP_SERVER_ERROR],
+            [506, ResponseCode::GROUP_SERVER_ERROR],
+            [507, ResponseCode::GROUP_SERVER_ERROR],
+            [508, ResponseCode::GROUP_SERVER_ERROR],
+            [509, ResponseCode::GROUP_SERVER_ERROR],
+            [510, ResponseCode::GROUP_SERVER_ERROR],
+            [511, ResponseCode::GROUP_SERVER_ERROR]
         ];
     }
 
@@ -287,11 +297,11 @@ class ResponseCodeTest extends \PHPUnit_Framework_TestCase
 
     public function testRegisteredGroupsGetsProperDescription()
     {
-        $this->assertSame('Information', ResponseCode::getReasonPhraseByGroup(100));
-        $this->assertSame('Success', ResponseCode::getReasonPhraseByGroup(200));
-        $this->assertSame('Redirecting', ResponseCode::getReasonPhraseByGroup(300));
-        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByGroup(400));
-        $this->assertSame('Server Error', ResponseCode::getReasonPhraseByGroup(500));
+        $this->assertSame('Information', ResponseCode::getReasonPhraseByGroup(ResponseCode::GROUP_INFORMATIONAL));
+        $this->assertSame('Success', ResponseCode::getReasonPhraseByGroup(ResponseCode::GROUP_SUCCESS));
+        $this->assertSame('Redirecting', ResponseCode::getReasonPhraseByGroup(ResponseCode::GROUP_REDIRECTION));
+        $this->assertSame('Client Error', ResponseCode::getReasonPhraseByGroup(ResponseCode::GROUP_CLIENT_ERROR));
+        $this->assertSame('Server Error', ResponseCode::getReasonPhraseByGroup(ResponseCode::GROUP_SERVER_ERROR));
     }
 
     public function testUnknownGroupsGetsDefaultDescription()
