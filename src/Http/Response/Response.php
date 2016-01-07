@@ -22,12 +22,12 @@ class Response extends Message implements ResponseInterface
     /**
      * @var int HTTP response code.
      */
-    private $statusCode = ResponseCode::NO_CONTENT;
+    protected $statusCode = ResponseCode::NO_CONTENT;
 
     /**
      * @var string Reason phrase
      */
-    private $reasonPhrase = 'No Content';
+    protected $reasonPhrase = 'No Content';
 
     /**
      * {@inheritdoc}
