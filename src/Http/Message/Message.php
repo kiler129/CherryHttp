@@ -42,6 +42,11 @@ class Message implements MessageInterface
     protected $headers = [];
 
     /**
+     * @var -undetermined- In current project phase it's just a plain VP
+     */
+    protected $body = '';
+
+    /**
      * {@inheritdoc}
      */
     public function getProtocolVersion()
@@ -143,7 +148,7 @@ class Message implements MessageInterface
      */
     public function getBody()
     {
-        throw new \LogicException('Not implemented');
+        return $this->body;
     }
 
     /**
@@ -151,6 +156,6 @@ class Message implements MessageInterface
      */
     public function setBody($body)
     {
-        throw new \LogicException('Not implemented');
+        $this->body = $body;
     }
 }
