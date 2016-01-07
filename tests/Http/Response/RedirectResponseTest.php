@@ -33,7 +33,7 @@ class RedirectResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(ResponseInterface::class, $this->subjectUnderTest);
     }
 
-    public function testFreshInstanceTemporaryRedirectWithIanaReasonPhrase()
+    public function testFreshInstanceContainsTemporaryRedirectWithIanaReasonPhrase()
     {
         $expectedCode = ResponseCode::TEMPORARY_REDIRECT;
         $expectedReasonPhrase = ResponseCode::getReasonPhraseByCode($expectedCode);
