@@ -23,19 +23,15 @@ interface NetworkNodeInterface extends StreamNodeInterface
     const IP_V4 = 4;
     const IP_V6 = 6;
 
+    const UNDETERMINED_IPV4 = '0.0.0.0';
+    const UNDETERMINED_IPV6 = '0:0:0:0:0:0:0:0'; //Of course :: can also be used for listening on all IPs
+
     /**
      * Returns IP version used by this node.
      *
      * @return int Returns IP version (see IP_V4 and IP_V6 constants).
      */
     public function getIpVersion();
-
-    /**
-     * Provides peer name for current node.
-     *
-     * @return string|null Null will be returned if peer name is not known.
-     */
-    public function getPeerName();
 
     /**
      * Provides local IP address.

@@ -21,14 +21,13 @@ use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
  */
 interface TcpListenerNodeInterface extends NetworkNodeInterface
 {
-    const LISTEN_ALL_IPV4    = '0.0.0.0';
-    const LISTEN_ALL_IPV6    = '0:0:0:0:0:0:0:0'; //Of course :: can also be used for listening on all IPs
     const RANDOM_LISTEN_PORT = 0;
 
     /**
      * Sets listening address.
      *
-     * @param string $address Any valid IPv4 or IPv6 address, self::LISTEN_ALL_IPV4 or LISTEN_ALL_IPV6.
+     * @param string $address Any valid IPv4 or IPv6 address, NetworkNodeInterface::UNDETERMINED_IPV4 or
+     *                        NetworkNodeInterface::UNDETERMINED_IPV6.
      *
      * @return void
      *
