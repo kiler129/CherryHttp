@@ -51,8 +51,8 @@ class CloneAwareResponseTest extends \PHPUnit_Framework_TestCase
         $reflection = new \ReflectionObject($this->subjectUnderTest);
         $this->assertTrue($reflection->hasProperty('_publicField'));
         $this->assertTrue($reflection->getProperty('_publicField')->isPublic());
-        $this->assertTrue($reflection->hasProperty('_code'));
-        $this->assertTrue($reflection->getProperty('_code')->isPublic());
+        $this->assertTrue($reflection->hasProperty('_status'));
+        $this->assertTrue($reflection->getProperty('_status')->isPublic());
         $this->assertTrue($reflection->hasProperty('_body'));
         $this->assertTrue($reflection->getProperty('_body')->isPublic());
     }
