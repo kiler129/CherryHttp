@@ -1,13 +1,11 @@
 <?php
-/*
+/**
  * This file is part of CherryHttp project.
- * You are using it at your own risk and you are fully responsible
- *  for everything that code will do.
+ * You are using it at your own risk and you are fully responsible for everything that code will do.
  *
- * (c) Grzegorz Zdanowski <grzegorz@noflash.pl>
+ * Copyright (c) 2016 Grzegorz Zdanowski <grzegorz@noflash.pl>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the LICENSE file distributed with this source code.
  */
 
 namespace noFlash\CherryHttp\Http\Response;
@@ -228,6 +226,25 @@ final class ResponseCode
     }
 
     /**
+     * Provides description for IANA registered HTTP codes.
+     * If not registered code was specified respective group description is returned.
+     *
+     * @param int $code
+     *
+     * @return string
+     */
+    public static function getReasonPhraseByCode($code)
+    {
+        if (isset(self::$codesDescription[$code])) {
+            return self::$codesDescription[$code];
+        }
+
+        $group = self::getGroupFromCode($code);
+
+        return self::getReasonPhraseByGroup($group);
+    }
+
+    /**
      * HTTP codes are divided into 5 groups: informational, success, redirections, client errors and server errors.
      * This method provides group number (100/200/300/400/500) for given code. If code was specified outside IANA
      * boundaries 0 is returned.
@@ -258,24 +275,5 @@ final class ResponseCode
         }
 
         return self::$codeGroups[$group];
-    }
-
-    /**
-     * Provides description for IANA registered HTTP codes.
-     * If not registered code was specified respective group description is returned.
-     *
-     * @param int $code
-     *
-     * @return string
-     */
-    public static function getReasonPhraseByCode($code)
-    {
-        if (isset(self::$codesDescription[$code])) {
-            return self::$codesDescription[$code];
-        }
-
-        $group = self::getGroupFromCode($code);
-
-        return self::getReasonPhraseByGroup($group);
     }
 }
