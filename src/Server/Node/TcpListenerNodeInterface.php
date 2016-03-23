@@ -31,7 +31,7 @@ interface TcpListenerNodeInterface extends NetworkNodeInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function setIpAddress($address);
+    public function setLocalIpAddress($address);
 
     /**
      * Sets listening port.
