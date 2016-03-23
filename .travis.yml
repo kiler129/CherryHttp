@@ -9,7 +9,17 @@ matrix:
   allow_failures:
     - php: hhvm
 
-before_script: phpenv config-add .travis.php.ini
-install: composer install --dev
-script: php ./vendor/phpunit/phpunit/phpunit --configuration phpunit.xml
-after_script: php ./vendor/bin/test-reporter --stdout --coverage-report build/logs/clover.xml
+before_script:
+  - if [[ "$TRAVIS_PHP_VERSION" = "php*" ]]; then phpenv config-add .travis.php.ini ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" = "hhv*" ]]; then cat .travis.php.ini >> /etc/hhvm/php.ini ; fi
+
+install:
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install --dev --no-interaction
+
+script:
+  - mkdir -p build/logs
+  - php vendor/bin/phpunit --configuration phpunit.xml
+
+after_script:
+  - travis_retry php vendor/bin/coveralls -v
