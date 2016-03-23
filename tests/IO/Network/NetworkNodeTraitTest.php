@@ -39,9 +39,28 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($traitReflection->isTrait());
     }
 
+    public function testTraitDefinesPublicPropertyForStream()
+    {
+        $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('stream'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('stream')->isPublic());
+    }
+
+    /**
+     * @testdox Stream getter reflects public stream field
+     */
+    public function testStreamGetterReflectsPublicStreamField()
+    {
+        $testStream = fopen('php://memory', 'r');
+
+        $this->subjectUnderTest->stream = $testStream;
+        $this->assertSame($testStream, $this->subjectUnderTest->stream); //Magic setters anyone? ;)
+        $this->assertSame($testStream, $this->subjectUnderTest->getStreamResource());
+    }
+
     public function testTraitDefinesProtectedPropertyForIpVersion()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkIpVersion'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkIpVersion')->isProtected());
     }
 
     /**
@@ -76,6 +95,7 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
     public function testTraitDefinesProtectedPropertyForLocalAddress()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkLocalIp'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkLocalIp')->isProtected());
     }
 
     /**
@@ -107,6 +127,7 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
     public function testTraitDefinesProtectedPropertyForLocalPort()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkLocalPort'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkLocalPort')->isProtected());
     }
 
     public function testZeroIsUsedAsLocalPortByDefault()
@@ -135,6 +156,7 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
     public function testTraitDefinesProtectedPropertyForRemoteAddress()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkRemoteIp'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkRemoteIp')->isProtected());
     }
 
     public function testNullIsUsedAsRemoteAddressByDefault()
@@ -163,6 +185,7 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
     public function testTraitDefinesProtectedPropertyForRemotePort()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkRemotePort'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkRemotePort')->isProtected());
     }
 
     public function testNullIsUsedAsRemotePortByDefault()
@@ -191,6 +214,7 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
     public function testTraitDefinesProtectedPropertyConnectionStatus()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkIsConnected'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkIsConnected')->isProtected());
     }
 
     public function testFalseIsUsedByDefaultAsNetworkConnectionStatus()

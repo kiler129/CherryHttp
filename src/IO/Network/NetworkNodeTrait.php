@@ -16,12 +16,51 @@ namespace noFlash\CherryHttp\IO\Network;
  */
 trait NetworkNodeTrait
 {
-    protected $networkIpVersion   = NetworkNodeInterface::IP_V4;
-    protected $networkLocalIp     = NetworkNodeInterface::UNDETERMINED_IPV4;
-    protected $networkLocalPort   = 0;
+    /**
+     * @var resource PHP stream resource
+     */
+    public $stream;
+
+    /**
+     * @var int Determines IP protocol version. This can contain value of 4 or 6 (NetworkNodeInterface::IP_V4/6)
+     */
+    protected $networkIpVersion = NetworkNodeInterface::IP_V4;
+
+    /**
+     * @var string Local IP address. You could also use NetworkNodeInterface::UNDETERMINED_IPV4/6
+     */
+    protected $networkLocalIp = NetworkNodeInterface::UNDETERMINED_IPV4;
+
+    /**
+     * @var int Local port. Values between 0 and 65535 are generally expected here (0 is an random port per TCP/IP RFC)
+     */
+    protected $networkLocalPort = 0;
+
+    /**
+     * @var string|null Remote IP address. For some implementations (e.g. listeners) it's NULL for obvious reasons.
+     */
     protected $networkRemoteIp;
+
+    /**
+     * @var int|null Remote port. Holds value between 0-65535 or null (e.g. for listeners).
+     */
     protected $networkRemotePort;
+
+    /**
+     * @var bool Specifies if this instance is connected. Meaning of this field depends on implementation.
+     */
     protected $networkIsConnected = false;
+
+    /**
+     * Provides PHP stream resource.
+     * Output of that method MUST BE consistent with $this->stream contents.
+     *
+     * @return resource|null
+     */
+    public function getStreamResource()
+    {
+        return $this->stream;
+    }
 
     /**
      * Returns IP version used by this node.
