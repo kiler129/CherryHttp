@@ -10,8 +10,6 @@
 
 namespace noFlash\CherryHttp\IO\Network;
 
-use noFlash\CherryHttp\Http\Exception\StreamException;
-
 /**
  * Trait implements common methods defined by TcpListenerNodeInterface
  *
@@ -125,10 +123,35 @@ trait TcpListenerNodeTrait
      *
      * @return resource Listening socket.
      *
-     * @throws StreamException
+     * @throws \LogicException It already listens
+     * @throws \RuntimeException Something went bad during SOCKET/BIND/LISTEN
      */
     public function startListening()
     {
-        // TODO: Implement startListening() method.
+        if ($this->stream !== null) {
+            throw new \LogicException(
+                'Listener is already listening, you cannot listen while listening because listening while listening ' .
+                'will break that listening which now listens.... but for real, call disconnect() fist'
+            );
+        }
+
+        $address = ($this->networkIpVersion ===
+                    NetworkNodeInterface::IP_V4) ? $this->networkLocalIp : "[{$this->networkLocalIp}]";
+        $this->stream = @stream_socket_server("tcp://$address:{$this->networkLocalPort}");
+
+        if ($this->stream === false) {
+            $error = error_get_last();
+            $error = (isset($error['message'])) ? $error['message'] : 'Unknown stream_socket_server() error';
+            $this->stream = null;
+
+            throw new \RuntimeException($error);
+        }
+        stream_set_blocking($this->stream, 0);
+
+        $address = stream_socket_get_name($this->stream, false);
+        $dividerPosition = strrpos($address, ':');
+
+        $this->networkLocalIp = substr($address, 0, $dividerPosition);
+        $this->networkLocalPort = (int)substr($address, $dividerPosition + 1);
     }
 }

@@ -33,6 +33,14 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
     }
 
+    public function tearDown()
+    {
+        //Prevent dangling open sockets
+        if (!empty($this->subjectUnderTest->stream) && is_resource($this->subjectUnderTest->stream)) {
+            @fclose($this->subjectUnderTest->stream);
+        }
+    }
+
     public function testTestedSubjectIsATrait()
     {
         $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
@@ -395,5 +403,150 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
     public function testTraitContainsStartListeningMethod()
     {
         $this->assertTrue(method_exists($this->subjectUnderTest, 'startListening'));
+    }
+
+    public function testListeningCanBeStartedWithDefaultSettings()
+    {
+        $this->assertNull($this->subjectUnderTest->stream, 'Stream field is already populated on fresh object');
+
+        $this->subjectUnderTest->startListening();
+        $this->assertInternalType('resource', $this->subjectUnderTest->stream);
+    }
+
+
+    public function testListeningCreatesListeningSocket()
+    {
+        $this->subjectUnderTest->startListening();
+
+        //See PHP test sorce file ext/standard/tests/streams/stream_socket_get_name.phpt
+        $this->assertFalse(stream_socket_get_name($this->subjectUnderTest->stream, true));
+    }
+
+    /**
+     * @testdox Listening creates TCP/IP socket
+     */
+    public function testListeningCreatesTcpIpSocket()
+    {
+        $this->subjectUnderTest->startListening();
+
+        //See php_stream_generic_socket_ops in PHP source file main/streams/xp_socket.c (look for tcp_socket)
+        //However while SSL extension situation changes (see /ext/openssl/xp_ssl.c) -> tcp_socket/ssl
+        $streamMetadata = stream_get_meta_data($this->subjectUnderTest->stream);
+        $this->assertStringStartsWith('tcp_socket', $streamMetadata['stream_type']);
+    }
+
+    public function testListeningCreatesNonBlockingSocket()
+    {
+        $this->subjectUnderTest->startListening();
+
+        $streamMetadata = stream_get_meta_data($this->subjectUnderTest->stream);
+        $this->assertFalse($streamMetadata['blocked']);
+    }
+
+    /**
+     * @testdox Listening is started on proper IPv4 address and correct port
+     */
+    public function testListeningIsStartedOnProperIpV4AddressAndCorrectPort()
+    {
+        $randomPort = rand(1024, 65535);
+        $this->subjectUnderTest->setLocalIpAddress('127.0.0.1');
+        $this->subjectUnderTest->setLocalPort($randomPort);
+
+        $this->subjectUnderTest->startListening();
+        $this->assertSame("127.0.0.1:$randomPort", stream_socket_get_name($this->subjectUnderTest->stream, false));
+    }
+
+    /**
+     * @testdox Listening is started on proper IPv6 address and correct port
+     */
+    public function testListeningIsStartedOnProperIpV6AddressAndCorrectPort()
+    {
+        $this->markTestSkippedIfNoIpV6TestEnvironment();
+
+        $randomPort = rand(1024, 65535);
+        $this->subjectUnderTest->setLocalIpAddress('::1');
+        $this->subjectUnderTest->setLocalPort($randomPort);
+
+        $this->subjectUnderTest->startListening();
+        $this->assertSame("::1:$randomPort", stream_socket_get_name($this->subjectUnderTest->stream, false));
+    }
+
+    private function markTestSkippedIfNoIpV6TestEnvironment()
+    {
+        //Method found at https://github.com/symfony/http-foundation/blob/master/IpUtils.php#L100
+        if (!((extension_loaded('sockets') && defined('AF_INET6')) || @inet_pton('::1'))) {
+            $this->markTestSkipped('Unable to check Ipv6. Check that PHP was not compiled with option "disable-ipv6".');
+        }
+    }
+
+    /**
+     * @testdox Port is populated after listening starts on IPv4 address
+     */
+    public function testPortIsPopulatedAfterListeningStartsOnIpV4Address()
+    {
+        $this->subjectUnderTest->setLocalIpAddress('127.0.0.1');
+        $this->subjectUnderTest->setLocalPort(0);
+        $this->subjectUnderTest->startListening();
+
+        $address = stream_socket_get_name($this->subjectUnderTest->stream, false);
+        $realPort = (int)substr($address, strrpos($address, ':') + 1);
+
+        $this->assertSame($realPort, $this->getRestrictedPropertyValue('networkLocalPort'));
+    }
+
+    /**
+     * @testdox Port is populated after listening starts on IPv6 address
+     */
+    public function testPortIsPopulatedAfterListeningStartsOnIpV6Address()
+    {
+        $this->markTestSkippedIfNoIpV6TestEnvironment();
+
+        $this->subjectUnderTest->setLocalIpAddress('::1');
+        $this->subjectUnderTest->setLocalPort(0);
+        $this->subjectUnderTest->startListening();
+
+        $address = stream_socket_get_name($this->subjectUnderTest->stream, false);
+        $realPort = (int)substr($address, strrpos($address, ':') + 1);
+
+        $this->assertSame($realPort, $this->getRestrictedPropertyValue('networkLocalPort'));
+    }
+
+    /**
+     * @testdox Address is populated after listening starts on IPv6 address
+     */
+    public function testAddressIsPopulatedAfterListeningStartsOnIpV6Address()
+    {
+        $this->markTestSkippedIfNoIpV6TestEnvironment();
+
+        $this->subjectUnderTest->setLocalIpAddress('0:0:0:0:0:0:0:1');
+        $this->subjectUnderTest->setLocalPort(0);
+        $this->subjectUnderTest->startListening();
+
+        $address = stream_socket_get_name($this->subjectUnderTest->stream, false);
+        $realIp = substr($address, 0, strrpos($address, ':'));
+
+        $this->assertSame($realIp, $this->getRestrictedPropertyValue('networkLocalIp'));
+    }
+
+    public function testRuntimeExceptionIsThrownIfListeningStartFailed()
+    {
+        $randomPort = rand(1024, 65535);
+        //GC / OPC trick: https://3v4l.org/YCV5E
+        $dummyVariable = stream_socket_server("127.0.0.1:$randomPort"); //Let's occupy a port
+
+        $this->subjectUnderTest->setLocalIpAddress('127.0.0.1');
+        $this->subjectUnderTest->setLocalPort($randomPort);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageRegExp('/Address already in use/');
+        $this->subjectUnderTest->startListening();
+    }
+
+    public function testLogicExceptionIsThrownIfStartListeningWasCalledOnAlreadyListeningObject()
+    {
+        $this->subjectUnderTest->startListening();
+
+        $this->expectException(\LogicException::class);
+        $this->subjectUnderTest->startListening();
     }
 }
