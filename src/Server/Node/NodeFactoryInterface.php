@@ -12,6 +12,9 @@ namespace noFlash\CherryHttp\Server\Node;
 
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
 
+/**
+ * Classes implementing this interface are able to spawn new loop nodes.
+ */
 interface NodeFactoryInterface
 {
     /**
