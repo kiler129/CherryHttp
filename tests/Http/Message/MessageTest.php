@@ -80,10 +80,9 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSettingUnknownProtocolVersionThrowsException($version)
     {
-        $this->setExpectedException(
-            '\InvalidArgumentException',
-            'Invalid HTTP version - valid version should be in DIGIT.DIGIT format.'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid HTTP version - valid version should be in DIGIT.DIGIT format.');
+
         $this->subjectUnderTest->setProtocolVersion($version);
     }
 

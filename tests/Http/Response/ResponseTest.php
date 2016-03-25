@@ -132,7 +132,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testCodeRejectsSemanticallyInvalidCodes($code)
     {
-        $this->setExpectedException('\InvalidArgumentException', 'Invalid code specified. Consult RFC.');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid code specified. Consult RFC.');
         $this->subjectUnderTest->setStatus($code);
     }
 

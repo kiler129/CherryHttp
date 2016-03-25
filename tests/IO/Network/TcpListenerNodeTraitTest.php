@@ -103,13 +103,13 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testAttemptingToWriteOnListenerStreamResultsInLogicException()
     {
-        $this->setExpectedException('\LogicException');
+        $this->expectException(\LogicException::class);
         $this->subjectUnderTest->doWrite();
     }
 
     public function testAttemptingToAddDataToListenerWriteBufferResultsInLogicException()
     {
-        $this->setExpectedException('\LogicException');
+        $this->expectException(\LogicException::class);
         $this->subjectUnderTest->writeBufferAppend('grumpgrump');
     }
 
@@ -195,7 +195,7 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testLocalIpIsVerified($ip)
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);        
         $this->subjectUnderTest->setLocalIpAddress($ip);
     }
 
@@ -262,7 +262,7 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testLocalPortRejectsInvalidPorts($ip)
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setLocalPort($ip);
     }
 }

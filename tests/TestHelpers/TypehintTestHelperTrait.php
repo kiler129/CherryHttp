@@ -33,10 +33,10 @@ trait TypehintTestHelperTrait
              * - http://stackoverflow.com/questions/25570786/how-to-unit-test-type-hint-with-phpunit
              * - https://github.com/sebastianbergmann/phpunit/issues/178
              */
-            $this->setExpectedException(get_class(new \PHPUnit_Framework_Error("", 0, "", 1)));
+            $this->expectException(get_class(new \PHPUnit_Framework_Error("", 0, "", 1)));
 
         } else {
-            $this->setExpectedException('\TypeError');
+            $this->expectException('\TypeError');
         }
     }
 }

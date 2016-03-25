@@ -128,7 +128,7 @@ class RedirectResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testStatusRejectsNonRedirectCodes($code)
     {
-        $this->setExpectedException(\LogicException::class);
+        $this->expectException(\LogicException::class);
         $this->subjectUnderTest->setStatus($code);
     }
 

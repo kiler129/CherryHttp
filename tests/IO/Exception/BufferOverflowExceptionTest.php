@@ -53,14 +53,16 @@ class BufferOverflowExceptionTest extends \PHPUnit_Framework_TestCase
 
     public function testOverflowMagnitudeRejectsNonNumericValues()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'Overflow magnitude should be a number.');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Overflow magnitude should be a number.');
 
         $this->subjectUnderTest->setOverflowMagnitude([42]);
     }
 
     public function testOverflowMagnitudeRejectsNegativeValues()
     {
-        $this->setExpectedException('\LogicException', 'Overflow magnitude cannot be negative.');
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Overflow magnitude cannot be negative.');
 
         $this->subjectUnderTest->setOverflowMagnitude(-1);
     }

@@ -114,19 +114,19 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testEmptyRequestTargetCannotBeSet()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setRequestTarget('');
     }
 
     public function testRequestTargetRejectsValueContainingSpaces()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setRequestTarget('/foo/b ar/');
     }
 
     public function testRequestTargetRejectsValuesContainingHash()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setRequestTarget('/foo/bar.html#derp');
     }
 
@@ -140,7 +140,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testEmptyPathCannotBeSet()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setPath('');
     }
 
@@ -167,19 +167,19 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testPathRejectsValueContainingSpaces()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setPath('/foo/b ar/');
     }
 
     public function testPathRejectsValuesContainingQuestionMark()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setPath('/foo/bar.html?derp');
     }
 
     public function testPathRejectsValuesContainingHash()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setPath('/foo/bar.html#derp');
     }
 
@@ -206,7 +206,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testQueryStringRejectsValueContainingSpaces()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setQueryString('foo = bar');
     }
 
@@ -215,13 +215,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->subjectUnderTest->setQueryString('foo?x=1&bar=2');
         $this->assertSame('foo?x=1&bar=2', $this->subjectUnderTest->getQueryString());
 
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setQueryString('?oops=1');
     }
 
     public function testQueryStringRejectsValuesContainingHash()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setQueryString('foo=1&bar=2#derp');
     }
 

@@ -216,7 +216,7 @@ class ResponseFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testHeadersModeIsValidated()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setHeadersMode('invalid mode');
     }
 

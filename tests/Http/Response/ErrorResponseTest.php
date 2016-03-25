@@ -99,7 +99,7 @@ class ErrorResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testStatusRejectsNonErrorCodes($code)
     {
-        $this->setExpectedException(\LogicException::class);
+        $this->expectException(\LogicException::class);
         $this->subjectUnderTest->setStatus($code);
     }
 
