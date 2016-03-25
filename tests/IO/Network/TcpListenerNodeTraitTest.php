@@ -418,8 +418,15 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
     {
         $this->subjectUnderTest->startListening();
 
-        //See PHP test sorce file ext/standard/tests/streams/stream_socket_get_name.phpt
-        $this->assertFalse(stream_socket_get_name($this->subjectUnderTest->stream, true));
+        if (defined('HHVM_VERSION')) {
+            $error = error_get_last();
+            $this->assertArrayHasKey('message', $error);
+            $this->assertContains('Transport endpoint is not connected', $error['message']);
+
+        } else {
+            //See PHP test source file ext/standard/tests/streams/stream_socket_get_name.phpt
+            $this->assertFalse(stream_socket_get_name($this->subjectUnderTest->stream, true));
+        }
     }
 
     /**
