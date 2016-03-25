@@ -49,6 +49,14 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertContains(NetworkNodeTrait::class, $usedTraits);
     }
 
+    /**
+     * @testdox Trait contains disconnect() method
+     */
+    public function testTraitContainsDisconnectMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'disconnect'));
+    }
+
     public function testDisconnectClosesStream()
     {
         $this->subjectUnderTest->stream = fopen('php://memory', 'r');
@@ -93,6 +101,14 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(true); //Dummy assertion - test will fail in set_error_handler() or due to exception
     }
 
+    /**
+     * @testdox Trait contains isWriteReady() method
+     */
+    public function testTraitContainsIsWriteReadyMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'isWriteReady'));
+    }
+
     public function testStreamIsAlwaysConsideredNotReadyToWrite()
     {
         $this->assertFalse($this->subjectUnderTest->isWriteReady());
@@ -101,10 +117,56 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->subjectUnderTest->isWriteReady());
     }
 
+    /**
+     * @testdox Trait contains doRead() method
+     */
+    public function testTraitContainsDoReadMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'doRead'));
+    }
+
+    /**
+     * @testdox Trait contains doWrite() method
+     */
+    public function testTraitContainsDoWriteMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'doWrite'));
+    }
+
     public function testAttemptingToWriteOnListenerStreamResultsInLogicException()
     {
         $this->expectException(\LogicException::class);
         $this->subjectUnderTest->doWrite();
+    }
+
+    /**
+     * @testdox Trait contains writeBufferAppend() method
+     */
+    public function testTraitContainsWriteBufferAppendMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'writeBufferAppend'));
+    }
+
+    /**
+     * Declaration of the method need to be complaint with the one in interface.
+     *
+     * @testdox Method writeBufferAppend() declares one argument without type-hint
+     */
+    public function testMethodWriteBufferAppendDeclaresOneArgumentWithoutTypehint()
+    {
+        $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
+        $wbaMethodReflection = $traitReflection->getMethod('writeBufferAppend');
+
+        $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');
+
+        $wbaMethodParameters = $wbaMethodReflection->getParameters();
+
+        /** @var \ReflectionParameter $wbaMethodParameter */
+        $wbaMethodParameter = reset($wbaMethodParameters); //Gets first parameter
+        $this->assertNull($wbaMethodParameter->getClass()); //Unfortunately hasType() is available since 7.0
+        $this->assertFalse($wbaMethodParameter->isDefaultValueAvailable());
+        $this->assertFalse($wbaMethodParameter->isPassedByReference());
+        $this->assertSame('data', $wbaMethodParameter->getName());
     }
 
     public function testAttemptingToAddDataToListenerWriteBufferResultsInLogicException()
@@ -112,6 +174,7 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->expectException(\LogicException::class);
         $this->subjectUnderTest->writeBufferAppend('grumpgrump');
     }
+
 
     public function ipsDataProvider()
     {
@@ -167,6 +230,36 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
             ['1.2.4.256']
             //tbc...
         ];
+    }
+
+    /**
+     * @testdox Trait contains setLocalIpAddress() method
+     */
+    public function testTraitContainsSetLocalIpAddressMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'setLocalIpAddress'));
+    }
+
+    /**
+     * Declaration of the method need to be complaint with the one in interface.
+     *
+     * @testdox Method setLocalIpAddress() declares one argument without type-hint
+     */
+    public function testMethodSetLocalIpAddressDeclaresOneArgumentWithoutTypehint()
+    {
+        $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
+        $wbaMethodReflection = $traitReflection->getMethod('setLocalIpAddress');
+
+        $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');
+
+        $wbaMethodParameters = $wbaMethodReflection->getParameters();
+
+        /** @var \ReflectionParameter $wbaMethodParameter */
+        $wbaMethodParameter = reset($wbaMethodParameters); //Gets first parameter
+        $this->assertNull($wbaMethodParameter->getClass()); //Unfortunately hasType() is available since 7.0
+        $this->assertFalse($wbaMethodParameter->isDefaultValueAvailable());
+        $this->assertFalse($wbaMethodParameter->isPassedByReference());
+        $this->assertSame('address', $wbaMethodParameter->getName());
     }
 
     /**
@@ -236,6 +329,36 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @testdox Trait contains setLocalPort() method
+     */
+    public function testTraitContainsSetLocalPortMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'setLocalPort'));
+    }
+
+    /**
+     * Declaration of the method need to be complaint with the one in interface.
+     *
+     * @testdox Method setLocalPort() declares one argument without type-hint
+     */
+    public function testMethodSetLocalPortDeclaresOneArgumentWithoutTypehint()
+    {
+        $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
+        $wbaMethodReflection = $traitReflection->getMethod('setLocalPort');
+
+        $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');
+
+        $wbaMethodParameters = $wbaMethodReflection->getParameters();
+
+        /** @var \ReflectionParameter $wbaMethodParameter */
+        $wbaMethodParameter = reset($wbaMethodParameters); //Gets first parameter
+        $this->assertNull($wbaMethodParameter->getClass()); //Unfortunately hasType() is available since 7.0
+        $this->assertFalse($wbaMethodParameter->isDefaultValueAvailable());
+        $this->assertFalse($wbaMethodParameter->isPassedByReference());
+        $this->assertSame('port', $wbaMethodParameter->getName());
+    }
+    
+    /**
      * @dataProvider validPortsProvider
      * @long
      */
@@ -264,5 +387,13 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->subjectUnderTest->setLocalPort($ip);
+    }
+
+    /**
+     * @testdox Trait contains startListening() method
+     */
+    public function testTraitContainsStartListeningMethod()
+    {
+        $this->assertTrue(method_exists($this->subjectUnderTest, 'startListening'));
     }
 }
