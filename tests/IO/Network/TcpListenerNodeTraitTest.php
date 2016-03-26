@@ -418,15 +418,11 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
     {
         $this->subjectUnderTest->startListening();
 
-        if (defined('HHVM_VERSION')) {
-            $error = error_get_last();
-            $this->assertArrayHasKey('message', $error);
-            $this->assertContains('Transport endpoint is not connected', $error['message']);
+        //@ is needed for HHVM - https://github.com/facebook/hhvm/issues/6937
+        $remoteName = @stream_socket_get_name($this->subjectUnderTest->stream, true);
 
-        } else {
-            //See PHP test source file ext/standard/tests/streams/stream_socket_get_name.phpt
-            $this->assertFalse(stream_socket_get_name($this->subjectUnderTest->stream, true));
-        }
+        //See PHP test source file ext/standard/tests/streams/stream_socket_get_name.phpt
+        $this->assertFalse($remoteName);
     }
 
     /**
@@ -444,6 +440,8 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testListeningCreatesNonBlockingSocket()
     {
+        //Warning: this test fails due to HHVM bug: https://github.com/facebook/hhvm/issues/6938
+
         $this->subjectUnderTest->startListening();
 
         $streamMetadata = stream_get_meta_data($this->subjectUnderTest->stream);
