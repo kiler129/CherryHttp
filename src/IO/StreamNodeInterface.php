@@ -68,6 +68,21 @@ interface StreamNodeInterface extends LoopNodeInterface
     public function doWrite();
 
     /**
+     * In rare situations stream may become invalid on such a low level that even PHP is unable to given any clue
+     * besides "there's an error on one of your streams, I don't know on which and what happened". Even Linux kernel
+     * will not tell you directly which stream failed during select() call.
+     * This method will be called if such error was detected and in some magical way pinpointed to given stream.
+     *
+     * You should definitely trash it without any attempts to recover anything from it - it's gone on the kernel level.
+     * For internal details see following links:
+     *   http://news.php.net/php.internals/91974
+     *   https://github.com/facebook/hhvm/issues/6942
+     *
+     * @return void
+     */
+    public function onStreamError();
+
+    /**
      * Appends data to stream write buffer.
      *
      * @param string $data
