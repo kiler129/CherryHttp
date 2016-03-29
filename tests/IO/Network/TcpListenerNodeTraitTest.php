@@ -126,14 +126,6 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @testdox Trait contains doRead() method
-     */
-    public function testTraitContainsDoReadMethod()
-    {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'doRead'));
-    }
-
-    /**
      * @testdox Trait contains doWrite() method
      */
     public function testTraitContainsDoWriteMethod()

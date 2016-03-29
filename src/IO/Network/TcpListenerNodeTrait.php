@@ -46,18 +46,6 @@ trait TcpListenerNodeTrait
     }
 
     /**
-     * Method called everytime stream is considered "read ready".
-     * Please note that method can be also called for stream errors (e.g. remote disconnection) - it's how streams are
-     * handled by PHP itself.
-     *
-     * @return void
-     */
-    public function doRead()
-    {
-        // TODO: Implement doRead() method.
-    }
-
-    /**
      * In case of listener node it's just a dummy method.
      *
      * @throws \LogicException
