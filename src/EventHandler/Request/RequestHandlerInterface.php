@@ -10,6 +10,14 @@
 
 namespace noFlash\CherryHttp\EventHandler\Request;
 
+use noFlash\CherryHttp\Http\Response\ResponseFactoryInterface;
+
+/**
+ * Prototype of an interface for HTTP request handler.
+ *
+ * --- WARNING ---
+ * This specification is subject to change!
+ */
 interface RequestHandlerInterface
 {
     public function onRequestStart();
@@ -19,4 +27,11 @@ interface RequestHandlerInterface
     public function onRequestHeadersComplete();
 
     public function onRequestComplete();
+
+    /**
+     * Returns factory used to create HTTP responses.
+     *
+     * @return ResponseFactoryInterface
+     */
+    public function getResponseFactory();
 }
