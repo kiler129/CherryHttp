@@ -12,6 +12,7 @@ namespace noFlash\CherryHttp\Tests\IO\Network;
 
 use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
 use noFlash\CherryHttp\IO\Network\NetworkNodeTrait;
+use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
 use ReflectionClass;
 
 class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
@@ -39,22 +40,12 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($traitReflection->isTrait());
     }
 
-    public function testTraitDefinesPublicPropertyForStream()
-    {
-        $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('stream'));
-        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('stream')->isPublic());
-    }
-
     /**
-     * @testdox Stream getter reflects public stream field
+     * @testdox Tested subject uses StreamNodeTrait
      */
-    public function testStreamGetterReflectsPublicStreamField()
+    public function testTestedSubjectUsesStreamNodeTrait()
     {
-        $testStream = fopen('php://memory', 'r');
-
-        $this->subjectUnderTest->stream = $testStream;
-        $this->assertSame($testStream, $this->subjectUnderTest->stream); //Magic setters anyone? ;)
-        $this->assertSame($testStream, $this->subjectUnderTest->getStreamResource());
+        $this->assertContains(StreamNodeTrait::class, class_uses(NetworkNodeTrait::class));
     }
 
     public function testTraitDefinesProtectedPropertyForIpVersion()

@@ -10,16 +10,15 @@
 
 namespace noFlash\CherryHttp\IO\Network;
 
+use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
+
 /**
  * Trait implements common methods defined by NetworkNodeInterface
  * Keep in mind this trait represents just generic NetworkNode - nor listener nor stream client.
  */
 trait NetworkNodeTrait
 {
-    /**
-     * @var resource PHP stream resource
-     */
-    public $stream;
+    use StreamNodeTrait;
 
     /**
      * @var int Determines IP protocol version. This can contain value of 4 or 6 (NetworkNodeInterface::IP_V4/6)
@@ -50,17 +49,6 @@ trait NetworkNodeTrait
      * @var bool Specifies if this instance is connected. Meaning of this field depends on implementation.
      */
     protected $networkIsConnected = false;
-
-    /**
-     * Provides PHP stream resource.
-     * Output of that method MUST BE consistent with $this->stream contents.
-     *
-     * @return resource|null
-     */
-    public function getStreamResource()
-    {
-        return $this->stream;
-    }
 
     /**
      * Returns IP version used by this node.
