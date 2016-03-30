@@ -10,15 +10,30 @@
 
 namespace noFlash\CherryHttp\Http;
 
+use noFlash\CherryHttp\EventHandler\Request\RequestHandlerInterface;
 use noFlash\CherryHttp\Http\Response\ResponseInterface;
 use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
 
+/**
+ * Interface HttpNodeInterface represents standard HTTP node, usually client.
+ */
 interface HttpNodeInterface extends NetworkNodeInterface
 {
     /**
+     * Higher level method than writeBufferAppend().
+     * It appends new HTTP response to given connection.
+     * 
      * @param ResponseInterface $response
      *
      * @return void
      */
     public function responseAppend(ResponseInterface $response);
+
+    /**
+     * HTTP request is divided into many states. To prevent tight coupling this method allows you to set external
+     * request handler which will be notified about various events happening during the process of handling request.
+     *
+     * @return RequestHandlerInterface
+     */
+    public function setRequestHandler();
 }
