@@ -45,7 +45,7 @@ interface LoopNodeInterface
     public function ping();
 
     /**
-     * Method called by loop after attaching to loop..
+     * Method called by loop after attaching to loop.
      *
      * @param LoopInterface $loop Loop to which loop was added.
      *
