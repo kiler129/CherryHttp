@@ -134,6 +134,14 @@ class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @testdox ping() returns null
+     */
+    public function testPingReturnsNull()
+    {
+        $this->assertNull($this->subjectUnderTest->ping());
+    }
+
+    /**
      * @testdox Class implements onStreamError() method
      */
     public function testClassImplementsOnStreamErrorMethod()
