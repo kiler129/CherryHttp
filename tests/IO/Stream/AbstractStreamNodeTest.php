@@ -33,6 +33,12 @@ class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
         $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
     }
 
+    public function testClassIsDefinedAsAbstract()
+    {
+        $sutClassReflection = new \ReflectionClass(AbstractStreamNode::class);
+        $this->assertTrue($sutClassReflection->isAbstract());
+    }
+
     /**
      * @testdox Tested subject uses StreamNodeTrait
      */
