@@ -21,15 +21,12 @@ abstract class AbstractStreamNode implements StreamNodeInterface
     use StreamNodeTrait;
 
     /**
-     * @var LoopInterface|null
+     * @var LoopInterface|null A loop to which stream node is attached or null if it's not attached to any
      */
     protected $loop;
 
     /**
-     * Every node can be "married"/attached to a loop.
-     * This method returns current loop to which a node is bound.
-     *
-     * @return LoopInterface|null Corresponding loop object or null if not bound to loop yet.
+     * @inheritdoc
      */
     public function getLoop()
     {
@@ -37,13 +34,7 @@ abstract class AbstractStreamNode implements StreamNodeInterface
     }
 
     /**
-     * Node can receive periodical signals from main loop.
-     * This method informs loop how often node wish to be pinged.
-     * Keep in mind this value is only suggestion and should NEVER be used in any time-critical routines.
-     *
-     * Value is cached and retrieved only on node attachment.
-     *
-     * @return int Number of seconds or self::PING_INTERVAL_ANY if node can be pinged in any intervals.
+     * @inheritdoc
      */
     public function getPingInterval()
     {
@@ -51,26 +42,14 @@ abstract class AbstractStreamNode implements StreamNodeInterface
     }
 
     /**
-     * Method called by loop according to interval specified by getPingInterval() method.
-     *
-     * @return void
+     * @inheritdoc
      */
     public function ping()
     {
     }
 
     /**
-     * In rare situations stream may become invalid on such a low level that even PHP is unable to given any clue
-     * besides "there's an error on one of your streams, I don't know on which and what happened". Even Linux kernel
-     * will not tell you directly which stream failed during select() call.
-     * This method will be called if such error was detected and in some magical way pinpointed to given stream.
-     *
-     * You should definitely trash it without any attempts to recover anything from it - it's gone on the kernel level.
-     * For internal details see following links:
-     *   http://news.php.net/php.internals/91974
-     *   https://github.com/facebook/hhvm/issues/6942
-     *
-     * @return void
+     * @inheritdoc
      */
     public function onStreamError()
     {
