@@ -101,6 +101,9 @@ interface StreamNodeInterface extends LoopNodeInterface
      * will be sent to client (which is not guaranteed in any way!).
      * This method is equivalent of UNIX "shutdown(socket, SHUT_RD)" system call.
      *
+     * Note: This method NOT GUARANTEE that no more data will arrive on socket - it only suggest that socket should be
+     * switched to non-read mode. On some OSs data may still be flowing regardless of shutdownRead() call.
+     *
      * @return bool
      */
     public function shutdownRead();

@@ -199,6 +199,10 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testShutdownReadSwitchesSocketIntoWriteOnlyMode()
     {
+        if (PHP_OS === 'Linux') {
+            $this->markTestSkipped('Skipping due to possible PHP bug #71951');
+        }
+
         $server = stream_socket_server('tcp://127.0.0.1:9999');
         $this->assertInternalType('resource', $server, 'Failed to start test server');
 
@@ -228,6 +232,10 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testShutdownReadWillReturnFalseIfStreamWasAlreadyReadClosed()
     {
+        if (PHP_OS === 'Linux') {
+            $this->markTestSkipped('Skipping due to possible PHP bug #71951');
+        }
+
         $testStream = stream_socket_client('udp://127.0.0.1:9999');
         $this->assertNotFalse($testStream, 'Failed to open test stream');
 
