@@ -192,4 +192,71 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
             );
         }
     }
+
+    /**
+     * @testdox shutdownRead() switches socket into write-only mode
+     * @short
+     */
+    public function testShutdownReadSwitchesSocketIntoWriteOnlyMode()
+    {
+        $server = stream_socket_server('tcp://127.0.0.1:9999');
+        $this->assertInternalType('resource', $server, 'Failed to start test server');
+
+        $clientOnClient = stream_socket_client('tcp://127.0.0.1:9999');
+        $this->assertInternalType('resource', $clientOnClient, 'Failed to create client socket');
+
+        $clientOnServer = stream_socket_accept($server, 0.5);
+        $this->assertInternalType('resource', $clientOnServer, 'Failed to accept client');
+
+        $this->assertNotFalse(stream_set_chunk_size($clientOnServer, 1), 'Failed to set chunk size');
+        $this->assertNotFalse(stream_set_read_buffer($clientOnServer, 1), 'Failed to set read buffer size');
+
+        fwrite($clientOnClient, '1234'); //Sends 4 bytes of data from real client
+
+        //It will read 2 bytes and php buffer will should stay empty after this since read buffer was set to 1 byte
+        $this->assertSame('12', fread($clientOnServer, 2), 'Test read failed');
+
+        $this->subjectUnderTest->stream = $clientOnServer;
+        $this->assertTrue($this->subjectUnderTest->shutdownRead(), 'Failed to shutdown read');
+
+        //Since socket was closed for reading it will return empty string
+        $this->assertSame('', fread($clientOnServer, 2), 'Stream was not closed for reading!');
+    }
+
+    /**
+     * @testdox shutdownRead() will return false if stream was already read-closed
+     */
+    public function testShutdownReadWillReturnFalseIfStreamWasAlreadyReadClosed()
+    {
+        $testStream = stream_socket_client('udp://127.0.0.1:9999');
+        $this->assertNotFalse($testStream, 'Failed to open test stream');
+
+        $this->assertTrue(stream_socket_shutdown($testStream, STREAM_SHUT_RD), 'Failed to shutdown test stream');
+
+        $this->subjectUnderTest->stream = $testStream;
+        $this->assertFalse($this->subjectUnderTest->shutdownRead());
+    }
+
+    /**
+     * @testdox shutdownRead() will return false if there is no stream set
+     */
+    public function testShutdownReadWillReturnFalseIfThereIsNoStreamSet()
+    {
+        $this->subjectUnderTest->stream = null; //It should be in this state anyway
+        $this->assertFalse($this->subjectUnderTest->shutdownRead());
+    }
+
+    /**
+     * @testdox shutdownRead() marks node as degenerated
+     */
+    public function testShutdownReadMarksNodeAsDegenerated()
+    {
+        $testStream = stream_socket_client('udp://127.0.0.1:9999');
+        $this->assertNotFalse($testStream, 'Failed to open test stream');
+
+        $this->subjectUnderTest->stream = $testStream;
+        $this->subjectUnderTest->shutdownRead();
+
+        $this->assertTrue($this->getRestrictedPropertyValue('isDegenerated'));
+    }
 }

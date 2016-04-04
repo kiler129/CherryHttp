@@ -83,5 +83,17 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
         parent::onStreamError();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function shutdownRead()
+    {
+        if (!is_resource($this->stream)) {
+            return false;
+        }
 
+        $this->isDegenerated = true;
+        
+        return stream_socket_shutdown($this->stream, STREAM_SHUT_RD);
+    }
 }
