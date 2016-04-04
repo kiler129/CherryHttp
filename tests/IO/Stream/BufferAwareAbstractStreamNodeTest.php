@@ -155,7 +155,7 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
         $this->setRestrictedPropertyValue('writeBuffer', $value);
         $this->assertFalse($this->subjectUnderTest->isWriteReady());
     }
-    
+
     public function testBothWriteAndReadBuffersAreSetToEmptyStringOnStreamError()
     {
         $this->setRestrictedPropertyValue('writeBuffer', 'foo');
@@ -165,5 +165,42 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame('', $this->getRestrictedPropertyValue('writeBuffer'));
         $this->assertSame('', $this->getRestrictedPropertyValue('readBuffer'));
+    }
+
+    /**
+     * @testdox writeBufferAppend() adds given data to writeBuffer returning added length
+     */
+    public function testWriteBufferAppendAddsGivenDataToWriteBufferReturningAddedLength()
+    {
+        $testStrings = [
+            ['le foo', 6],
+            ["another\nfoo", 11],
+            ["cr\rfoo", 6],
+            ["null\0foo", 8],
+            ["backspace\x08foo", 13],
+            ["tab\tfoo", 7],
+            ["utf☃foo", 9],
+            [0b101010, 2],
+            ['', 0]
+        ];
+
+        $expectedBufferContents = '';
+        foreach ($testStrings as $datasetIndex => $testString) {
+            $expectedBufferContents .= $testString[0];
+
+            $returnedLength = $this->subjectUnderTest->writeBufferAppend($testString[0]);
+            $actualBufferContents = $this->getRestrictedPropertyValue('writeBuffer');
+
+            $this->assertSame(
+                $expectedBufferContents,
+                $actualBufferContents,
+                'Buffer contents mismatch after test string #' . ($datasetIndex + 1)
+            );
+            $this->assertSame(
+                $testString[1],
+                $returnedLength,
+                'Returned appended data length for test string #' . ($datasetIndex + 1) . ' is not valid'
+            );
+        }
     }
 }

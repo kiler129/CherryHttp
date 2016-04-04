@@ -10,8 +10,6 @@
 
 namespace noFlash\CherryHttp\IO\Stream;
 
-use noFlash\CherryHttp\IO\Exception\BufferOverflowException;
-
 /**
  * Class BufferAwareAbstractStreamNode
  */
@@ -34,9 +32,7 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
     protected $isDegenerated = false;
 
     /**
-     * Provides information whatever underlying stream should be checked for free buffer space.
-     *
-     * @return bool
+     * @inheritdoc
      */
     public function isWriteReady()
     {
@@ -63,22 +59,17 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
     public function doWrite()
     {
         // TODO: Implement doWrite() method.
+        // Check if degenerated & buffer empty (if so disconnect)
     }
 
     /**
-     * Appends data to stream write buffer.
-     *
-     * @param string $data
-     *
-     * @return int Number of bytes added to buffer.
-     * @throws BufferOverflowException Exception is thrown if buffer overflown or it's not even available for current
-     *                                 StreamNode. Since method may return 0, raising exception suggest permanent and
-     *                                 unrecoverable situation. Example use-case will be one-way socket which is
-     *                                 capable of only receiving data (e.g. GPS).
+     * @inheritdoc
      */
     public function writeBufferAppend($data)
     {
-        // TODO: Implement writeBufferAppend() method.
+        $this->writeBuffer .= $data;
+
+        return strlen($data); //Currently this method doesn't implement any length limit
     }
 
     /**
