@@ -145,17 +145,6 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
         $property->setValue($this->subjectUnderTest, $value);
     }
 
-    /**
-     * @testdox      isWriteReady() always returns false if node is degemerated
-     * @dataProvider writeBufferValuesFuzzingForIsWriteReady
-     */
-    public function testIsWriteReadyAlwaysReturnsFalseIfNodeIsDegenerated($value)
-    {
-        $this->setRestrictedPropertyValue('isDegenerated', true);
-        $this->setRestrictedPropertyValue('writeBuffer', $value);
-        $this->assertFalse($this->subjectUnderTest->isWriteReady());
-    }
-
     public function testBothWriteAndReadBuffersAreSetToEmptyStringOnStreamError()
     {
         $this->setRestrictedPropertyValue('writeBuffer', 'foo');

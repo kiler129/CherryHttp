@@ -36,7 +36,7 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
      */
     public function isWriteReady()
     {
-        return !($this->writeBuffer === '' || $this->isDegenerated);
+        return !($this->writeBuffer === '');
     }
 
     /**
