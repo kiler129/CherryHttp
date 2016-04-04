@@ -14,23 +14,16 @@ use noFlash\CherryHttp\Application\Lifecycle\LoopInterface;
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
 use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
+use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
-class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
+class AbstractStreamNodeTest extends TestCase
 {
-    /**
-     * @var AbstractStreamNode
-     */
-    private $subjectUnderTest;
-
-    /**
-     * @var \ReflectionObject
-     */
-    private $subjectUnderTestObjectReflection;
-
     public function setUp()
     {
+        /** @var AbstractStreamNode|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest */
         $this->subjectUnderTest = $this->getMockForAbstractClass(AbstractStreamNode::class);
-        $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
+
+        parent::setUp();
     }
 
     public function testClassIsDefinedAsAbstract()
@@ -52,22 +45,7 @@ class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testClassImplementsGetLoopMethod()
     {
-        $this->assertTrue($this->isMethodImplementedBySUTClass('getLoop'));
-    }
-
-    private function isMethodImplementedBySUTClass($name)
-    {
-        //This is, I believe, the only method to really check if abstract class implementing interface has a method
-
-        $subjectUnderTestClassReflection = new \ReflectionClass(AbstractStreamNode::class);
-
-        if (!$subjectUnderTestClassReflection->hasMethod($name)) {
-            return false;
-        }
-
-        $methodReflection = $subjectUnderTestClassReflection->getMethod($name);
-
-        return ($methodReflection->getDeclaringClass()->name === AbstractStreamNode::class);
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'getLoop'));
     }
 
     public function testClassContainsProtectedLoopProperty()
@@ -84,18 +62,6 @@ class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->subjectUnderTest->getLoop());
     }
 
-    private function getRestrictedPropertyValue($name)
-    {
-        if (!$this->subjectUnderTestObjectReflection->hasProperty($name)) {
-            throw new \RuntimeException('There is no property named ' . $name);
-        }
-
-        $property = $this->subjectUnderTestObjectReflection->getProperty($name);
-        $property->setAccessible(true);
-
-        return $property->getValue($this->subjectUnderTest);
-    }
-
     public function testLoopGetterReturnsValueOfProtectedLoopProperty()
     {
         $loopMock = $this->getMockForAbstractClass(LoopInterface::class);
@@ -104,23 +70,12 @@ class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($loopMock, $this->subjectUnderTest->getLoop());
     }
 
-    private function setRestrictedPropertyValue($name, $value)
-    {
-        if (!$this->subjectUnderTestObjectReflection->hasProperty($name)) {
-            throw new \RuntimeException('There is no property named ' . $name);
-        }
-
-        $property = $this->subjectUnderTestObjectReflection->getProperty($name);
-        $property->setAccessible(true);
-        $property->setValue($this->subjectUnderTest, $value);
-    }
-
     /**
      * @testdox Class implements getPingInterval() method
      */
     public function testClassImplementsGetPingIntervalMethod()
     {
-        $this->assertTrue($this->isMethodImplementedBySUTClass('getPingInterval'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'getPingInterval'));
     }
 
     /**
@@ -136,7 +91,7 @@ class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testClassImplementsPingMethod()
     {
-        $this->assertTrue($this->isMethodImplementedBySUTClass('ping'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'ping'));
     }
 
     /**
@@ -152,7 +107,7 @@ class AbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testClassImplementsOnStreamErrorMethod()
     {
-        $this->assertTrue($this->isMethodImplementedBySUTClass('onStreamError'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'onStreamError'));
     }
 
     /**

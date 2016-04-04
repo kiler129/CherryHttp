@@ -11,23 +11,16 @@
 namespace noFlash\CherryHttp\Tests\IO\Stream;
 
 use noFlash\CherryHttp\IO\Stream\BufferAwareAbstractStreamNode;
+use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
-class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
+class BufferAwareAbstractStreamNodeTest extends TestCase
 {
-    /**
-     * @var BufferAwareAbstractStreamNode
-     */
-    private $subjectUnderTest;
-
-    /**
-     * @var \ReflectionObject
-     */
-    private $subjectUnderTestObjectReflection;
-
     public function setUp()
     {
+        /** @var BufferAwareAbstractStreamNode| $subjectUnderTest */
         $this->subjectUnderTest = $this->getMockForAbstractClass(BufferAwareAbstractStreamNode::class);
-        $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
+
+        parent::setUp();
     }
 
     public function testClassIsDefinedAsAbstract()
@@ -53,18 +46,6 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
         $writeBufferValue = $this->getRestrictedPropertyValue('writeBuffer');
         $this->assertInternalType('string', $writeBufferValue);
         $this->assertSame('', $writeBufferValue);
-    }
-
-    private function getRestrictedPropertyValue($name)
-    {
-        if (!$this->subjectUnderTestObjectReflection->hasProperty($name)) {
-            throw new \RuntimeException('There is no property named ' . $name);
-        }
-
-        $property = $this->subjectUnderTestObjectReflection->getProperty($name);
-        $property->setAccessible(true);
-
-        return $property->getValue($this->subjectUnderTest);
     }
 
     /**
@@ -132,17 +113,6 @@ class BufferAwareAbstractStreamNodeTest extends \PHPUnit_Framework_TestCase
     {
         $this->setRestrictedPropertyValue('writeBuffer', $value);
         $this->assertSame($expectedResult, $this->subjectUnderTest->isWriteReady());
-    }
-
-    private function setRestrictedPropertyValue($name, $value)
-    {
-        if (!$this->subjectUnderTestObjectReflection->hasProperty($name)) {
-            throw new \RuntimeException('There is no property named ' . $name);
-        }
-
-        $property = $this->subjectUnderTestObjectReflection->getProperty($name);
-        $property->setAccessible(true);
-        $property->setValue($this->subjectUnderTest, $value);
     }
 
     public function testBothWriteAndReadBuffersAreSetToEmptyStringOnStreamError()

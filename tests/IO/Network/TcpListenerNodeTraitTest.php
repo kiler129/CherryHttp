@@ -13,24 +13,17 @@ namespace noFlash\CherryHttp\Tests\IO\Network;
 use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
 use noFlash\CherryHttp\IO\Network\NetworkNodeTrait;
 use noFlash\CherryHttp\IO\Network\TcpListenerNodeTrait;
+use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 use ReflectionClass;
 
-class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
+class TcpListenerNodeTraitTest extends TestCase
 {
-    /**
-     * @var TcpListenerNodeTrait
-     */
-    private $subjectUnderTest;
-
-    /**
-     * @var ReflectionClass
-     */
-    private $subjectUnderTestObjectReflection;
-
     public function setUp()
     {
+        /** @var TcpListenerNodeTrait|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest */
         $this->subjectUnderTest = $this->getMockBuilder(TcpListenerNodeTrait::class)->getMockForTrait();
-        $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
+
+        parent::setUp();
     }
 
     public function tearDown()
@@ -271,18 +264,6 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($ip, $this->getRestrictedPropertyValue('networkLocalIp'));
     }
 
-    private function getRestrictedPropertyValue($name)
-    {
-        if (!$this->subjectUnderTestObjectReflection->hasProperty($name)) {
-            throw new \RuntimeException('There is no property named ' . $name);
-        }
-
-        $property = $this->subjectUnderTestObjectReflection->getProperty($name);
-        $property->setAccessible(true);
-
-        return $property->getValue($this->subjectUnderTest);
-    }
-
     /**
      * @dataProvider invalidIpsProvider
      */
@@ -466,14 +447,6 @@ class TcpListenerNodeTraitTest extends \PHPUnit_Framework_TestCase
 
         $this->subjectUnderTest->startListening();
         $this->assertSame("::1:$randomPort", stream_socket_get_name($this->subjectUnderTest->stream, false));
-    }
-
-    private function markTestSkippedIfNoIpV6TestEnvironment()
-    {
-        //Method found at https://github.com/symfony/http-foundation/blob/master/IpUtils.php#L100
-        if (!((extension_loaded('sockets') && defined('AF_INET6')) || @inet_pton('::1'))) {
-            $this->markTestSkipped('Unable to check Ipv6. Check that PHP was not compiled with option "disable-ipv6".');
-        }
     }
 
     /**

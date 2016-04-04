@@ -14,9 +14,10 @@ use noFlash\CherryHttp\Http\Response\Response;
 use noFlash\CherryHttp\Http\Response\ResponseFactory;
 use noFlash\CherryHttp\Http\Response\ResponseInterface;
 use noFlash\CherryHttp\Tests\TestHelpers\CloneAwareResponse;
+use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
-class ResponseFactoryTest extends \PHPUnit_Framework_TestCase
+class ResponseFactoryTest extends TestCase
 {
     /**
      * Since by design ResponseFactory uses cloning and testing it is a nightmare (specialized response stub with
@@ -25,14 +26,13 @@ class ResponseFactoryTest extends \PHPUnit_Framework_TestCase
      * @var string Name of private field with base response.
      */
     const INTERNAL_RESPONSE_FACTORY_FIELD_NAME = 'baseResponse';
-    /**
-     * @var ResponseFactory
-     */
-    private $subjectUnderTest;
 
     public function setUp()
     {
+        /** @var ResponseFactory subjectUnderTest */
         $this->subjectUnderTest = new ResponseFactory();
+
+        parent::setUp();
     }
 
     public function testBaseResponseIsAvailableOnFreshObject()
@@ -112,15 +112,12 @@ class ResponseFactoryTest extends \PHPUnit_Framework_TestCase
             $mock = $this->getMockForAbstractClass(ResponseInterface::class);
         }
 
-        $sutReflection = new \ReflectionObject($this->subjectUnderTest);
         $this->assertTrue(
-            $sutReflection->hasProperty(self::INTERNAL_RESPONSE_FACTORY_FIELD_NAME),
+            $this->subjectUnderTestObjectReflection->hasProperty(self::INTERNAL_RESPONSE_FACTORY_FIELD_NAME),
             'Invalid base response field name'
         );
 
-        $baseResponseProperty = $sutReflection->getProperty(self::INTERNAL_RESPONSE_FACTORY_FIELD_NAME);
-        $baseResponseProperty->setAccessible(true);
-        $baseResponseProperty->setValue($this->subjectUnderTest, $mock);
+        $this->setRestrictedPropertyValue(self::INTERNAL_RESPONSE_FACTORY_FIELD_NAME, $mock);
 
         return $mock;
     }
