@@ -17,7 +17,7 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
 {
     public function setUp()
     {
-        /** @var BufferAwareAbstractStreamNode| $subjectUnderTest */
+        /** @var BufferAwareAbstractStreamNode|\PHPUnit_Framework_MockObject_MockObject $subjectUnderTest */
         $this->subjectUnderTest = $this->getMockForAbstractClass(BufferAwareAbstractStreamNode::class);
 
         parent::setUp();
@@ -86,6 +86,14 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->assertSame(false, $isDegeneratedValue);
     }
 
+    /**
+     * @testdox Class implements isWriteReady() method
+     */
+    public function testClassImplementsIsWriteReadyMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'isWriteReady'));
+    }
+    
     public function testFreshNodeIsConsideredNotWriteReady()
     {
         $this->assertFalse($this->subjectUnderTest->isWriteReady());
@@ -115,6 +123,30 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->assertSame($expectedResult, $this->subjectUnderTest->isWriteReady());
     }
 
+    /**
+     * @testdox Class implements doRead() method
+     */
+    public function testClassImplementsDoReadMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'doRead'));
+    }
+
+    /**
+     * @testdox Class implements doWrite() method
+     */
+    public function testClassImplementsDoWriteMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'doWrite'));
+    }
+
+    /**
+     * @testdox Class implements onStreamError() method
+     */
+    public function testClassImplementsOnStreamErrorMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'onStreamError'));
+    }
+
     public function testBothWriteAndReadBuffersAreSetToEmptyStringOnStreamError()
     {
         $this->setRestrictedPropertyValue('writeBuffer', 'foo');
@@ -126,6 +158,14 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->assertSame('', $this->getRestrictedPropertyValue('readBuffer'));
     }
 
+    /**
+     * @testdox Class implements writeBufferAppend() method
+     */
+    public function testClassImplementsWriteBufferAppendMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'writeBufferAppend'));
+    }
+    
     /**
      * @testdox writeBufferAppend() adds given data to writeBuffer returning added length
      */
@@ -163,6 +203,14 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         }
     }
 
+    /**
+     * @testdox Class implements shutdownRead() method
+     */
+    public function testClassImplementsShutdownReadMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'shutdownRead'));
+    }
+    
     /**
      * @testdox shutdownRead() switches socket into write-only mode
      * @short

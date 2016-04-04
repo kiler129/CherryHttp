@@ -63,16 +63,6 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
     }
 
     /**
-     * @inheritdoc
-     */
-    public function writeBufferAppend($data)
-    {
-        $this->writeBuffer .= $data;
-
-        return strlen($data); //Currently this method doesn't implement any length limit
-    }
-
-    /**
      * @inheritDoc
      */
     public function onStreamError()
@@ -81,6 +71,16 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
         $this->writeBuffer = '';
 
         parent::onStreamError();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function writeBufferAppend($data)
+    {
+        $this->writeBuffer .= $data;
+
+        return strlen($data); //Currently this method doesn't implement any length limit
     }
 
     /**
