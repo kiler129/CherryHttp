@@ -76,4 +76,22 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         return ($methodReflection->getDeclaringClass()->name === $className);
     }
+
+    protected function createDummyServerWithClient()
+    {
+        $server = stream_socket_server('tcp://127.0.0.1:9999');
+        $this->assertInternalType('resource', $server, 'Failed to start test server');
+
+        $address = stream_socket_get_name($server, false);
+        $this->assertNotFalse($address, 'Failed to obtain test server address');
+
+        $clientOnClient = stream_socket_client('tcp://' . $address);
+        $this->assertInternalType('resource', $clientOnClient, 'Failed to create client socket');
+
+        $clientOnServer = stream_socket_accept($server, 0.5);
+        $this->assertInternalType('resource', $clientOnServer, 'Failed to accept client');
+
+        return ['server' => $server, 'clientOnServer' => $clientOnServer, 'clientOnClient' => $clientOnClient];
+    }
+
 }

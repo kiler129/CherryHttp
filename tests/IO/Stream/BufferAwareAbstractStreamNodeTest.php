@@ -221,28 +221,21 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
             $this->markTestSkipped('Skipping due to possible PHP bug #71951');
         }
 
-        $server = stream_socket_server('tcp://127.0.0.1:9999');
-        $this->assertInternalType('resource', $server, 'Failed to start test server');
+        $dummyServer = $this->createDummyServerWithClient();
 
-        $clientOnClient = stream_socket_client('tcp://127.0.0.1:9999');
-        $this->assertInternalType('resource', $clientOnClient, 'Failed to create client socket');
+        $this->assertNotFalse(stream_set_chunk_size($dummyServer['clientOnServer'], 1), 'Failed to set chunk size');
+        $this->assertNotFalse(stream_set_read_buffer($dummyServer['clientOnServer'], 1), 'Failed to set read buffer size');
 
-        $clientOnServer = stream_socket_accept($server, 0.5);
-        $this->assertInternalType('resource', $clientOnServer, 'Failed to accept client');
-
-        $this->assertNotFalse(stream_set_chunk_size($clientOnServer, 1), 'Failed to set chunk size');
-        $this->assertNotFalse(stream_set_read_buffer($clientOnServer, 1), 'Failed to set read buffer size');
-
-        fwrite($clientOnClient, '1234'); //Sends 4 bytes of data from real client
+        fwrite($dummyServer['clientOnClient'], '1234'); //Sends 4 bytes of data from real client
 
         //It will read 2 bytes and php buffer will should stay empty after this since read buffer was set to 1 byte
-        $this->assertSame('12', fread($clientOnServer, 2), 'Test read failed');
+        $this->assertSame('12', fread($dummyServer['clientOnServer'], 2), 'Test read failed');
 
-        $this->subjectUnderTest->stream = $clientOnServer;
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
         $this->assertTrue($this->subjectUnderTest->shutdownRead(), 'Failed to shutdown read');
 
         //Since socket was closed for reading it will return empty string
-        $this->assertSame('', fread($clientOnServer, 2), 'Stream was not closed for reading!');
+        $this->assertSame('', fread($dummyServer['clientOnServer'], 2), 'Stream was not closed for reading!');
     }
 
     /**
