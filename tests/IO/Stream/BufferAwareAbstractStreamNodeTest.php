@@ -175,14 +175,23 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->assertSame('testfoo', $this->getRestrictedPropertyValue('readBuffer'));
     }
 
+    /**
+     * Since this test may fail on depending on HHVM compile-time configuration and HHVM lacks
+     *  stream_set_chunk_size() & stream_set_read_buffer() it's marked skipped.
+     *
+     * @see https://github.com/facebook/hhvm/issues/6573
+     * @see https://github.com/facebook/hhvm/issues/6977
+     */
     public function testDataIsReadFromStreamInSpecifiedChunks()
     {
-        $chunkSize = BufferAwareAbstractStreamNode::READ_CHUNK_SIZE;
+        $this->skipTestOnHHVM();
 
+        $chunkSize = BufferAwareAbstractStreamNode::READ_CHUNK_SIZE;
         $data1 = str_repeat('a', $chunkSize);
         $data2 = str_repeat('b', $chunkSize);
 
         $dummyServer = $this->createDummyServerWithClient();
+
         $this->assertNotFalse(
             stream_set_chunk_size($dummyServer['clientOnServer'], $chunkSize * 3),
             'Failed to set chunk size'
@@ -296,6 +305,8 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
      */
     public function testShutdownReadSwitchesSocketIntoWriteOnlyMode()
     {
+        $this->skipTestOnHHVM('See HVVM bug https://github.com/facebook/hhvm/issues/6573');
+        
         if (PHP_OS === 'Linux') {
             $this->markTestSkipped('Skipping due to possible PHP bug #71951');
         }
@@ -332,7 +343,15 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->assertTrue(stream_socket_shutdown($testStream, STREAM_SHUT_RD), 'Failed to shutdown test stream');
 
         $this->subjectUnderTest->stream = $testStream;
-        $this->assertFalse($this->subjectUnderTest->shutdownRead());
+
+        try {
+            $this->assertFalse($this->subjectUnderTest->shutdownRead());
+
+        } catch (\PHPUnit_Framework_Error_Warning $e) {
+            if (!$this->isHHVM() && !$this->isOSX()) { //See https://github.com/facebook/hhvm/issues/6978 for details
+                throw $e;
+            }
+        }
     }
 
     /**

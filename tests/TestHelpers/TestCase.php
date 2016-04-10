@@ -24,6 +24,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected $subjectUnderTestObjectReflection;
 
+    public function isOSX()
+    {
+        return (PHP_OS === 'Darwin');
+    }
+
     protected function setUp()
     {
         $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
@@ -94,4 +99,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
         return ['server' => $server, 'clientOnServer' => $clientOnServer, 'clientOnClient' => $clientOnClient];
     }
 
+    protected function skipTestOnHHVM($info = 'See test comments for details')
+    {
+        if ($this->isHHVM()) {
+            $this->markTestSkipped($info);
+        }
+    }
+
+    public function isHHVM()
+    {
+        return defined('HHVM_VERSION');
+    }
 }
