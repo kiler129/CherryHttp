@@ -98,6 +98,7 @@ class TcpListenerNodeTraitTest extends TestCase
 
         $this->subjectUnderTest->stream = new \stdClass();
         $this->subjectUnderTest->disconnect();
+        restore_error_handler();
 
         $this->assertTrue(true); //Dummy assertion - test will fail in set_error_handler() or due to exception
     }
@@ -411,10 +412,12 @@ class TcpListenerNodeTraitTest extends TestCase
         $this->assertStringStartsWith('tcp_socket', $streamMetadata['stream_type']);
     }
 
+    /**
+     * This test will fail on HHVM due to it's bug: https://github.com/facebook/hhvm/issues/6938
+     * It's intentionally not marked as skipped, because testing for stream blockage is a vital part of the server.
+     */
     public function testListeningCreatesNonBlockingSocket()
     {
-        //Warning: this test fails due to HHVM bug: https://github.com/facebook/hhvm/issues/6938
-
         $this->subjectUnderTest->startListening();
 
         $streamMetadata = stream_get_meta_data($this->subjectUnderTest->stream);

@@ -305,11 +305,10 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
      */
     public function testShutdownReadSwitchesSocketIntoWriteOnlyMode()
     {
-        $this->skipTestOnHHVM('See HVVM bug https://github.com/facebook/hhvm/issues/6573');
-        
-        if (PHP_OS === 'Linux') {
-            $this->markTestSkipped('Skipping due to possible PHP bug #71951');
-        }
+        $this->skipTestOnHHVM('See HVVM bug https://github.com/facebook/hhvm/issues/6573'); //HHVM on all OSs affected
+        $this->skipTestOnLinux(
+            'See PHP bug https://bugs.php.net/bug.php?id=71951'
+        ); //PHP on Linux affected (no need to check if HHVM since all HHVMs are skipped above)
 
         $dummyServer = $this->createDummyServerWithClient();
 
@@ -333,10 +332,9 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
      */
     public function testShutdownReadWillReturnFalseIfStreamWasAlreadyReadClosed()
     {
-        if (PHP_OS === 'Linux') {
-            $this->markTestSkipped('Skipping due to possible PHP bug #71951');
-        }
-
+        //In fact all intepreters will be affected due to bug nature (shutdown() POSIX call behaves strange on Linux)
+        $this->skipTestOnLinux('See PHP bug https://bugs.php.net/bug.php?id=71951');
+        
         $testStream = stream_socket_client('udp://127.0.0.1:9999');
         $this->assertNotFalse($testStream, 'Failed to open test stream');
 

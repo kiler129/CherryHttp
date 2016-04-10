@@ -24,7 +24,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected $subjectUnderTestObjectReflection;
 
-    public function isOSX()
+    protected function isOSX()
     {
         return (PHP_OS === 'Darwin');
     }
@@ -109,5 +109,17 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function isHHVM()
     {
         return defined('HHVM_VERSION');
+    }
+
+    protected function skipTestOnLinux($info = 'See test comments for details')
+    {
+        if ($this->isLinux()) {
+            $this->markTestSkipped($info);
+        }
+    }
+
+    protected function isLinux()
+    {
+        return (PHP_OS === 'Linux');
     }
 }
