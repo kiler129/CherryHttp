@@ -13,10 +13,14 @@ namespace noFlash\CherryHttp\Tests\IO\Stream;
 use noFlash\CherryHttp\IO\Stream\BufferAwareAbstractStreamNode;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
+/**
+ * @property BufferAwareAbstractStreamNode|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest
+ */
 class BufferAwareAbstractStreamNodeTest extends TestCase
 {
     public function setUp()
     {
+        $this->foo = '';
         /** @var BufferAwareAbstractStreamNode|\PHPUnit_Framework_MockObject_MockObject $subjectUnderTest */
         $this->subjectUnderTest = $this->getMockForAbstractClass(BufferAwareAbstractStreamNode::class);
 
@@ -27,6 +31,16 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
     {
         $sutClassReflection = new \ReflectionClass(BufferAwareAbstractStreamNode::class);
         $this->assertTrue($sutClassReflection->isAbstract());
+    }
+
+    /**
+     * @testdox Class contains READ_CHUNK_SIZE constant containing integer greater than zero
+     */
+    public function testClassContainsReadChunkSizeConstantContainingIntegerGreaterThanZero()
+    {
+        $this->assertTrue(defined(BufferAwareAbstractStreamNode::class . '::READ_CHUNK_SIZE'));
+        $this->assertInternalType('integer', BufferAwareAbstractStreamNode::READ_CHUNK_SIZE);
+        $this->assertGreaterThan(0, BufferAwareAbstractStreamNode::READ_CHUNK_SIZE);
     }
 
     /**
@@ -129,6 +143,71 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
     public function testClassImplementsDoReadMethod()
     {
         $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'doRead'));
+    }
+
+    public function testReadingFromRemotelyDisconnectedStreamDestroysTheStream()
+    {
+        $dummyServer = $this->createDummyServerWithClient();
+
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+
+        fwrite($dummyServer['clientOnClient'], 'ping');
+        $this->subjectUnderTest->doRead();
+        $this->assertInternalType('resource', $this->subjectUnderTest->stream, 'Valid stream was destroyed');
+
+
+        fclose($dummyServer['clientOnClient']);
+        $this->subjectUnderTest->doRead();
+        $this->assertNull($this->subjectUnderTest->stream, 'Disconnected stream not destroyed');
+    }
+
+    public function testDataFromStreamIsReadToReadBuffer()
+    {
+        $dummyServer = $this->createDummyServerWithClient();
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+
+        fwrite($dummyServer['clientOnClient'], 'test');
+        $this->subjectUnderTest->doRead();
+        $this->assertSame('test', $this->getRestrictedPropertyValue('readBuffer'));
+
+        fwrite($dummyServer['clientOnClient'], 'foo');
+        $this->subjectUnderTest->doRead();
+        $this->assertSame('testfoo', $this->getRestrictedPropertyValue('readBuffer'));
+    }
+
+    public function testDataIsReadFromStreamInSpecifiedChunks()
+    {
+        $chunkSize = BufferAwareAbstractStreamNode::READ_CHUNK_SIZE;
+
+        $data1 = str_repeat('a', $chunkSize);
+        $data2 = str_repeat('b', $chunkSize);
+
+        $dummyServer = $this->createDummyServerWithClient();
+        $this->assertNotFalse(
+            stream_set_chunk_size($dummyServer['clientOnServer'], $chunkSize * 3),
+            'Failed to set chunk size'
+        );
+        $this->assertNotFalse(
+            stream_set_read_buffer($dummyServer['clientOnServer'], $chunkSize * 3),
+            'Failed to set read buffer size'
+        );
+
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+        fwrite($dummyServer['clientOnClient'], $data1 . $data2);
+
+        $this->subjectUnderTest->doRead();
+        $this->assertSame(
+            $data1,
+            $this->getRestrictedPropertyValue('readBuffer'),
+            'Buffer contains invalid data after first read'
+        );
+
+        $this->subjectUnderTest->doRead();
+        $this->assertSame(
+            $data1 . $data2,
+            $this->getRestrictedPropertyValue('readBuffer'),
+            'Buffer contains invalid data after second read'
+        );
     }
 
     /**

@@ -15,6 +15,8 @@ namespace noFlash\CherryHttp\IO\Stream;
  */
 abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
 {
+    const READ_CHUNK_SIZE = 16384;
+
     /**
      * @var string Data to be pushed to the socket. It should NEVER contain data other than string!
      */
@@ -48,7 +50,15 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
      */
     public function doRead()
     {
-        // TODO: Implement doRead() method.
+        $data = fread($this->stream, static::READ_CHUNK_SIZE);
+
+        if ($data === '') {
+            fclose($this->stream);
+            $this->stream = null; //fclose() will only leave stream resource in unknown state
+
+        } else {
+            $this->readBuffer .= $data;
+        }
     }
 
     /**
