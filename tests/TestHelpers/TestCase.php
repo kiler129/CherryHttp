@@ -24,6 +24,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected $subjectUnderTestObjectReflection;
 
+    protected $streamsToDestroy = [];
+
     protected function isOSX()
     {
         return (PHP_OS === 'Darwin');
@@ -32,6 +34,20 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function tearDown()
+    {
+        foreach ($this->streamsToDestroy as $stream) {
+            @stream_socket_shutdown($stream, STREAM_SHUT_RDWR);
+            @fclose($stream);
+        }
+
+        gc_collect_cycles();
+        parent::tearDown();
     }
 
     protected function getRestrictedPropertyValue($name)
@@ -84,7 +100,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function createDummyServerWithClient()
     {
-        $server = stream_socket_server('tcp://127.0.0.1:9999');
+        $server = stream_socket_server('tcp://127.0.0.1:0');
         $this->assertInternalType('resource', $server, 'Failed to start test server');
 
         $address = stream_socket_get_name($server, false);
@@ -93,8 +109,12 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $clientOnClient = stream_socket_client('tcp://' . $address);
         $this->assertInternalType('resource', $clientOnClient, 'Failed to create client socket');
 
-        $clientOnServer = stream_socket_accept($server, 0.5);
+        $clientOnServer = stream_socket_accept($server, 5);
         $this->assertInternalType('resource', $clientOnServer, 'Failed to accept client');
+
+        $this->streamsToDestroy[] = $server;
+        $this->streamsToDestroy[] = $clientOnServer;
+        $this->streamsToDestroy[] = $clientOnClient;
 
         return ['server' => $server, 'clientOnServer' => $clientOnServer, 'clientOnClient' => $clientOnClient];
     }
@@ -122,4 +142,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         return (PHP_OS === 'Linux');
     }
+
+
 }
