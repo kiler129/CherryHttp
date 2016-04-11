@@ -58,6 +58,11 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
 
         } else {
             $this->readBuffer .= $data;
+
+            //For explanation read "important note" for processInputBuffer()
+            //@formatter:off
+            while ($this->processInputBuffer() === false);
+            //@formatter:on
         }
     }
 
@@ -106,4 +111,15 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
         
         return stream_socket_shutdown($this->stream, STREAM_SHUT_RD);
     }
+
+    /**
+     * Method is called everytime some data are collected (look into doRead()).
+     *
+     * Important note: to prevent infinite loops this function MUST NOT return false unless it's intended to be called
+     * again. At first it seems weird, but it's useful dealing with multiple "packets" of data after single buffer
+     * read efficiently (using recurrence creates very deep stack eating significant amount of memory & CPU).
+     *
+     * @return bool|null
+     */
+    abstract protected function processInputBuffer();
 }

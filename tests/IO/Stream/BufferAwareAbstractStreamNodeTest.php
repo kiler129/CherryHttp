@@ -20,7 +20,6 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
 {
     public function setUp()
     {
-        $this->foo = '';
         /** @var BufferAwareAbstractStreamNode|\PHPUnit_Framework_MockObject_MockObject $subjectUnderTest */
         $this->subjectUnderTest = $this->getMockForAbstractClass(BufferAwareAbstractStreamNode::class);
 
@@ -220,6 +219,91 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
     }
 
     /**
+     * @testdox Class contains protected abstract processInputBuffer() method
+     */
+    public function testClassContainsProtectedAbstractProcessInputBufferMethod()
+    {
+        $this->assertTrue(
+            $this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'processInputBuffer')
+        );
+
+        $classReflection = new \ReflectionClass(BufferAwareAbstractStreamNode::class);
+        $pibMethod = $classReflection->getMethod('processInputBuffer');
+
+        $this->assertTrue($pibMethod->isAbstract(), 'Method is not abstract');
+        $this->assertTrue($pibMethod->isProtected(), 'Method is not protected');
+    }
+
+    /**
+     * @testdox processInputBuffer() method is called after data read
+     */
+    public function testProcessInputBufferMethodIsCalledAfterDataRead()
+    {
+        $this->subjectUnderTest->expects($this->atLeastOnce())->method('processInputBuffer')->willReturnCallback(
+            function () {
+                $this->assertSame('test', $this->getRestrictedPropertyValue('readBuffer'));
+
+                return true;
+            }
+        );
+
+        $dummyServer = $this->createDummyServerWithClient();
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+
+        fwrite($dummyServer['clientOnClient'], 'test');
+        $this->subjectUnderTest->doRead();
+    }
+
+    /**
+     * @testdox processInputBuffer() method is not called if nothing was read
+     */
+    public function testProcessInputBufferMethodIsNotCalledIfNothingWasRead()
+    {
+        $this->subjectUnderTest->expects($this->never())->method('processInputBuffer');
+
+        $dummyServer = $this->createDummyServerWithClient();
+
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+        fclose($dummyServer['clientOnClient']);
+
+        $this->subjectUnderTest->doRead();
+    }
+
+    public function processInputBufferExitProviders()
+    {
+        return [
+            [[true], 1],
+            [[null], 1],
+            [[0], 1],
+            [[''], 1],
+            [[1], 1],
+            [[false, false, false, false, false, true], 6],
+            [[false, false, false, false, false, null], 6],
+            [[false, false, false, false, false, 0], 6],
+            [[false, false, false, false, false, ''], 6],
+            [[false, false, false, false, false, 1], 6],
+        ];
+    }
+
+    /**
+     * @testdox      processInputBuffer() method is called again if returned false
+     * @dataProvider processInputBufferExitProviders
+     */
+    public function testProcessInputBufferMethodIsCalledAgainIfReturnedFalse($returnValues, $expectedCallsNum)
+    {
+        $sutStub = new BufferAwareAbstractStreamNodeStub();
+        $sutStub->pibOutputMap = $returnValues;
+
+        $dummyServer = $this->createDummyServerWithClient();
+        $sutStub->stream = $dummyServer['clientOnServer'];
+
+        fwrite($dummyServer['clientOnClient'], 'test');
+        $sutStub->doRead();
+
+        $this->assertSame($expectedCallsNum, $sutStub->pibCallsCount);
+    }
+
+    /**
      * @testdox Class implements doWrite() method
      */
     public function testClassImplementsDoWriteMethod()
@@ -334,7 +418,7 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
     {
         //In fact all intepreters will be affected due to bug nature (shutdown() POSIX call behaves strange on Linux)
         $this->skipTestOnLinux('See PHP bug https://bugs.php.net/bug.php?id=71951');
-        
+
         $testStream = stream_socket_client('udp://127.0.0.1:9999');
         $this->assertNotFalse($testStream, 'Failed to open test stream');
 
