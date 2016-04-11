@@ -56,7 +56,7 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
             fclose($this->stream);
             $this->stream = null; //fclose() will only leave stream resource in unknown state
 
-        } else {
+        } elseif ($this->isDegenerated === false) {
             $this->readBuffer .= $data;
 
             //For explanation read "important note" for processInputBuffer()

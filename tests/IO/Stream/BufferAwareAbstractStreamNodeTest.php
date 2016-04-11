@@ -174,6 +174,29 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->assertSame('testfoo', $this->getRestrictedPropertyValue('readBuffer'));
     }
 
+    public function testDataFromStreamIsReadAndDiscardedIfNodeIsInDegeneratedState()
+    {
+        $dummyServer = $this->createDummyServerWithClient();
+
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+        stream_set_blocking($dummyServer['clientOnServer'], 0);
+
+        fwrite($dummyServer['clientOnClient'], 'test');
+        $this->subjectUnderTest->doRead();
+        $this->assertSame('test', $this->getRestrictedPropertyValue('readBuffer'), 'Data not arrived via dummy server');
+
+        $this->setRestrictedPropertyValue('isDegenerated', true);
+        fwrite($dummyServer['clientOnClient'], 'foo');
+        $this->subjectUnderTest->doRead();
+
+        $this->assertSame(
+            'test',
+            $this->getRestrictedPropertyValue('readBuffer'),
+            'Buffer contents is different after second read'
+        );
+        $this->assertSame('', fread($dummyServer['clientOnServer'], 3), 'Data was not read from stream');
+    }
+
     /**
      * Since this test may fail on depending on HHVM compile-time configuration and HHVM lacks
      *  stream_set_chunk_size() & stream_set_read_buffer() it's marked skipped.
@@ -266,6 +289,26 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
         fclose($dummyServer['clientOnClient']);
 
+        $this->subjectUnderTest->doRead();
+    }
+
+    /**
+     * @testdox processInputBuffer() method is not called if node is degenerated
+     */
+    public function testProcessInputBufferMethodIsNotCalledIfNodeIsDegenerated()
+    {
+        $this->subjectUnderTest->expects($this->once())->method('processInputBuffer');
+
+        $dummyServer = $this->createDummyServerWithClient();
+
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+        stream_set_blocking($dummyServer['clientOnServer'], 0);
+
+        fwrite($dummyServer['clientOnClient'], 'test');
+        $this->subjectUnderTest->doRead();
+
+        $this->setRestrictedPropertyValue('isDegenerated', true);
+        fwrite($dummyServer['clientOnClient'], 'foo');
         $this->subjectUnderTest->doRead();
     }
 
