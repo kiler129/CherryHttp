@@ -43,7 +43,7 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
     }
 
     /**
-     * @testdox Class contains protected writeBuffer field
+     * @testdox Class contains protercted writeBuffer field
      */
     public function testClassContainsProtectedWriteBufferField()
     {
@@ -354,6 +354,92 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->assertTrue($this->isMethodImplementedByClass(BufferAwareAbstractStreamNode::class, 'doWrite'));
     }
 
+    public function testContentsOfWriteBufferIsWrittenToStream()
+    {
+        $dummyServer = $this->createDummyServerWithClient();
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+        $this->setRestrictedPropertyValue('writeBuffer', 'test');
+
+        $this->subjectUnderTest->doWrite();
+        $this->assertSame('', $this->getRestrictedPropertyValue('writeBuffer'), 'Buffer is not empty');
+
+        stream_set_blocking($dummyServer['clientOnServer'], 0);
+        $this->assertSame(fread($dummyServer['clientOnClient'], 4), 'test', 'Invalid data sent');
+    }
+
+    /**
+     * This test looks a little bit complicated, but I failed to find simple way to test this behavior.
+     * First it creates large (bigger than expected to be transferred by doWrite()) chunk of data, next it's stacked on
+     * write buffer and doWrite() is called. Next step (while() loop) is crucial - it reads the other side of connection
+     * and counts all bytes received. Based on this knowledge buffer in SUT is compared to expected contents.
+     *
+     * It's written in a way to not suggest any implementation, so I think it serves the purpose.
+     */
+    public function testWriteBufferIsCorrectlySplitIfOnlyPartOfTheDataWereWritten()
+    {
+        $dataSize = (8 * 1024 * 1024);
+        $data = str_repeat('a', $dataSize);
+
+        $dummyServer = $this->createDummyServerWithClient();
+        stream_set_blocking($dummyServer['clientOnServer'], 0);
+        stream_set_blocking($dummyServer['clientOnClient'], 0);
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+
+        $this->setRestrictedPropertyValue('writeBuffer', $data);
+        $bytesWritten = 0;
+        while (true) {
+            $readChunk = fread($dummyServer['clientOnClient'], 8192);
+            $bytesWritten += strlen($readChunk);
+
+            if (empty($readChunk)) {
+                break;
+
+            } elseif ($bytesWritten > $dataSize) {
+                $this->fail('Failed to determine written data length (data read > data written ?!)');
+            }
+        }
+        $expectedBufferLengthLeft = $dataSize - $bytesWritten;
+
+        $bufferAfterWrite = $this->getRestrictedPropertyValue('writeBuffer');
+        $this->assertSame($expectedBufferLengthLeft, strlen($bufferAfterWrite), 'Invalid data length left on buffer');
+        $this->assertSame(
+            str_repeat('a', $expectedBufferLengthLeft),
+            $bufferAfterWrite,
+            'Invalid data contents on buffer'
+        );
+    }
+
+
+    public function testStreamIsDestroyedAfterWritingAllDataIfNodeIsDegenerated()
+    {
+        $dummyServer = $this->createDummyServerWithClient();
+        stream_set_blocking($dummyServer['clientOnServer'], 0);
+        stream_set_blocking($dummyServer['clientOnClient'], 0);
+
+        $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
+        $this->setRestrictedPropertyValue('isDegenerated', true);
+
+        $dataSize = (3 * 1024 * 1024);
+        $data = str_repeat('a', $dataSize);
+        $this->setRestrictedPropertyValue('writeBuffer', $data);
+        $bytesWritten = 0;
+        while (!empty($this->getRestrictedPropertyValue('writeBuffer'))) {
+            $this->subjectUnderTest->doWrite();
+
+            while (true) {
+                $chunkSize = strlen(fread($dummyServer['clientOnClient'], 8192));
+                $bytesWritten += $chunkSize;
+
+                if ($chunkSize === 0) {
+                    break;
+                }
+            }
+        }
+
+        $this->assertNull($this->subjectUnderTest->stream, 'Stream not destroyed');
+        $this->assertSame($dataSize, $bytesWritten, 'Only part of the data transferred');
+    }
+
     /**
      * @testdox Class implements onStreamError() method
      */
@@ -464,6 +550,7 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
 
         $testStream = stream_socket_client('udp://127.0.0.1:9999');
         $this->assertNotFalse($testStream, 'Failed to open test stream');
+        $this->streamsToDestroy[] = $testStream;
 
         $this->assertTrue(stream_socket_shutdown($testStream, STREAM_SHUT_RD), 'Failed to shutdown test stream');
 
@@ -495,6 +582,7 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
     {
         $testStream = stream_socket_client('udp://127.0.0.1:9999');
         $this->assertNotFalse($testStream, 'Failed to open test stream');
+        $this->streamsToDestroy[] = $testStream;
 
         $this->subjectUnderTest->stream = $testStream;
         $this->subjectUnderTest->shutdownRead();

@@ -67,14 +67,31 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
     }
 
     /**
-     * Method gets called if stream has some buffer space and data can be populated.
-     *
-     * @return void
+     * @inheritdoc
      */
     public function doWrite()
     {
-        // TODO: Implement doWrite() method.
-        // Check if degenerated & buffer empty (if so disconnect)
+        $bytesWritten = @fwrite($this->stream, $this->writeBuffer);
+
+        /*
+         * Fragment below looks weird at first, but it's perfectly logical.
+         * Most of the time buffer is completely written by fwrite() into system TCP buffer (which is 8KB by default). In
+         * that case using (rather expansive) substr() call can be avoided by checking whatever buffer was completely
+         * written. To do so efficiently isset() and direct character access is used. fwrite() returns NUMBER OF BYTES
+         * written. Character in strings are indexed from 0 (like arrays), so calling fwrite($socket, "abcde") return
+         * 5 if it was fully written, calling isset($x[5]) produce "false" because last character have index of 4.
+         */
+        if (!isset($this->writeBuffer[$bytesWritten])) {
+            $this->writeBuffer = '';
+
+            if ($this->isDegenerated) {
+                fclose($this->stream);
+                $this->stream = null;
+            }
+
+        } else {
+            $this->writeBuffer = substr($this->writeBuffer, $bytesWritten);
+        }
     }
 
     /**
