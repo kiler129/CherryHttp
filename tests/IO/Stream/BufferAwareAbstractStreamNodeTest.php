@@ -181,12 +181,12 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
         stream_set_blocking($dummyServer['clientOnServer'], 0);
 
-        fwrite($dummyServer['clientOnClient'], 'test');
+        $this->safeWrite($dummyServer['clientOnClient'], 'test');
         $this->subjectUnderTest->doRead();
         $this->assertSame('test', $this->getRestrictedPropertyValue('readBuffer'), 'Data not arrived via dummy server');
 
         $this->setRestrictedPropertyValue('isDegenerated', true);
-        fwrite($dummyServer['clientOnClient'], 'foo');
+        $this->safeWrite($dummyServer['clientOnClient'], 'test');
         $this->subjectUnderTest->doRead();
 
         $this->assertSame(
@@ -304,11 +304,11 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $this->subjectUnderTest->stream = $dummyServer['clientOnServer'];
         stream_set_blocking($dummyServer['clientOnServer'], 0);
 
-        fwrite($dummyServer['clientOnClient'], 'test');
+        $this->safeWrite($dummyServer['clientOnClient'], 'test');
         $this->subjectUnderTest->doRead();
 
         $this->setRestrictedPropertyValue('isDegenerated', true);
-        fwrite($dummyServer['clientOnClient'], 'foo');
+        $this->safeWrite($dummyServer['clientOnClient'], 'foo');
         $this->subjectUnderTest->doRead();
     }
 
@@ -425,9 +425,10 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
         $bytesWritten = 0;
         while (!empty($this->getRestrictedPropertyValue('writeBuffer'))) {
             $this->subjectUnderTest->doWrite();
+            usleep(200000); //Avoid race condition with OS network stack
 
             while (true) {
-                $chunkSize = strlen(fread($dummyServer['clientOnClient'], 8192));
+                $chunkSize = strlen(fread($dummyServer['clientOnClient'], $dataSize));
                 $bytesWritten += $chunkSize;
 
                 if ($chunkSize === 0) {

@@ -17,6 +17,8 @@ namespace noFlash\CherryHttp\Tests\TestHelpers;
  */
 class TestCase extends \PHPUnit_Framework_TestCase
 {
+    const MAX_SAFE_WRITE_TRIES = 100;
+
     protected $subjectUnderTest;
 
     /**
@@ -141,6 +143,25 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected function isLinux()
     {
         return (PHP_OS === 'Linux');
+    }
+
+    /**
+     * Method used instead of classic fwrite() when there's a risk that fread() will be performed too fast for OS
+     *  network stack to delivery data (yes, it was replicated many times).
+     */
+    protected function safeWrite($stream, $data)
+    {
+        for ($i = 0; $i < self::MAX_SAFE_WRITE_TRIES; $i++) {
+            $bytesWritten = fwrite($stream, $data);
+            $data = substr($data, $bytesWritten);
+            usleep(100000);
+
+            if (empty($data)) {
+                return;
+            }
+        }
+
+        $this->fail('safeWrite() reached max count writing before writting full data set');
     }
 
 
