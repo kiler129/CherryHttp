@@ -10,7 +10,7 @@
 
 namespace noFlash\CherryHttp\IO\Stream;
 
-use noFlash\CherryHttp\Application\Lifecycle\LoopInterface;
+use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\StreamNodeInterface;
 
 /**
@@ -19,19 +19,7 @@ use noFlash\CherryHttp\IO\StreamNodeInterface;
 abstract class AbstractStreamNode implements StreamNodeInterface
 {
     use StreamNodeTrait;
-
-    /**
-     * @var LoopInterface|null A loop to which stream node is attached or null if it's not attached to any
-     */
-    protected $loop;
-
-    /**
-     * @inheritdoc
-     */
-    public function getLoop()
-    {
-        return $this->loop;
-    }
+    use LoopNodeTrait;
 
     /**
      * @inheritdoc

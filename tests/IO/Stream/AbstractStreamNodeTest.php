@@ -10,8 +10,8 @@
 
 namespace noFlash\CherryHttp\Tests\IO\Stream;
 
-use noFlash\CherryHttp\Application\Lifecycle\LoopInterface;
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
+use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
@@ -41,33 +41,11 @@ class AbstractStreamNodeTest extends TestCase
     }
 
     /**
-     * @testdox Class implements getLoop() method
+     * @testdox Tested subject uses LoopNodeTrait
      */
-    public function testClassImplementsGetLoopMethod()
+    public function testTestedSubjectUsesLoopNodeTrait()
     {
-        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'getLoop'));
-    }
-
-    public function testClassContainsProtectedLoopProperty()
-    {
-        $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('loop'));
-
-        $loopProperty = $this->subjectUnderTestObjectReflection->getProperty('loop');
-        $this->assertTrue($loopProperty->isProtected());
-    }
-
-    public function testByDefaultThereIsNoLoopDefined()
-    {
-        $this->assertNull($this->getRestrictedPropertyValue('loop'));
-        $this->assertNull($this->subjectUnderTest->getLoop());
-    }
-
-    public function testLoopGetterReturnsValueOfProtectedLoopProperty()
-    {
-        $loopMock = $this->getMockForAbstractClass(LoopInterface::class);
-
-        $this->setRestrictedPropertyValue('loop', $loopMock);
-        $this->assertSame($loopMock, $this->subjectUnderTest->getLoop());
+        $this->assertContains(LoopNodeTrait::class, class_uses(AbstractStreamNode::class));
     }
 
     /**
