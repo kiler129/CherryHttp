@@ -116,7 +116,26 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
     }
 
     /**
-     * @inheritdoc
+     * Method is called everytime some data are collected (look into doRead()).
+     *
+     * Important note: to prevent infinite loops this function MUST NOT return false unless it's intended to be called
+     * again. At first it seems weird, but it's useful dealing with multiple "packets" of data after single buffer
+     * read efficiently (using recurrence creates very deep stack eating significant amount of memory & CPU).
+     *
+     * @return bool|null
+     */
+    abstract protected function processInputBuffer();
+
+    /**
+     * This method physically shutdowns socket receiving channel effectively making it write-only.
+     * After calling this method node is switched into "degenerated" state where only data already present in a buffer
+     * will be sent to client (which is not guaranteed in any way!).
+     * This method is equivalent of UNIX "shutdown(socket, SHUT_RD)" system call.
+     *
+     * Note: This method NOT GUARANTEE that no more data will arrive on socket - it only suggest that socket should be
+     * switched to non-read mode. On some OSs data may still be flowing regardless of shutdownRead() call.
+     *
+     * @return bool
      */
     public function shutdownRead()
     {
@@ -128,15 +147,4 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
         
         return stream_socket_shutdown($this->stream, STREAM_SHUT_RD);
     }
-
-    /**
-     * Method is called everytime some data are collected (look into doRead()).
-     *
-     * Important note: to prevent infinite loops this function MUST NOT return false unless it's intended to be called
-     * again. At first it seems weird, but it's useful dealing with multiple "packets" of data after single buffer
-     * read efficiently (using recurrence creates very deep stack eating significant amount of memory & CPU).
-     *
-     * @return bool|null
-     */
-    abstract protected function processInputBuffer();
 }
