@@ -10,6 +10,8 @@
 
 namespace noFlash\CherryHttp\Application\Lifecycle;
 
+use noFlash\CherryHttp\Application\Exception\NodeConflictException;
+
 trait LoopNodeTrait
 {
     /**
@@ -23,5 +25,33 @@ trait LoopNodeTrait
     public function getLoop()
     {
         return $this->loop;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onAttach(LoopInterface $loop)
+    {
+        if ($this->loop !== null) {
+            throw new NodeConflictException(
+                get_class($this) . ' node is already attached to a ' . get_class($this->loop) . ' loop!'
+            );
+        }
+
+        $this->loop = $loop;
+    }
+
+    /*
+     * @inheritdoc
+     */
+    public function onDetach()
+    {
+        if ($this->loop === null) {
+            throw new NodeConflictException(
+                get_class($this) . ' node is not assigned to any loop'
+            );
+        }
+        
+        $this->loop = null;
     }
 }
