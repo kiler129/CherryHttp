@@ -10,125 +10,73 @@
 
 namespace noFlash\CherryHttp\Server\Node;
 
-use noFlash\CherryHttp\Application\Lifecycle\LoopInterface;
+use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
+use noFlash\CherryHttp\Http\Node\HttpNodeFactoryInterface;
 use noFlash\CherryHttp\IO\Network\TcpListenerNodeTrait;
-use Psr\Http\Message\StreamInterface;
+use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 
 /**
  * Class HttpListenerNode
  */
-class HttpListenerNode /**implements TcpListenerNodeInterface**/
+class HttpListenerNode extends AbstractStreamNode implements TcpListenerNodeInterface
 {
     use TcpListenerNodeTrait;
-
+    use LoopNodeTrait;
 
     /**
-     * Every node can be "married"/attached to a loop.
-     * This method returns current loop to which a node is bound.
-     *
-     * @return LoopInterface|null Corresponding loop object or null if not bound to loop yet.
+     * @var HttpNodeFactoryInterface
      */
-    public function getLoop()
+    private $nodeFactory;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct()
     {
-        // TODO: Implement getLoop() method.
+        if ($this->nodeFactory === null) {
+            $this->nodeFactory = new \stdClass(); //TODO: change me to NodeFactoryInterface instance when it's there
+        }
     }
 
     /**
-     * Node can receive periodical signals from main loop.
-     * This method informs loop how often node wish to be pinged.
-     * Keep in mind this value is only suggestion and should NEVER be used in any time-critical routines.
+     * Listener node uses stream to accept connections and no data transfer is made through that stream.
+     * Due to that fact creating object is useless.
      *
-     * Value is cached and retrieved only on node attachment.
-     *
-     * @return int Number of seconds or self::PING_INTERVAL_ANY if node can be pinged in any intervals.
-     */
-    public function getPingInterval()
-    {
-        // TODO: Implement getPingInterval() method.
-    }
-
-    /**
-     * Method called by loop according to interval specified by getPingInterval() method.
-     *
-     * @return void
-     */
-    public function ping()
-    {
-        // TODO: Implement ping() method.
-    }
-
-    /**
-     * Method called by loop after attaching to loop.
-     *
-     * @param LoopInterface $loop Loop to which loop was added.
-     *
-     * @return void
-     */
-    public function onAttach(LoopInterface $loop)
-    {
-        // TODO: Implement onAttach() method.
-    }
-
-    /**
-     * Method called by loop after detaching from loop.
-     * Implementation should at least remove any internal references to loop object to prevent dangling objects & leaks.
-     *
-     * @return void
-     */
-    public function onDetach()
-    {
-        // TODO: Implement onDetach() method.
-    }
-
-    /**
-     * Provides object implementing StreamInterface containing stream from current instance.
-     *
-     * @return StreamInterface|null Null may be returned if there's no valid stream in current instance.
+     * @throws \LogicException
      */
     public function getStreamObject()
     {
-        // TODO: Implement getStreamObject() method.
+        throw new \LogicException('Listeners do not provide stream objects');
     }
 
     /**
-     * Method called everytime stream is considered "read ready".
-     * Please note that method can be also called for stream errors (e.g. remote disconnection) - it's how streams are
-     * handled by PHP itself.
-     *
-     * @return void
+     * @inheritdoc
      */
     public function doRead()
     {
-        // TODO: Implement doRead() method.
+        if (!$this->stream) {
+            $this->onStreamError();
+        }
     }
 
     /**
-     * In rare situations stream may become invalid on such a low level that even PHP is unable to given any clue
-     * besides "there's an error on one of your streams, I don't know on which and what happened". Even Linux kernel
-     * will not tell you directly which stream failed during select() call.
-     * This method will be called if such error was detected and in some magical way pinpointed to given stream.
+     * @inheritdoc
      *
-     * You should definitely trash it without any attempts to recover anything from it - it's gone on the kernel level.
-     * For internal details see following links:
-     *   http://news.php.net/php.internals/91974
-     *   https://github.com/facebook/hhvm/issues/6942
-     *
-     * @return void
-     */
-    public function onStreamError()
-    {
-        // TODO: Implement onStreamError() method.
-    }
-
-    /**
-     * After connection accept node holding that connection is needed.
-     * To prevent tight coupling a proper factory is needed - that method returns instance of that factory
-     * which is used by current instance.
-     *
-     * @return NodeFactoryInterface
+     * @return HttpNodeFactoryInterface
      */
     public function getNodeFactory()
     {
-        // TODO: Implement getNodeFactory() method.
+        return $this->nodeFactory;
+    }
+
+    /**
+     * Sets node factory on object.
+     * Since it's HTTP-specific listener only HttpNodeFactory is allowed.
+     *
+     * @param HttpNodeFactoryInterface $nodeFactory
+     */
+    public function setNodeFactory(HttpNodeFactoryInterface $nodeFactory)
+    {
+        $this->nodeFactory = $nodeFactory;
     }
 }

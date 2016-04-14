@@ -28,6 +28,20 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
     protected $streamsToDestroy = [];
 
+    /**
+     * Allows cataching typehint errors on PHP <7 & >=7
+     *
+     *
+     * For explanation refer to links below:
+     * - http://stackoverflow.com/questions/25570786/how-to-unit-test-type-hint-with-phpunit
+     * - https://github.com/sebastianbergmann/phpunit/issues/178
+     */
+    public function expectTypehintError()
+    {
+        $className = (PHP_MAJOR_VERSION < 7) ? get_class(new \PHPUnit_Framework_Error("", 0, "", 1)) : '\TypeError';
+        $this->expectException($className);
+    }
+
     protected function isOSX()
     {
         return (PHP_OS === 'Darwin');
@@ -163,6 +177,5 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         $this->fail('safeWrite() reached max count writing before writting full data set');
     }
-
 
 }
