@@ -10,17 +10,19 @@
 
 namespace noFlash\CherryHttp\Tests\IO\Network;
 
+use noFlash\CherryHttp\IO\Network\AbstractNetworkListenerNode;
+use noFlash\CherryHttp\IO\Network\AbstractNetworkStreamNode;
+use noFlash\CherryHttp\IO\Network\NetworkListenerNodeInterface;
 use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
-use noFlash\CherryHttp\IO\Network\TcpListenerNodeTrait;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 use ReflectionClass;
 
-class TcpListenerNodeTraitTest extends TestCase
+class AbstractNetworkListenerNodeTest extends TestCase
 {
     public function setUp()
     {
-        /** @var TcpListenerNodeTrait|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest */
-        $this->subjectUnderTest = $this->getMockBuilder(TcpListenerNodeTrait::class)->getMockForTrait();
+        /** @var AbstractNetworkListenerNode|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest */
+        $this->subjectUnderTest = $this->getMockForAbstractClass(AbstractNetworkListenerNode::class);
 
         parent::setUp();
     }
@@ -33,11 +35,14 @@ class TcpListenerNodeTraitTest extends TestCase
         }
     }
 
-    public function testTestedSubjectIsATrait()
+    public function testClassExtendsAbstractNetworkStreamNode()
     {
-        $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
+        $this->assertInstanceOf(AbstractNetworkStreamNode::class, $this->subjectUnderTest);
+    }
 
-        $this->assertTrue($traitReflection->isTrait());
+    public function testClassImplementsNetworkListenerNodeInterface()
+    {
+        $this->assertInstanceOf(NetworkListenerNodeInterface::class, $this->subjectUnderTest);
     }
 
     /**
@@ -131,34 +136,6 @@ class TcpListenerNodeTraitTest extends TestCase
         $this->assertTrue(method_exists($this->subjectUnderTest, 'writeBufferAppend'));
     }
 
-    /**
-     * Declaration of the method need to be complaint with the one in interface.
-     *
-     * @testdox Method writeBufferAppend() declares one argument without type-hint
-     */
-    public function testMethodWriteBufferAppendDeclaresOneArgumentWithoutTypehint()
-    {
-        $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
-        $wbaMethodReflection = $traitReflection->getMethod('writeBufferAppend');
-
-        $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');
-
-        $wbaMethodParameters = $wbaMethodReflection->getParameters();
-
-        /** @var \ReflectionParameter $wbaMethodParameter */
-        $wbaMethodParameter = reset($wbaMethodParameters); //Gets first parameter
-        $this->assertNull($wbaMethodParameter->getClass()); //Unfortunately hasType() is available since 7.0
-        $this->assertFalse($wbaMethodParameter->isDefaultValueAvailable());
-        $this->assertFalse($wbaMethodParameter->isPassedByReference());
-        $this->assertSame('data', $wbaMethodParameter->getName());
-    }
-
-    public function testAttemptingToAddDataToListenerWriteBufferResultsInLogicException()
-    {
-        $this->expectException(\LogicException::class);
-        $this->subjectUnderTest->writeBufferAppend('grumpgrump');
-    }
-
 
     public function ipsDataProvider()
     {
@@ -231,7 +208,7 @@ class TcpListenerNodeTraitTest extends TestCase
      */
     public function testMethodSetLocalIpAddressDeclaresOneArgumentWithoutTypehint()
     {
-        $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
+        $traitReflection = new ReflectionClass(AbstractNetworkListenerNode::class);
         $wbaMethodReflection = $traitReflection->getMethod('setLocalIpAddress');
 
         $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');
@@ -315,7 +292,7 @@ class TcpListenerNodeTraitTest extends TestCase
      */
     public function testMethodSetLocalPortDeclaresOneArgumentWithoutTypehint()
     {
-        $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
+        $traitReflection = new ReflectionClass(AbstractNetworkListenerNode::class);
         $wbaMethodReflection = $traitReflection->getMethod('setLocalPort');
 
         $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');

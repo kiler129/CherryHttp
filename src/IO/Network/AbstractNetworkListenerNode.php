@@ -11,16 +11,12 @@
 namespace noFlash\CherryHttp\IO\Network;
 
 /**
- * Trait implements common methods defined by TcpListenerNodeInterface
- *
  * - Listeners cannot contain remote IP sine they're not connected (so, protected $networkRemoteIp = null)
  * - Listener cannot contain remote port since they're not connected (so, protected $networkRemotePort = null)
  * - Again... listeners cannot be connected ;) (so, protected $networkIsConnected = false)
  */
-trait TcpListenerNodeTrait
+abstract class AbstractNetworkListenerNode extends AbstractNetworkStreamNode implements NetworkListenerNodeInterface
 {
-    //use NetworkNodeTrait;
-
     /**
      * Closes listener.
      * Note: clients connected using this listener will be leaved untouched. If you want to disconnect them get clients
@@ -33,36 +29,6 @@ trait TcpListenerNodeTrait
         if (is_resource($this->stream)) {
             fclose($this->stream); //Perhaps this still can throw E_WARNING but I rather not use @
         }
-    }
-
-    /**
-     * In case of listener node this always returns that it's not write ready.
-     *
-     * @return bool
-     */
-    public function isWriteReady()
-    {
-        return false;
-    }
-
-    /**
-     * In case of listener node it's just a dummy method.
-     *
-     * @throws \LogicException
-     */
-    public function doWrite()
-    {
-        throw new \LogicException('You cannot perform write on listener node');
-    }
-
-    /**
-     * In case of listener node it's just a dummy method.
-     *
-     * @throws \LogicException
-     */
-    public function writeBufferAppend($data)
-    {
-        throw new \LogicException('You cannot add data to buffer on listener node (because there\'s no any)');
     }
 
     /**
@@ -104,7 +70,6 @@ trait TcpListenerNodeTrait
         $this->networkLocalPort = $port;
     }
 
-
     /**
      * Prepares listening stream and starts listening.
      * It's equivalent of using socket(), bind(), and listen() system calls.
@@ -141,5 +106,35 @@ trait TcpListenerNodeTrait
 
         $this->networkLocalIp = substr($address, 0, $dividerPosition);
         $this->networkLocalPort = (int)substr($address, $dividerPosition + 1);
+    }
+
+    /**
+     * In case of listener node this always returns that it's not write ready.
+     *
+     * @return bool
+     */
+    public function isWriteReady()
+    {
+        return false;
+    }
+
+    /**
+     * In case of listener node it's just a dummy method.
+     *
+     * @throws \LogicException
+     */
+    public function doWrite()
+    {
+        throw new \LogicException('You cannot perform write on listener node');
+    }
+
+    /**
+     * In case of listener node it's just a dummy method.
+     *
+     * @throws \LogicException
+     */
+    public function writeBufferAppend($data)
+    {
+        throw new \LogicException('You cannot add data to buffer on listener node (because there\'s no any)');
     }
 }
