@@ -21,7 +21,6 @@ use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 class HttpListenerNode extends AbstractStreamNode implements TcpListenerNodeInterface
 {
     use TcpListenerNodeTrait;
-    use LoopNodeTrait;
 
     /**
      * @var HttpNodeFactoryInterface

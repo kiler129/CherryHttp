@@ -10,16 +10,16 @@
 
 namespace noFlash\CherryHttp\IO\Stream;
 
+use noFlash\CherryHttp\Application\Lifecycle\AbstractLoopNode;
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\StreamNodeInterface;
 
 /**
  * Class AbstractStreamNode
  */
-abstract class AbstractStreamNode implements StreamNodeInterface
+abstract class AbstractStreamNode extends AbstractLoopNode implements StreamNodeInterface
 {
     use StreamNodeTrait;
-    use LoopNodeTrait;
 
     /**
      * @inheritdoc

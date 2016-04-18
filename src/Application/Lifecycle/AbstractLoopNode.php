@@ -12,7 +12,11 @@ namespace noFlash\CherryHttp\Application\Lifecycle;
 
 use noFlash\CherryHttp\Application\Exception\NodeConflictException;
 
-trait LoopNodeTrait
+/**
+ * Class represents the most basic loop node fully implementing LoopNodeInterface.
+ * It's marked abstract since it does nothing - it can be attached, detached and pinged.
+ */
+abstract class AbstractLoopNode implements LoopNodeInterface
 {
     /**
      * @var LoopInterface|null A loop to which stream node is attached or null if it's not attached to any

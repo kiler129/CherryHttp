@@ -11,29 +11,37 @@
 namespace noFlash\CherryHttp\Tests\Application\Lifecycle;
 
 use noFlash\CherryHttp\Application\Exception\NodeConflictException;
+use noFlash\CherryHttp\Application\Lifecycle\AbstractLoopNode;
 use noFlash\CherryHttp\Application\Lifecycle\LoopInterface;
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
-class LoopNodeTraitTest extends TestCase
+/**
+ * @property AbstractLoopNode subjectUnderTest
+ */
+class AbstractLoopNodeTest extends TestCase
 {
-
     public function setUp()
     {
-        $this->subjectUnderTest = $this->getMockForTrait(LoopNodeTrait::class);
+        $this->subjectUnderTest = $this->getMockForAbstractClass(AbstractLoopNode::class);
 
         parent::setUp();
     }
 
-    public function testTraitDefinesProtectedPropertyForLoop()
+    public function testClassIsMarkedAsAbstract()
+    {
+        $this->assertIsAbstractClass(AbstractLoopNode::class);
+    }
+
+    public function testClassDefinesProtectedPropertyForLoop()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('loop'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('loop')->isProtected());
     }
 
-    public function testTraitContainsPublicMethodLoopGetter()
+    public function testClassContainsPublicMethodLoopGetter()
     {
-        $this->assertTrue($this->isMethodImplementedByClass(LoopNodeTrait::class, 'getLoop'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractLoopNode::class, 'getLoop'));
     }
 
     public function testByDefaultThereIsNoLoopDefined()
@@ -52,18 +60,19 @@ class LoopNodeTraitTest extends TestCase
     }
 
     /**
-     * @testdox Trait implements onAttach() method
+     * @testdox Class implements onAttach() method
      */
-    public function testTraitImplementsOnAttachMethod()
+    public function testClassImplementsOnAttachMethod()
     {
-        $this->assertTrue($this->isMethodImplementedByClass(LoopNodeTrait::class, 'onAttach'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractLoopNode::class, 'onAttach'));
     }
 
     /**
-     * @testdox Caling onAttach() method assigns given loop to "loop" property
+     * @testdox Calling onAttach() method assigns given loop to "loop" property
      */
     public function testCallingOnAttachAssignsGivenLoopToLoopProperty()
     {
+        /** @var LoopInterface|\PHPUnit_Framework_MockObject_MockObject $loop */
         $loop = $this->getMockForAbstractClass(LoopInterface::class);
 
         $this->subjectUnderTest->onAttach($loop);
@@ -76,6 +85,7 @@ class LoopNodeTraitTest extends TestCase
      */
     public function testCallingOnAttachMethodWithTheSameLoopAsAlreadyAssignedNodeThrowsNodeConflictException()
     {
+        /** @var LoopInterface|\PHPUnit_Framework_MockObject_MockObject $testLoop */
         $testLoop = $this->getMockForAbstractClass(LoopInterface::class);
         $this->setRestrictedPropertyValue('loop', $testLoop);
 
@@ -89,7 +99,9 @@ class LoopNodeTraitTest extends TestCase
      */
     public function testCallingOnAttachMethodOnAlreadyAssignedNodeWithLoopAnotherThanAssignedThrowsNodeThrowsNodeConflictException()
     {
+        /** @var LoopInterface|\PHPUnit_Framework_MockObject_MockObject $testLoop1 */
         $testLoop1 = $this->getMockForAbstractClass(LoopInterface::class);
+        /** @var LoopInterface|\PHPUnit_Framework_MockObject_MockObject $testLoop2 */
         $testLoop2 = $this->getMockForAbstractClass(LoopInterface::class);
         $this->setRestrictedPropertyValue('loop', $testLoop1);
 
@@ -98,18 +110,19 @@ class LoopNodeTraitTest extends TestCase
     }
 
     /**
-     * @testdox Trait implements onDetach() method
+     * @testdox Class implements onDetach() method
      */
-    public function testTraitImplementsOnDetachMethod()
+    public function testClassImplementsOnDetachMethod()
     {
-        $this->assertTrue($this->isMethodImplementedByClass(LoopNodeTrait::class, 'onDetach'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractLoopNode::class, 'onDetach'));
     }
 
     /**
-     * @testdox Caling onDetach() method unassigns node from loop
+     * @testdox Calling onDetach() method unassigns node from loop
      */
     public function testCallingOnDetachMethodUnassignsNodeFromLoop()
     {
+        /** @var LoopInterface|\PHPUnit_Framework_MockObject_MockObject $testLoop */
         $testLoop = $this->getMockForAbstractClass(LoopInterface::class);
 
         $this->setRestrictedPropertyValue('loop', $testLoop);
@@ -124,5 +137,4 @@ class LoopNodeTraitTest extends TestCase
         $this->expectException(NodeConflictException::class);
         $this->subjectUnderTest->onDetach();
     }
-
 }

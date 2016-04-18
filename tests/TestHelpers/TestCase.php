@@ -97,6 +97,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
+    protected function assertClassImplementsMethod($expectedMethodName, $className)
+    {
+        $this->assertTrue(
+            $this->isMethodImplementedByClass($className, $expectedMethodName),
+            "Class does not implement \"$expectedMethodName\" method"
+        );
+    }
+
     protected function isMethodImplementedByClass($className, $methodName)
     {
         //This is, I believe, the only method to really check if abstract class implementing interface has a method
@@ -114,6 +122,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
         return ($methodReflection->getDeclaringClass()->name === $className);
     }
 
+    protected function assertIsAbstractClass($className)
+    {
+        $this->assertTrue(class_exists($className), 'Given class does not exists');
+
+        $classReflection = new \ReflectionClass($className);
+        $this->assertTrue($classReflection->isAbstract(), 'Class is not abstract');
+    }
+    
     protected function createDummyServerWithClient()
     {
         $server = stream_socket_server('tcp://127.0.0.1:0');

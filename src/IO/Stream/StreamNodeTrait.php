@@ -10,6 +10,8 @@
 
 namespace noFlash\CherryHttp\IO\Stream;
 
+use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
+
 /**
  * Contains commonly used method defined by StreamNodeInterface
  */

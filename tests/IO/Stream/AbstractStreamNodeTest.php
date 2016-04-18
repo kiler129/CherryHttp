@@ -10,10 +10,10 @@
 
 namespace noFlash\CherryHttp\Tests\IO\Stream;
 
+use noFlash\CherryHttp\Application\Lifecycle\AbstractLoopNode;
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
-use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
 class AbstractStreamNodeTest extends TestCase
@@ -28,24 +28,15 @@ class AbstractStreamNodeTest extends TestCase
 
     public function testClassIsDefinedAsAbstract()
     {
-        $sutClassReflection = new \ReflectionClass(AbstractStreamNode::class);
-        $this->assertTrue($sutClassReflection->isAbstract());
+        $this->assertIsAbstractClass(AbstractStreamNode::class);
     }
 
     /**
-     * @testdox Tested subject uses StreamNodeTrait
+     * @testdox Class extends AbstractLoopNode
      */
-    public function testTestedSubjectUsesStreamNodeTrait()
+    public function testClassExtendsAbstractLoopNode()
     {
-        $this->assertContains(StreamNodeTrait::class, class_uses(AbstractStreamNode::class));
-    }
-
-    /**
-     * @testdox Tested subject uses LoopNodeTrait
-     */
-    public function testTestedSubjectUsesLoopNodeTrait()
-    {
-        $this->assertContains(LoopNodeTrait::class, class_uses(AbstractStreamNode::class));
+        $this->assertInstanceOf(AbstractLoopNode::class, $this->subjectUnderTest);
     }
 
     /**

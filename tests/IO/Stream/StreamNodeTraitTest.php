@@ -10,6 +10,7 @@
 
 namespace noFlash\CherryHttp\Tests\IO\Stream;
 
+use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
 
 class StreamNodeTraitTest extends \PHPUnit_Framework_TestCase
@@ -31,6 +32,13 @@ class StreamNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
     }
 
+    ///**
+    // * @testdox Tested subject uses LoopNodeTrait
+    // */
+    //public function testTestedSubjectUsesLoopNodeTrait()
+    //{
+    //    $this->assertContains(LoopNodeTrait::class, class_uses(StreamNodeTrait::class));
+    //}
 
     public function testTraitDefinesPublicPropertyForStream()
     {
