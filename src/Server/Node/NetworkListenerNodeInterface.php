@@ -17,7 +17,7 @@ use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
 /**
  * Listening node which can accept incoming connections.
  */
-interface TcpListenerNodeInterface extends NetworkNodeInterface
+interface NetworkListenerNodeInterface extends NetworkNodeInterface
 {
     const RANDOM_LISTEN_PORT = 0;
 

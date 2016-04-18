@@ -18,7 +18,7 @@ use noFlash\CherryHttp\IO\Network\TcpListenerNodeTrait;
 /**
  * Class HttpListenerNode
  */
-class HttpListenerNode extends AbstractNetworkStreamNode implements TcpListenerNodeInterface
+class HttpListenerNode extends AbstractNetworkStreamNode implements NetworkListenerNodeInterface
 {
     use TcpListenerNodeTrait;
 

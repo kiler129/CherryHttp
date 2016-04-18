@@ -13,8 +13,8 @@ namespace noFlash\CherryHttp\Tests\Server\Node;
 use noFlash\CherryHttp\Http\Node\HttpNodeFactoryInterface;
 use noFlash\CherryHttp\IO\Network\AbstractNetworkStreamNode;
 use noFlash\CherryHttp\Server\Node\HttpListenerNode;
+use noFlash\CherryHttp\Server\Node\NetworkListenerNodeInterface;
 use noFlash\CherryHttp\Server\Node\NodeFactoryInterface;
-use noFlash\CherryHttp\Server\Node\TcpListenerNodeInterface;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
 /**
@@ -42,7 +42,7 @@ class HttpListenerNodeTest extends TestCase
      */
     public function testClassImplementsTcpListenerNodeInterface()
     {
-        $this->assertInstanceOf(TcpListenerNodeInterface::class, $this->subjectUnderTest);
+        $this->assertInstanceOf(NetworkListenerNodeInterface::class, $this->subjectUnderTest);
     }
 
     /**

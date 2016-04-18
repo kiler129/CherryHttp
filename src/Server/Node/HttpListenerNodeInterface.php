@@ -10,6 +10,6 @@
 
 namespace noFlash\CherryHttp\Server\Node;
 
-interface HttpListenerNodeInterface extends TcpListenerNodeInterface
+interface HttpListenerNodeInterface extends NetworkListenerNodeInterface
 {
 }
