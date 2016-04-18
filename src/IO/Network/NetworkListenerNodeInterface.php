@@ -8,11 +8,11 @@
  * For the full copyright and license information, please view the LICENSE file distributed with this source code.
  */
 
-namespace noFlash\CherryHttp\Server\Node;
+namespace noFlash\CherryHttp\IO\Network;
 
 
 use noFlash\CherryHttp\Http\Exception\StreamException;
-use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
+use noFlash\CherryHttp\Server\Node\NodeFactoryInterface;
 
 /**
  * Listening node which can accept incoming connections.
