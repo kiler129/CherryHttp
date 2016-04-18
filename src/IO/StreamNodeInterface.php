@@ -11,7 +11,6 @@
 namespace noFlash\CherryHttp\IO;
 
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
-use noFlash\CherryHttp\IO\Exception\BufferOverflowException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -82,16 +81,16 @@ interface StreamNodeInterface extends LoopNodeInterface
      */
     public function onStreamError();
 
-    /**
-     * Appends data to stream write buffer.
-     *
-     * @param string $data
-     *
-     * @return int Number of bytes added to buffer.
-     * @throws BufferOverflowException Exception is thrown if buffer overflown or it's not even available for current
-     *                                 StreamNode. Since method may return 0, raising exception suggest permanent and
-     *                                 unrecoverable situation. Example use-case will be one-way socket which is
-     *                                 capable of only receiving data (e.g. GPS).
-     */
-    public function writeBufferAppend($data);
+    ///**
+    // * Appends data to stream write buffer.
+    // *
+    // * @param string $data
+    // *
+    // * @return int Number of bytes added to buffer.
+    // * @throws BufferOverflowException Exception is thrown if buffer overflown or it's not even available for current
+    // *                                 StreamNode. Since method may return 0, raising exception suggest permanent and
+    // *                                 unrecoverable situation. Example use-case will be one-way socket which is
+    // *                                 capable of only receiving data (e.g. GPS).
+    // */
+    //public function writeBufferAppend($data);
 }

@@ -10,15 +10,14 @@
 
 namespace noFlash\CherryHttp\IO\Network;
 
-use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
-
 /**
  * Trait implements common methods defined by NetworkNodeInterface
  * Keep in mind this trait represents just generic NetworkNode - nor listener nor stream client.
  */
 trait NetworkNodeTrait
 {
-    use StreamNodeTrait;
+    //use StreamNodeTrait;
+    public $stream; //Temporary solution after removing StreamNodeTrait
 
     /**
      * @var int Determines IP protocol version. This can contain value of 4 or 6 (NetworkNodeInterface::IP_V4/6)

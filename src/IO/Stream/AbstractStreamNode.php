@@ -18,8 +18,23 @@ use noFlash\CherryHttp\IO\StreamNodeInterface;
  */
 abstract class AbstractStreamNode extends AbstractLoopNode implements StreamNodeInterface
 {
-    use StreamNodeTrait;
 
+    /**
+     * @var resource PHP stream resource
+     */
+    public $stream;
+
+    /**
+     * Provides PHP stream resource.
+     * Output of that method MUST BE consistent with $this->stream contents.
+     *
+     * @return resource|null
+     */
+    public function getStreamResource()
+    {
+        return $this->stream;
+    }
+    
     /**
      * @inheritdoc
      */

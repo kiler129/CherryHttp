@@ -15,11 +15,13 @@ use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
+/**
+ * @property AbstractStreamNode|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest
+ */
 class AbstractStreamNodeTest extends TestCase
 {
     public function setUp()
     {
-        /** @var AbstractStreamNode|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest */
         $this->subjectUnderTest = $this->getMockForAbstractClass(AbstractStreamNode::class);
 
         parent::setUp();
@@ -36,6 +38,32 @@ class AbstractStreamNodeTest extends TestCase
     public function testClassExtendsAbstractLoopNode()
     {
         $this->assertInstanceOf(AbstractLoopNode::class, $this->subjectUnderTest);
+    }
+
+    public function testTraitDefinesPublicPropertyForStream()
+    {
+        $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('stream'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('stream')->isPublic());
+    }
+
+    /**
+     * @testdox Class implements getStreamResource() method
+     */
+    public function testClassImplementsGetStreamResourceMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'getStreamResource'));
+    }
+
+    /**
+     * @testdox Stream getter reflects public stream field
+     */
+    public function testStreamGetterReflectsPublicStreamField()
+    {
+        $testStream = fopen('php://memory', 'r');
+
+        $this->subjectUnderTest->stream = $testStream;
+        $this->assertSame($testStream, $this->subjectUnderTest->stream); //Magic setters anyone? ;)
+        $this->assertSame($testStream, $this->subjectUnderTest->getStreamResource());
     }
 
     /**

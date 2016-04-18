@@ -40,14 +40,6 @@ class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($traitReflection->isTrait());
     }
 
-    /**
-     * @testdox Tested subject uses StreamNodeTrait
-     */
-    public function testTestedSubjectUsesStreamNodeTrait()
-    {
-        $this->assertContains(StreamNodeTrait::class, class_uses(NetworkNodeTrait::class));
-    }
-
     public function testTraitDefinesProtectedPropertyForIpVersion()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkIpVersion'));
