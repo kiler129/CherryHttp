@@ -12,13 +12,13 @@ namespace noFlash\CherryHttp\Server\Node;
 
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\Http\Node\HttpNodeFactoryInterface;
+use noFlash\CherryHttp\IO\Network\AbstractNetworkStreamNode;
 use noFlash\CherryHttp\IO\Network\TcpListenerNodeTrait;
-use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 
 /**
  * Class HttpListenerNode
  */
-class HttpListenerNode extends AbstractStreamNode implements TcpListenerNodeInterface
+class HttpListenerNode extends AbstractNetworkStreamNode implements TcpListenerNodeInterface
 {
     use TcpListenerNodeTrait;
 

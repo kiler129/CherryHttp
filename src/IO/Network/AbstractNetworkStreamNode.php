@@ -10,11 +10,10 @@
 
 namespace noFlash\CherryHttp\IO\Network;
 
-/**
- * Trait implements common methods defined by NetworkNodeInterface
- * Keep in mind this trait represents just generic NetworkNode - nor listener nor stream client.
- */
-trait NetworkNodeTrait
+use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
+use noFlash\CherryHttp\IO\StreamNodeInterface;
+
+abstract class AbstractNetworkStreamNode extends AbstractStreamNode implements StreamNodeInterface
 {
     //use StreamNodeTrait;
     public $stream; //Temporary solution after removing StreamNodeTrait

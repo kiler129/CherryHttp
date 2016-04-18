@@ -10,34 +10,43 @@
 
 namespace noFlash\CherryHttp\Tests\IO\Network;
 
+use noFlash\CherryHttp\IO\Network\AbstractNetworkStreamNode;
 use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
-use noFlash\CherryHttp\IO\Network\NetworkNodeTrait;
-use noFlash\CherryHttp\IO\Stream\StreamNodeTrait;
-use ReflectionClass;
+use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
+use noFlash\CherryHttp\IO\StreamNodeInterface;
+use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
-class NetworkNodeTraitTest extends \PHPUnit_Framework_TestCase
+/**
+ * @property AbstractNetworkStreamNode subjectUnderTest
+ */
+class AbstractNetworkStreamNodeTest extends TestCase
 {
-    /**
-     * @var NetworkNodeTrait
-     */
-    private $subjectUnderTest;
-
-    /**
-     * @var ReflectionClass
-     */
-    private $subjectUnderTestObjectReflection;
-
     public function setUp()
     {
-        $this->subjectUnderTest = $this->getMockBuilder(NetworkNodeTrait::class)->getMockForTrait();
-        $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
+        $this->subjectUnderTest = $this->getMockForAbstractClass(AbstractNetworkStreamNode::class);
+
+        parent::setUp();
     }
 
-    public function testTestedSubjectIsATrait()
+    public function testClassIsAbstract()
     {
-        $traitReflection = new ReflectionClass(NetworkNodeTrait::class);
+        $this->assertIsAbstractClass(AbstractNetworkStreamNode::class);
+    }
 
-        $this->assertTrue($traitReflection->isTrait());
+    /**
+     * @testdox Class extends AbstractStreamNode
+     */
+    public function testClassExtendsAbstractStreamNode()
+    {
+        $this->assertInstanceOf(AbstractStreamNode::class, $this->subjectUnderTest);
+    }
+
+    /**
+     * @testdox Class implements StreamNodeInterface
+     */
+    public function testClassImplementsStreamNodeInterface()
+    {
+        $this->assertInstanceOf(StreamNodeInterface::class, $this->subjectUnderTest);
     }
 
     public function testTraitDefinesProtectedPropertyForIpVersion()

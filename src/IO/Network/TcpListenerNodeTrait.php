@@ -19,7 +19,7 @@ namespace noFlash\CherryHttp\IO\Network;
  */
 trait TcpListenerNodeTrait
 {
-    use NetworkNodeTrait;
+    //use NetworkNodeTrait;
 
     /**
      * Closes listener.

@@ -11,7 +11,6 @@
 namespace noFlash\CherryHttp\Tests\IO\Network;
 
 use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
-use noFlash\CherryHttp\IO\Network\NetworkNodeTrait;
 use noFlash\CherryHttp\IO\Network\TcpListenerNodeTrait;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 use ReflectionClass;
@@ -39,15 +38,6 @@ class TcpListenerNodeTraitTest extends TestCase
         $traitReflection = new ReflectionClass(TcpListenerNodeTrait::class);
 
         $this->assertTrue($traitReflection->isTrait());
-    }
-
-    /**
-     * @testdox Tested subject extends NetworkNodeTrait
-     */
-    public function testTestedSubjectExtendsNetworkNodeTrait()
-    {
-        $usedTraits = class_uses(TcpListenerNodeTrait::class);
-        $this->assertContains(NetworkNodeTrait::class, $usedTraits);
     }
 
     /**
