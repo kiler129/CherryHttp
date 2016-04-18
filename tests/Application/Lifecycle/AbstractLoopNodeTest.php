@@ -13,7 +13,6 @@ namespace noFlash\CherryHttp\Tests\Application\Lifecycle;
 use noFlash\CherryHttp\Application\Exception\NodeConflictException;
 use noFlash\CherryHttp\Application\Lifecycle\AbstractLoopNode;
 use noFlash\CherryHttp\Application\Lifecycle\LoopInterface;
-use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
 /**
@@ -57,6 +56,39 @@ class AbstractLoopNodeTest extends TestCase
         $this->setRestrictedPropertyValue('loop', $testLoop);
         $this->assertSame($testLoop, $this->getRestrictedPropertyValue('loop')); //Magic setters anyone? ;)
         $this->assertSame($testLoop, $this->subjectUnderTest->getLoop());
+    }
+
+    /**
+     * @testdox Class implements getPingInterval() method
+     */
+    public function testClassImplementsGetPingIntervalMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractLoopNode::class, 'getPingInterval'));
+    }
+
+    /**
+     * @testdox Ping interval returns LoopNodeInterface::PING_INTERVAL_ANY
+     */
+    public function testPingIntervalReturnsNodeInterfacePingIntervalAny()
+    {
+        $this->assertSame(AbstractLoopNode::PING_INTERVAL_ANY, $this->subjectUnderTest->getPingInterval());
+    }
+
+    /**
+     * @testdox Class implements ping() method
+     */
+    public function testClassImplementsPingMethod()
+    {
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractLoopNode::class, 'ping'));
+    }
+
+    /**
+     * @testdox ping() returns null
+     */
+    public function testPingReturnsNull()
+    {
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
+        $this->assertNull($this->subjectUnderTest->ping());
     }
 
     /**

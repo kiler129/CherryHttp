@@ -11,7 +11,6 @@
 namespace noFlash\CherryHttp\Tests\IO\Stream;
 
 use noFlash\CherryHttp\Application\Lifecycle\AbstractLoopNode;
-use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
@@ -37,38 +36,6 @@ class AbstractStreamNodeTest extends TestCase
     public function testClassExtendsAbstractLoopNode()
     {
         $this->assertInstanceOf(AbstractLoopNode::class, $this->subjectUnderTest);
-    }
-
-    /**
-     * @testdox Class implements getPingInterval() method
-     */
-    public function testClassImplementsGetPingIntervalMethod()
-    {
-        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'getPingInterval'));
-    }
-
-    /**
-     * @testdox Ping interval returns LoopNodeInterface::PING_INTERVAL_ANY
-     */
-    public function testPingIntervalReturnsNodeInterfacePingIntervalAny()
-    {
-        $this->assertSame(LoopNodeInterface::PING_INTERVAL_ANY, $this->subjectUnderTest->getPingInterval());
-    }
-
-    /**
-     * @testdox Class implements ping() method
-     */
-    public function testClassImplementsPingMethod()
-    {
-        $this->assertTrue($this->isMethodImplementedByClass(AbstractStreamNode::class, 'ping'));
-    }
-
-    /**
-     * @testdox ping() returns null
-     */
-    public function testPingReturnsNull()
-    {
-        $this->assertNull($this->subjectUnderTest->ping());
     }
 
     /**

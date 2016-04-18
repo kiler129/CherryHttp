@@ -34,6 +34,21 @@ abstract class AbstractLoopNode implements LoopNodeInterface
     /**
      * @inheritdoc
      */
+    public function getPingInterval()
+    {
+        return self::PING_INTERVAL_ANY;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function ping()
+    {
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function onAttach(LoopInterface $loop)
     {
         if ($this->loop !== null) {

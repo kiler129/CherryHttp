@@ -11,7 +11,6 @@
 namespace noFlash\CherryHttp\IO\Stream;
 
 use noFlash\CherryHttp\Application\Lifecycle\AbstractLoopNode;
-use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\StreamNodeInterface;
 
 /**
@@ -20,21 +19,6 @@ use noFlash\CherryHttp\IO\StreamNodeInterface;
 abstract class AbstractStreamNode extends AbstractLoopNode implements StreamNodeInterface
 {
     use StreamNodeTrait;
-
-    /**
-     * @inheritdoc
-     */
-    public function getPingInterval()
-    {
-        return self::PING_INTERVAL_ANY;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function ping()
-    {
-    }
 
     /**
      * @inheritdoc
