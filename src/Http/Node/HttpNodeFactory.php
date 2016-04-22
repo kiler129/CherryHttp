@@ -10,15 +10,15 @@
 
 namespace noFlash\CherryHttp\Http\Node;
 
+use noFlash\CherryHttp\EventHandler\Request\RequestHandlerInterface;
 use noFlash\CherryHttp\Http\HttpNodeInterface;
-use noFlash\CherryHttp\Server\Node\NodeFactoryInterface;
 
 /**
  * Produces HTTP nodes
  *
  * @see HttpNodeInterface
  */
-class HttpNodeFactory implements NodeFactoryInterface
+class HttpNodeFactory implements HttpNodeFactoryInterface
 {
     /**
      * @var HttpNodeInterface
@@ -46,5 +46,21 @@ class HttpNodeFactory implements NodeFactoryInterface
     public function getNode()
     {
         return clone $this->baseNode;
+    }
+
+    /**
+     * Most of HTTP server specific nodes are able to handle request. They however need to know where to pass
+     * the new request - here comes request handler.
+     * Using this method you can set a default one for particular nodes factory, which will be than automatically
+     * set on every new node.
+     *
+     * @param RequestHandlerInterface $requestHandler
+     *
+     * @return void
+     * @see HttpNodeInterface::setRequestHandler()
+     */
+    public function setDefaultRequestHandler(RequestHandlerInterface $requestHandler)
+    {
+        $this->baseNode->setRequestHandler($requestHandler);
     }
 }

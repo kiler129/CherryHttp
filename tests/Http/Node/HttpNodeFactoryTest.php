@@ -11,6 +11,7 @@
 namespace noFlash\CherryHttp\Tests\Http\Node;
 
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeInterface;
+use noFlash\CherryHttp\EventHandler\Request\RequestHandlerInterface;
 use noFlash\CherryHttp\Http\HttpNodeInterface;
 use noFlash\CherryHttp\Http\Node\HttpNodeFactory;
 use noFlash\CherryHttp\Server\Node\NodeFactoryInterface;
@@ -22,6 +23,15 @@ use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
  */
 class HttpNodeFactoryTest extends TestCase
 {
+    protected function setUp()
+    {
+        //TODO: refactor it after fixing testGetNodeMethodProducesObjectsImplementingHttpNodeInterface()
+        $baseNode = $this->getMockForAbstractClass(HttpNodeInterface::class);
+        $this->subjectUnderTest = new HttpNodeFactory($baseNode);
+
+        parent::setUp();
+    }
+
     /**
      * @testdox Class implements NodeFactoryInterface
      */
@@ -68,10 +78,6 @@ class HttpNodeFactoryTest extends TestCase
 
     public function testFactoredNodeIsAlwaysNewObject()
     {
-        //TODO: remove these two lines after fixing testGetNodeMethodProducesObjectsImplementingHttpNodeInterface()
-        $baseNode = $this->getMockForAbstractClass(HttpNodeInterface::class);
-        $this->subjectUnderTest = new HttpNodeFactory($baseNode);
-
         $instance1 = $this->subjectUnderTest->getNode();
         $instance2 = $this->subjectUnderTest->getNode();
 
@@ -79,10 +85,39 @@ class HttpNodeFactoryTest extends TestCase
         $this->assertNotSame($instance1, $instance2);
     }
 
-    protected function setUp()
+    /**
+     * @testdox setRequestHandler() is not called when there is no default request handler set
+     */
+    public function testSetRequestHandlerIsNotCalledWhenThereIsNoDefaultRequestHandlerSet()
     {
-        $this->subjectUnderTest = new HttpNodeFactory();
+        $baseNode = $this->getMockForAbstractClass(HttpNodeInterface::class);
+        $baseNode->expects($this->never())->method('setRequestHandler');
 
-        parent::setUp();
+        $this->subjectUnderTest = new HttpNodeFactory($baseNode);
+        $this->subjectUnderTest->getNode();
+    }
+
+    public function testRequestHandlerIsSetOnFactoredResponseIfDefaultOneWasSet()
+    {
+        $requestHandlerSetByFactory = null;
+
+        $baseNode = $this->getMockForAbstractClass(HttpNodeInterface::class);
+        $baseNode->expects($this->atLeastOnce())->method('setRequestHandler')->willReturnCallback(
+            function ($requestHandler) use (&$requestHandlerSetByFactory) {
+                $requestHandlerSetByFactory = $requestHandler;
+            }
+        );
+
+        $this->subjectUnderTest = new HttpNodeFactory($baseNode);
+
+        /** @var RequestHandlerInterface|\PHPUnit_Framework_MockObject_MockObject $defaultRequestHandler */
+        $defaultRequestHandler = $this->getMockForAbstractClass(RequestHandlerInterface::class);
+
+        $this->subjectUnderTest->setDefaultRequestHandler($defaultRequestHandler);
+        $this->assertSame(
+            $defaultRequestHandler,
+            $requestHandlerSetByFactory,
+            'Request handler is different from one set'
+        );
     }
 }

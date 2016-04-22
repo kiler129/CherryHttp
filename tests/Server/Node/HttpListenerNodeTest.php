@@ -108,7 +108,7 @@ class HttpListenerNodeTest extends TestCase
 
     public function testFreshObjectContainsDefaultNodesFactory()
     {
-        $this->assertInstanceOf(NodeFactoryInterface::class, $this->subjectUnderTest->getNodeFactory());
+        $this->assertInstanceOf(HttpNodeFactoryInterface::class, $this->subjectUnderTest->getNodeFactory());
     }
 
     /**
