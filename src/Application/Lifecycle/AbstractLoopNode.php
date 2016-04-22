@@ -45,7 +45,7 @@ abstract class AbstractLoopNode implements LoopNodeInterface
     public function ping()
     {
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -70,7 +70,7 @@ abstract class AbstractLoopNode implements LoopNodeInterface
                 get_class($this) . ' node is not assigned to any loop'
             );
         }
-        
+
         $this->loop = null;
     }
 }

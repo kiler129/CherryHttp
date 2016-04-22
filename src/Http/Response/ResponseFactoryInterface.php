@@ -11,7 +11,7 @@
 namespace noFlash\CherryHttp\Http\Response;
 
 /**
- * Every HTTP response 
+ * Every HTTP response
  */
 interface ResponseFactoryInterface
 {

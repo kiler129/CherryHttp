@@ -34,7 +34,7 @@ abstract class AbstractStreamNode extends AbstractLoopNode implements StreamNode
     {
         return $this->stream;
     }
-    
+
     /**
      * @inheritdoc
      */

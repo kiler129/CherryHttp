@@ -146,7 +146,7 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
         }
 
         $this->isDegenerated = true;
-        
+
         return stream_socket_shutdown($this->stream, STREAM_SHUT_RD);
     }
 }

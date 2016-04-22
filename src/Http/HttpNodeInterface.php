@@ -22,7 +22,7 @@ interface HttpNodeInterface extends NetworkNodeInterface
     /**
      * Higher level method than writeBufferAppend().
      * It appends new HTTP response to given connection.
-     * 
+     *
      * @param ResponseInterface $response
      *
      * @return void
