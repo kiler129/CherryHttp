@@ -35,5 +35,5 @@ interface HttpNodeInterface extends NetworkNodeInterface
      *
      * @return RequestHandlerInterface
      */
-    public function setRequestHandler();
+    public function setRequestHandler(RequestHandlerInterface $requestHandler);
 }
