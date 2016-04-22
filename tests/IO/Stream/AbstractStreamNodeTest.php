@@ -11,7 +11,6 @@
 namespace noFlash\CherryHttp\Tests\IO\Stream;
 
 use noFlash\CherryHttp\Application\Lifecycle\AbstractLoopNode;
-use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
@@ -40,7 +39,7 @@ class AbstractStreamNodeTest extends TestCase
         $this->assertInstanceOf(AbstractLoopNode::class, $this->subjectUnderTest);
     }
 
-    public function testTraitDefinesPublicPropertyForStream()
+    public function testClassDefinesPublicPropertyForStream()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('stream'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('stream')->isPublic());

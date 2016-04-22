@@ -48,11 +48,11 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * @testdox Trait contains disconnect() method
+     * @testdox Class contains disconnect() method
      */
-    public function testTraitContainsDisconnectMethod()
+    public function testClassContainsDisconnectMethod()
     {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'disconnect'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractNetworkListenerNode::class, 'disconnect'));
     }
 
     public function testDisconnectClosesStream()
@@ -101,11 +101,11 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * @testdox Trait contains isWriteReady() method
+     * @testdox Class contains isWriteReady() method
      */
-    public function testTraitContainsIsWriteReadyMethod()
+    public function testClassContainsIsWriteReadyMethod()
     {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'isWriteReady'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractNetworkListenerNode::class, 'isWriteReady'));
     }
 
     public function testStreamIsAlwaysConsideredNotReadyToWrite()
@@ -117,11 +117,11 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * @testdox Trait contains doWrite() method
+     * @testdox Class contains doWrite() method
      */
-    public function testTraitContainsDoWriteMethod()
+    public function testClassContainsDoWriteMethod()
     {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'doWrite'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractNetworkListenerNode::class, 'doWrite'));
     }
 
     public function testAttemptingToWriteOnListenerStreamResultsInLogicException()
@@ -201,11 +201,11 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * @testdox Trait contains setLocalIpAddress() method
+     * @testdox Class contains setLocalIpAddress() method
      */
-    public function testTraitContainsSetLocalIpAddressMethod()
+    public function testClassContainsSetLocalIpAddressMethod()
     {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'setLocalIpAddress'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractNetworkListenerNode::class, 'setLocalIpAddress'));
     }
 
     /**
@@ -215,8 +215,8 @@ class AbstractNetworkListenerNodeTest extends TestCase
      */
     public function testMethodSetLocalIpAddressDeclaresOneArgumentWithoutTypehint()
     {
-        $traitReflection = new ReflectionClass(AbstractNetworkListenerNode::class);
-        $wbaMethodReflection = $traitReflection->getMethod('setLocalIpAddress');
+        $classReflection = new ReflectionClass(AbstractNetworkListenerNode::class);
+        $wbaMethodReflection = $classReflection->getMethod('setLocalIpAddress');
 
         $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');
 
@@ -285,11 +285,11 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * @testdox Trait contains setLocalPort() method
+     * @testdox Class contains setLocalPort() method
      */
-    public function testTraitContainsSetLocalPortMethod()
+    public function testClassContainsSetLocalPortMethod()
     {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'setLocalPort'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractNetworkListenerNode::class, 'setLocalPort'));
     }
 
     /**
@@ -299,8 +299,8 @@ class AbstractNetworkListenerNodeTest extends TestCase
      */
     public function testMethodSetLocalPortDeclaresOneArgumentWithoutTypehint()
     {
-        $traitReflection = new ReflectionClass(AbstractNetworkListenerNode::class);
-        $wbaMethodReflection = $traitReflection->getMethod('setLocalPort');
+        $classReflection = new ReflectionClass(AbstractNetworkListenerNode::class);
+        $wbaMethodReflection = $classReflection->getMethod('setLocalPort');
 
         $this->assertSame(1, $wbaMethodReflection->getNumberOfParameters(), 'Method defines more than one parameter');
 
@@ -346,11 +346,11 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * @testdox Trait contains startListening() method
+     * @testdox Class contains startListening() method
      */
-    public function testTraitContainsStartListeningMethod()
+    public function testClassContainsStartListeningMethod()
     {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'startListening'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractNetworkListenerNode::class, 'startListening'));
     }
 
     public function testListeningCanBeStartedWithDefaultSettings()

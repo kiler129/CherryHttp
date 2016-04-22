@@ -49,7 +49,7 @@ class AbstractNetworkStreamNodeTest extends TestCase
         $this->assertInstanceOf(StreamNodeInterface::class, $this->subjectUnderTest);
     }
 
-    public function testTraitDefinesProtectedPropertyForIpVersion()
+    public function testClassDefinesProtectedPropertyForIpVersion()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkIpVersion'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkIpVersion')->isProtected());
@@ -84,7 +84,7 @@ class AbstractNetworkStreamNodeTest extends TestCase
         $this->assertSame(NetworkNodeInterface::IP_V6, $this->subjectUnderTest->getIpVersion());
     }
 
-    public function testTraitDefinesProtectedPropertyForLocalAddress()
+    public function testClassDefinesProtectedPropertyForLocalAddress()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkLocalIp'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkLocalIp')->isProtected());
@@ -116,7 +116,7 @@ class AbstractNetworkStreamNodeTest extends TestCase
         $this->assertSame('127.0.0.1', $this->subjectUnderTest->getLocalIpAddress());
     }
 
-    public function testTraitDefinesProtectedPropertyForLocalPort()
+    public function testClassDefinesProtectedPropertyForLocalPort()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkLocalPort'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkLocalPort')->isProtected());
@@ -145,7 +145,7 @@ class AbstractNetworkStreamNodeTest extends TestCase
         $this->assertSame(80, $this->subjectUnderTest->getLocalPort());
     }
 
-    public function testTraitDefinesProtectedPropertyForRemoteAddress()
+    public function testClassDefinesProtectedPropertyForRemoteAddress()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkRemoteIp'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkRemoteIp')->isProtected());
@@ -174,7 +174,7 @@ class AbstractNetworkStreamNodeTest extends TestCase
         $this->assertSame('10.0.0.1', $this->subjectUnderTest->getRemoteIpAddress());
     }
 
-    public function testTraitDefinesProtectedPropertyForRemotePort()
+    public function testClassDefinesProtectedPropertyForRemotePort()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkRemotePort'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkRemotePort')->isProtected());
@@ -203,7 +203,7 @@ class AbstractNetworkStreamNodeTest extends TestCase
         $this->assertSame(13981, $this->subjectUnderTest->getRemotePort());
     }
 
-    public function testTraitDefinesProtectedPropertyConnectionStatus()
+    public function testClassDefinesProtectedPropertyConnectionStatus()
     {
         $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('networkIsConnected'));
         $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('networkIsConnected')->isProtected());
