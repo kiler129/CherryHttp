@@ -17,11 +17,13 @@ use noFlash\CherryHttp\IO\Network\NetworkNodeInterface;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 use ReflectionClass;
 
+/**
+ * @property AbstractNetworkListenerNode|\PHPUnit_Framework_MockObject_MockObject  subjectUnderTest
+ */
 class AbstractNetworkListenerNodeTest extends TestCase
 {
     public function setUp()
     {
-        /** @var AbstractNetworkListenerNode|\PHPUnit_Framework_MockObject_MockObject subjectUnderTest */
         $this->subjectUnderTest = $this->getMockForAbstractClass(AbstractNetworkListenerNode::class);
 
         parent::setUp();
@@ -129,13 +131,18 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * @testdox Trait contains writeBufferAppend() method
+     * @testdox Class contains writeBufferAppend() method
      */
-    public function testTraitContainsWriteBufferAppendMethod()
+    public function testClassContainsWriteBufferAppendMethod()
     {
-        $this->assertTrue(method_exists($this->subjectUnderTest, 'writeBufferAppend'));
+        $this->assertTrue($this->isMethodImplementedByClass(AbstractNetworkListenerNode::class, 'writeBufferAppend'));
     }
 
+    public function testCallingWriteBufferAppendMethodThrowsLogicException()
+    {
+        $this->expectException(\LogicException::class);
+        $this->subjectUnderTest->writeBufferAppend('');
+    }
 
     public function ipsDataProvider()
     {
