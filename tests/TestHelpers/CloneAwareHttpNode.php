@@ -10,23 +10,11 @@
 
 namespace noFlash\CherryHttp\Tests\TestHelpers;
 
-use noFlash\CherryHttp\Http\Response\ResponseInterface;
+use noFlash\CherryHttp\Http\HttpNodeInterface;
 
 /**
  * @inheritdoc
  */
-abstract class CloneAwareResponse extends AbstractCloneAwareObject implements ResponseInterface
+abstract class CloneAwareHttpNode extends AbstractCloneAwareObject implements HttpNodeInterface
 {
-    public  $_body;
-    public  $_status;
-
-    public function setBody($body)
-    {
-        $this->_body = $body;
-    }
-
-    public function setStatus($code, $reasonPhrase = '')
-    {
-        $this->_status = [$code, $reasonPhrase];
-    }
 }

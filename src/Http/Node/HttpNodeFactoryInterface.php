@@ -15,18 +15,22 @@ use noFlash\CherryHttp\Server\Node\NodeFactoryInterface;
 
 /**
  * Objects implementing this interface are creating HTTP-specific nodes (but still backward complaint with standard
- * loop nodes)
+ * loop nodes).
+ * Most of the time you want to use NodeFactoryInterface while requesting dependency.
  */
 interface HttpNodeFactoryInterface extends NodeFactoryInterface
 {
+
     /**
      * Most of HTTP server specific nodes are able to handle request. They however need to know where to pass
      * the new request - here comes request handler.
-     * Using this method you can set a default one for particular nodes factory.
+     * Using this method you can set a default one for particular nodes factory, which will be than automatically
+     * set on every new node.
      *
      * @param RequestHandlerInterface $requestHandler
      *
      * @return void
+     * @see HttpNodeInterface::setRequestHandler()
      */
     public function setDefaultRequestHandler(RequestHandlerInterface $requestHandler);
 }

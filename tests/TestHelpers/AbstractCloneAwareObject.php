@@ -10,23 +10,22 @@
 
 namespace noFlash\CherryHttp\Tests\TestHelpers;
 
-use noFlash\CherryHttp\Http\Response\ResponseInterface;
-
 /**
- * @inheritdoc
+ * Unfortunately it's impossible (or I don't know a way) to check mock object has been cloned.
+ * So, this class is used in a clever way to detect cloning by setting marker on clone.
  */
-abstract class CloneAwareResponse extends AbstractCloneAwareObject implements ResponseInterface
+abstract class AbstractCloneAwareObject
 {
-    public  $_body;
-    public  $_status;
+    public  $_publicField = null;
+    private $cloneNumber  = 0;
 
-    public function setBody($body)
+    public function __clone()
     {
-        $this->_body = $body;
+        $this->cloneNumber++;
     }
 
-    public function setStatus($code, $reasonPhrase = '')
+    public function _getCloneNumber()
     {
-        $this->_status = [$code, $reasonPhrase];
+        return $this->cloneNumber;
     }
 }
