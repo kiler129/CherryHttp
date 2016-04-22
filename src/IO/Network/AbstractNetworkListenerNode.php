@@ -90,6 +90,8 @@ abstract class AbstractNetworkListenerNode extends AbstractNetworkStreamNode imp
 
         $address = ($this->networkIpVersion ===
                     NetworkNodeInterface::IP_V4) ? $this->networkLocalIp : "[{$this->networkLocalIp}]";
+
+        /** @noinspection PhpUsageOfSilenceOperatorInspection It's checked below, but it will throw warn. anyway */
         $this->stream = @stream_socket_server("tcp://$address:{$this->networkLocalPort}");
 
         if ($this->stream === false) {
@@ -131,7 +133,11 @@ abstract class AbstractNetworkListenerNode extends AbstractNetworkStreamNode imp
     /**
      * In case of listener node it's just a dummy method.
      *
-     * @throws \LogicException
+     * @param mixed $data It will be ignored
+     *
+     * @throws \LogicException You cannot append to listener buffer.
+     *
+     * @todo This method likely shouldn't be here - it needs investigation
      */
     public function writeBufferAppend($data)
     {

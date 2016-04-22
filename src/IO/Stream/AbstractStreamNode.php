@@ -40,6 +40,7 @@ abstract class AbstractStreamNode extends AbstractLoopNode implements StreamNode
      */
     public function onStreamError()
     {
+        /** @noinspection PhpUsageOfSilenceOperatorInspection There's no way to overcome that */
         @fclose($this->stream); //Well... I don't think it's gonna work really
         $this->stream = null;
     }

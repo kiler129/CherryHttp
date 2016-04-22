@@ -245,7 +245,7 @@ final class ResponseCode
     }
 
     /**
-     * HTTP codes are divided into 5 groups: informational, success, redirections, client errors and server errors.
+     * HTTP codes are divided into 5 groups: informational, success, redirection, client errors and server errors.
      * This method provides group number (100/200/300/400/500) for given code. If code was specified outside IANA
      * boundaries 0 is returned.
      *

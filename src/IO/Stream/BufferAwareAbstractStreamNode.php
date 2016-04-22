@@ -71,6 +71,8 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
      */
     public function doWrite()
     {
+        //PHP, despite returning number of bytes written, throws warning if buffer overflown 
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
         $bytesWritten = @fwrite($this->stream, $this->writeBuffer);
 
         /*

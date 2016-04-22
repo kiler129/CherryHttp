@@ -13,9 +13,14 @@ namespace noFlash\CherryHttp\IO\Network;
 use noFlash\CherryHttp\IO\Stream\AbstractStreamNode;
 use noFlash\CherryHttp\IO\StreamNodeInterface;
 
+/**
+ * Represents stub for StreamNodeInterface. It contains most used method for that interface.
+ * You only need to implement actual writing & reading (since this class is universal to ANY streams - local, TCP,
+ * UDP, raw IP.....)
+ */
 abstract class AbstractNetworkStreamNode extends AbstractStreamNode implements StreamNodeInterface
 {
-    //use StreamNodeTrait;
+    //TODO test that (?)
     public $stream; //Temporary solution after removing StreamNodeTrait
 
     /**

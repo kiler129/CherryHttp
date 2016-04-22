@@ -33,6 +33,8 @@ interface HttpNodeInterface extends NetworkNodeInterface
      * HTTP request is divided into many states. To prevent tight coupling this method allows you to set external
      * request handler which will be notified about various events happening during the process of handling request.
      *
+     * @param RequestHandlerInterface $requestHandler
+     *
      * @return RequestHandlerInterface
      */
     public function setRequestHandler(RequestHandlerInterface $requestHandler);
