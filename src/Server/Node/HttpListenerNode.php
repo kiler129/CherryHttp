@@ -10,12 +10,10 @@
 
 namespace noFlash\CherryHttp\Server\Node;
 
-use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
 use noFlash\CherryHttp\Http\Node\HttpNodeFactory;
 use noFlash\CherryHttp\Http\Node\HttpNodeFactoryInterface;
 use noFlash\CherryHttp\IO\Network\AbstractNetworkListenerNode;
 use noFlash\CherryHttp\IO\Network\NetworkListenerNodeInterface;
-use noFlash\CherryHttp\IO\Network\TcpListenerNodeTrait;
 
 /**
  * Class HttpListenerNode
