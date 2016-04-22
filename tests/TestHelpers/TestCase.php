@@ -15,7 +15,7 @@ namespace noFlash\CherryHttp\Tests\TestHelpers;
  *
  * Hmm... maybe I should do tests for this class too even if it wasn't written using TDD?
  */
-class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     const MAX_SAFE_WRITE_TRIES = 100;
 
@@ -49,6 +49,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        if (empty($this->subjectUnderTest)) {
+            throw new \LogicException('You need to overwrite setUp() function and set $this->subjectUnderTest');
+        }
+        
         $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
     }
 
