@@ -11,6 +11,7 @@
 namespace noFlash\CherryHttp\Server\Node;
 
 use noFlash\CherryHttp\Application\Lifecycle\LoopNodeTrait;
+use noFlash\CherryHttp\Http\Node\HttpNodeFactory;
 use noFlash\CherryHttp\Http\Node\HttpNodeFactoryInterface;
 use noFlash\CherryHttp\IO\Network\AbstractNetworkListenerNode;
 use noFlash\CherryHttp\IO\Network\NetworkListenerNodeInterface;
@@ -32,7 +33,7 @@ class HttpListenerNode extends AbstractNetworkListenerNode implements NetworkLis
     public function __construct()
     {
         if ($this->nodeFactory === null) {
-            $this->nodeFactory = new \stdClass(); //TODO: change me to NodeFactoryInterface instance when it's there
+            $this->nodeFactory = new HttpNodeFactory();
         }
     }
 

@@ -108,9 +108,7 @@ class HttpListenerNodeTest extends TestCase
 
     public function testFreshObjectContainsDefaultNodesFactory()
     {
-        $this->markTestIncomplete('No implementation for NodeFactoryInterface yet');
-
-        $this->assertInstanceOf(NodeFactoryInterface::class, $this->subjectUnderTest);
+        $this->assertInstanceOf(NodeFactoryInterface::class, $this->subjectUnderTest->getNodeFactory());
     }
 
     /**
