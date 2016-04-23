@@ -20,9 +20,6 @@ use noFlash\CherryHttp\IO\StreamNodeInterface;
  */
 abstract class AbstractNetworkStreamNode extends AbstractStreamNode implements StreamNodeInterface
 {
-    //TODO test that (?)
-    public $stream; //Temporary solution after removing StreamNodeTrait
-
     /**
      * @var int Determines IP protocol version. This can contain value of 4 or 6 (NetworkNodeInterface::IP_V4/6)
      */

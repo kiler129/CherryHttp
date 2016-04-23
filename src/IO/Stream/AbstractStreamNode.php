@@ -18,7 +18,6 @@ use noFlash\CherryHttp\IO\StreamNodeInterface;
  */
 abstract class AbstractStreamNode extends AbstractLoopNode implements StreamNodeInterface
 {
-
     /**
      * @var resource PHP stream resource
      */
