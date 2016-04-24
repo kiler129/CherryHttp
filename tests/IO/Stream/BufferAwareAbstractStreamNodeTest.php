@@ -590,4 +590,15 @@ class BufferAwareAbstractStreamNodeTest extends TestCase
 
         $this->assertTrue($this->getRestrictedPropertyValue('isDegenerated'));
     }
+
+    /**
+     * @testdox getStreamObject() throws RuntimeException
+     */
+    public function testGetStreamObjectThrowsRuntimeException()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Not implemented');
+
+        $this->subjectUnderTest->getStreamObject();
+    }
 }

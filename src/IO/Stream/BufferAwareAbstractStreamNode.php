@@ -159,4 +159,14 @@ abstract class BufferAwareAbstractStreamNode extends AbstractStreamNode
 
         return stream_socket_shutdown($this->stream, STREAM_SHUT_RD);
     }
+
+    /**
+     * Provides object implementing StreamInterface containing stream from current instance.
+     *
+     * @return StreamInterface|null Null may be returned if there's no valid stream in current instance.
+     */
+    public function getStreamObject()
+    {
+        throw new \RuntimeException('Not implemented');
+    }
 }
