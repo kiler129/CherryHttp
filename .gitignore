@@ -22,7 +22,7 @@ Temporary Items
 .apdisk
 
 # CI
-build/*
+build/logs
 
 # Composer
 composer.phar
