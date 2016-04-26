@@ -67,4 +67,45 @@ class Response extends Message implements ResponseInterface
         $reasonPhrase = (string)$reasonPhrase;
         $this->reasonPhrase = (empty($reasonPhrase)) ? ResponseCode::getReasonPhraseByCode($code) : $reasonPhrase;
     }
+
+    /**
+     * This method provides HTTP response header section (status line + headers + empty line) as defined in RFC:
+     *  https://tools.ietf.org/html/rfc7230#section-2
+     *
+     * @return string Example output:
+     *                HTTP/1.1 200 OK\r\n
+     *                Server: CherryHttp/2.0\r\n
+     *                Content-Length: 10\r\n
+     *                Connection: Keep-Alive\r\n
+     *                \r\n
+     */
+    public function getHeaderSection()
+    {
+        $header = 'HTTP/' . $this->protocolVersion . ' ' . $this->statusCode . ' ' . $this->reasonPhrase . "\r\n";
+        
+        foreach($this->headers as $headerLine)
+        {
+            //@formatter:off
+            $header .= $headerLine[0] . ': ' . //Header name
+                        (
+                            (isset($headerLine[1][1])) ? //More than single value?
+                            implode("\r\n${headerLine[0]}: ", $headerLine[1]) :
+                            $headerLine[1][0]
+                        ) .
+                       "\r\n";
+            //@formatter:on
+        }
+
+        return $header . "\r\n";
+    }
+
+    /**
+     * Generates HTTP response to send down the wire
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return '';
+    }
 }

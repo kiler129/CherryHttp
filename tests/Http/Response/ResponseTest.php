@@ -205,4 +205,78 @@ class ResponseTest extends TestCase
         $this->subjectUnderTest->setStatus(200, $setPhrase);
         $this->assertSame($checkPhrase, $this->subjectUnderTest->getReasonPhrase());
     }
+
+    public function testObjectCanBeCastedToString()
+    {
+        $this->assertInternalType('string', (string)$this->subjectUnderTest);
+    }
+
+    public function testHeaderSectionContainsProperlyFormattedStatusLine()
+    {
+        $this->assertRegExp(
+            "/^HTTP\/[0-1]\.[0-9] [0-9]{3} [A-Za-z0-9\s]+\r\n/",
+            (string)$this->subjectUnderTest->getHeaderSection()
+        );
+    }
+
+    public function testStatusLineInHeaderSectionContainsProperProtocolVersion()
+    {
+        $this->subjectUnderTest->setProtocolVersion(Response::HTTP_10);
+        $this->assertStringStartsWith('HTTP/1.0', (string)$this->subjectUnderTest->getHeaderSection());
+
+        $this->subjectUnderTest->setProtocolVersion(Response::HTTP_11);
+        $this->assertStringStartsWith('HTTP/1.1', (string)$this->subjectUnderTest->getHeaderSection());
+
+        $this->subjectUnderTest->setProtocolVersion('0.9');
+        $this->assertStringStartsWith('HTTP/0.9', (string)$this->subjectUnderTest->getHeaderSection());
+    }
+
+    public function testStatusLineInHeaderSectionContainsProperCodeAndReasonPhrase()
+    {
+        $this->subjectUnderTest->setStatus(200, 'Foo');
+        $this->assertContains('200 Foo', (string)$this->subjectUnderTest->getHeaderSection());
+
+        $this->subjectUnderTest->setStatus(500, 'Bar');
+        $this->assertContains('500 Bar', (string)$this->subjectUnderTest->getHeaderSection());
+    }
+
+    public function testHeaderSectionContainsAllHeadersDefined()
+    {
+        $expectedResult = [
+            '/.*?/', //Status line format has it's own separate test
+            "/^Server:\s?DerpServ\/0.99/",
+            "/^Foo:\s?Bar$/",
+            "/^Baz:\s?AaA$/",
+            "/^Baz:\s?bBb$/",
+            "/^Baz:\s?ccc/",
+            "/^$/",
+            "/^$/",
+        ];
+
+        $this->subjectUnderTest->setHeader('Server', 'DerpServ/0.99');
+        $this->subjectUnderTest->setHeader('Foo', 'Bar');
+        $this->subjectUnderTest->addHeader('Baz', 'AaA');
+        $this->subjectUnderTest->addHeader('Baz', 'bBb');
+        $this->subjectUnderTest->addHeader('Baz', 'ccc');
+
+
+        $headerSection = explode("\r\n", $this->subjectUnderTest->getHeaderSection());
+        $this->assertSame(count($expectedResult),
+                          count($headerSection),
+                          "Different number of lines returned than expected");
+
+        foreach($headerSection as $lineIndex => $lineContents)
+        {
+            $this->assertRegExp($expectedResult[$lineIndex], $lineContents, "Response line #$lineIndex failed test");
+        }
+    }
+
+    public function testHeaderSectionEndsWithEmptyLine()
+    {
+        $this->assertStringEndsWith("\r\n\r\n",
+                                    (string)$this->subjectUnderTest->getHeaderSection(),
+                                    'Header section need to end with empty line');
+    }
+
+    //@todo Add "Content-Length" magic tests
 }
