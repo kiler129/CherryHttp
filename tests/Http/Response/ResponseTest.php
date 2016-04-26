@@ -12,13 +12,37 @@ namespace noFlash\CherryHttp\Tests\Http\Response;
 
 use noFlash\CherryHttp\Http\Response\Response;
 use noFlash\CherryHttp\Http\Response\ResponseCode;
+use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
-class ResponseTest extends \PHPUnit_Framework_TestCase
+/**
+ * @property Response subjectUnderTest
+ */
+class ResponseTest extends TestCase
 {
-    /**
-     * @var Response
-     */
-    private $subjectUnderTest;
+    public function setUp()
+    {
+        $this->subjectUnderTest = new Response();
+        parent::setUp();
+    }
+
+    public function testResponseContainsServerHeaderByDefault()
+    {
+        $this->assertTrue($this->subjectUnderTest->hasHeader('Server'));
+
+        $serverHeader = $this->subjectUnderTest->getHeader('Server');
+        $this->assertSame(1, count($serverHeader));
+
+        $this->assertStringStartsWith('CherryHttp/', reset($serverHeader));
+    }
+
+    public function testResponseIsCreatedWithNoContentCodeAndRespectivePhraseByDefault()
+    {
+        $defaultCode = ResponseCode::NO_CONTENT;
+        $defaultReasonPhrase = ResponseCode::getReasonPhraseByCode($defaultCode);
+
+        $this->assertSame(ResponseCode::NO_CONTENT, $this->subjectUnderTest->getStatusCode());
+        $this->assertSame($defaultReasonPhrase, $this->subjectUnderTest->getReasonPhrase());
+    }
 
     public function ianaCodesProvider()
     {
@@ -88,20 +112,6 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         foreach ($ianaCodes as $code) {
             yield [$code, ResponseCode::getReasonPhraseByCode($code)];
         }
-    }
-
-    public function setUp()
-    {
-        $this->subjectUnderTest = new Response();
-    }
-
-    public function testResponseIsCreatedWithNoContentCodeAndRespectivePhraseByDefault()
-    {
-        $defaultCode = ResponseCode::NO_CONTENT;
-        $defaultReasonPhrase = ResponseCode::getReasonPhraseByCode($defaultCode);
-
-        $this->assertSame(ResponseCode::NO_CONTENT, $this->subjectUnderTest->getStatusCode());
-        $this->assertSame($defaultReasonPhrase, $this->subjectUnderTest->getReasonPhrase());
     }
 
     /**

@@ -30,6 +30,16 @@ class Response extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
+    protected $headers = [
+        'server' => [
+            'Server',
+            ['CherryHttp/2']
+        ]
+    ];
+    
+    /**
+     * {@inheritdoc}
+     */
     public function getStatusCode()
     {
         return $this->statusCode;
