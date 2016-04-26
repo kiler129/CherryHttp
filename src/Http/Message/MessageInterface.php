@@ -10,6 +10,8 @@
 
 namespace noFlash\CherryHttp\Http\Message;
 
+use noFlash\CherryHttp\IO\Stream\StreamInterface;
+
 /**
  * Generic representation of ane HTTP message, which consists of request line, headers and (sometimes non-empty) body.
  */
@@ -126,18 +128,17 @@ interface MessageInterface
     /**
      * Returns message body.
      *
-     * @return -undetermined-
-     * @todo
+     * @return StreamInterface|string
      */
     public function getBody();
 
     /**
      * Sets given message body on current instance.
      *
-     * @param -undetermined- $body Message body.
+     * @param StreamInterface|string $body Message body. For smaller payloads it's advised to use string, for bigger
+     *                                     use stream object.
      *
      * @return void
-     * @todo
      */
     public function setBody($body);
 }

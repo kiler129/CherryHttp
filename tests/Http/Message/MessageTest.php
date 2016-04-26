@@ -12,17 +12,38 @@ namespace noFlash\CherryHttp\Tests\Http\Message;
 
 use noFlash\CherryHttp\Http\Message\Message;
 use noFlash\CherryHttp\Http\Message\MessageInterface;
+use noFlash\CherryHttp\IO\Stream\StreamInterface;
+use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
-class MessageTest extends \PHPUnit_Framework_TestCase
+/**
+ * @property Message subjectUnderTest
+ */
+class MessageTest extends TestCase
 {
-    /**
-     * @var Message
-     */
-    private $subjectUnderTest;
-
     public function setUp()
     {
         $this->subjectUnderTest = new Message();
+        
+        parent::setUp();
+    }
+
+    public function testClassDefinedProtectedArrayFieldForHeaders()
+    {
+        $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('headers'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('headers')->isProtected());
+        $this->assertInternalType('array', $this->getRestrictedPropertyValue('headers'));
+    }
+
+    public function testClassDefinedProtectedFieldForBody()
+    {
+        $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('body'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('body')->isProtected());
+    }
+
+    public function testClassDefinedProtectedFieldForProtocolVersion()
+    {
+        $this->assertTrue($this->subjectUnderTestObjectReflection->hasProperty('protocolVersion'));
+        $this->assertTrue($this->subjectUnderTestObjectReflection->getProperty('protocolVersion')->isProtected());
     }
 
     /**
@@ -306,5 +327,53 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     public function testTryingToGetAllHeadersWhereNoneWasSetResultsInEmptyArray()
     {
         $this->assertSame([], $this->subjectUnderTest->getHeaders());
+    }
+
+    public function testFreshObjectContainsEmptyStringBody()
+    {
+        $this->assertSame('', $this->subjectUnderTest->getBody());
+    }
+
+    public function testBodyCanBeSetToStringValue()
+    {
+        $testString = 'FooBar';
+
+        $this->subjectUnderTest->setBody($testString);
+        $this->assertSame($testString,
+                          $this->getRestrictedPropertyValue('body'),
+                          'Protected body field is was not populated by setBody()');
+        $this->assertSame($testString, $this->subjectUnderTest->getBody());
+
+
+        $testString = 'BazzBar';
+
+        $this->subjectUnderTest->setBody($testString);
+        $this->assertSame($testString,
+                          $this->getRestrictedPropertyValue('body'),
+                          'Protected body field is was not populated by setBody()');
+        $this->assertSame($testString, $this->subjectUnderTest->getBody());
+    }
+
+    /**
+     * @testdox Body can be set to StreamInterface object
+     */
+    public function testBodyCanBeSetToStreamInterfaceObject()
+    {
+        $testStream = $this->getMockForAbstractClass(StreamInterface::class);
+
+        $this->subjectUnderTest->setBody($testStream);
+        $this->assertSame($testStream,
+                          $this->getRestrictedPropertyValue('body'),
+                          'Protected body field is was not populated by setBody()');
+        $this->assertSame($testStream, $this->subjectUnderTest->getBody());
+    }
+
+    /**
+     * @testdox setBody() throws \InvalidArgumentException object not implementing StreamInterface was passed
+     */
+    public function testSetBodyThrowsInvalidArgumentExceptionIfIObjectNotImplementingStreamInterfaceWasPassed()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->subjectUnderTest->setBody(new \stdClass());
     }
 }

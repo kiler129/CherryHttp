@@ -10,6 +10,8 @@
 
 namespace noFlash\CherryHttp\Http\Message;
 
+use noFlash\CherryHttp\IO\Stream\StreamInterface;
+
 /**
  * Represents generic message exchanged between endpoints.
  */
@@ -33,14 +35,16 @@ class Message implements MessageInterface
      * @var array
      */
     protected $headers = [];
+
     /**
-     * @var -undetermined- In current project phase it's just a plain VP
+     * @var StreamInterface|string
      */
     protected $body = '';
+
     /**
      * @var string HTTP protocol version, e.g. 1.0, 1.1, 0.99
      */
-    private $protocolVersion = MessageInterface::HTTP_11;
+    protected $protocolVersion = MessageInterface::HTTP_11;
 
     /**
      * {@inheritdoc}
@@ -152,6 +156,10 @@ class Message implements MessageInterface
      */
     public function setBody($body)
     {
+        if(!is_string($body) && !($body instanceof StreamInterface)) {
+            throw new \InvalidArgumentException('Stream need to be a string or object implementing StreamInterface');
+        }
+        
         $this->body = $body;
     }
 }
