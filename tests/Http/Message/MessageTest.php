@@ -368,6 +368,13 @@ class MessageTest extends TestCase
         $this->assertSame($testStream, $this->subjectUnderTest->getBody());
     }
 
+    public function testBodyCanBeClearedBySettingNull()
+    {
+        $this->subjectUnderTest->setBody('foo');
+        $this->subjectUnderTest->setBody(null);
+        $this->assertNull($this->subjectUnderTest->getBody());
+    }
+
     /**
      * @testdox setBody() throws \InvalidArgumentException object not implementing StreamInterface was passed
      */
