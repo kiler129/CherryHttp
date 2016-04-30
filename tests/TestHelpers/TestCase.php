@@ -195,7 +195,38 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             }
         }
 
-        $this->fail('safeWrite() reached max count writing before writting full data set');
+        $this->fail('safeWrite() reached max count writing before writing full data set');
+    }
+
+    /**
+     * Method made essentially to test for HHVM bug, which was fixed in later releases
+     * https://github.com/facebook/hhvm/issues/6938
+     * 
+     * @return bool
+     */
+    protected function verifyStreamBlockingBug()
+    {
+        $stream = stream_socket_client("udp://127.0.0.1:9999");
+        stream_set_blocking($stream, 0);
+
+        if (stream_get_meta_data($stream)['blocked'] === false) {
+            return;
+        }
+
+        if ($this->isHHVM()) {
+            $this->fail(
+                "Your HHVM is affected by stream-blocking bug " . "(https://github.com/facebook/hhvm/issues/6938).\n" .
+                "If you're sure that your version is newer than described there report this" . " to HHVM developers."
+            );
+
+        } else {
+            $this->fail(
+                "Your interpreter is affected by stream-blocking bug. Non-blocking stream is reported as \n" .
+                " blocked one (or it's just blocked after setting to non-blocking). This bug is similar to \n" .
+                " HHVM one at https://github.com/facebook/hhvm/issues/6938.\n" .
+                "Report it to your interpreter maintainers"
+            );
+        }
     }
 
 }

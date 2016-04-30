@@ -387,11 +387,12 @@ class AbstractNetworkListenerNodeTest extends TestCase
     }
 
     /**
-     * This test will fail on HHVM due to it's bug: https://github.com/facebook/hhvm/issues/6938
-     * It's intentionally not marked as skipped, because testing for stream blockage is a vital part of the server.
+     * This test may fail on older HHVMs - see https://github.com/facebook/hhvm/issues/6938
      */
     public function testListeningCreatesNonBlockingSocket()
     {
+        $this->verifyStreamBlockingBug();
+
         $this->subjectUnderTest->startListening();
 
         $streamMetadata = stream_get_meta_data($this->subjectUnderTest->stream);
