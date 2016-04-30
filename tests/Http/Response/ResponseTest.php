@@ -12,6 +12,7 @@ namespace noFlash\CherryHttp\Tests\Http\Response;
 
 use noFlash\CherryHttp\Http\Response\Response;
 use noFlash\CherryHttp\Http\Response\ResponseCode;
+use noFlash\CherryHttp\IO\Stream\StreamInterface;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 
 /**
@@ -204,6 +205,251 @@ class ResponseTest extends TestCase
     {
         $this->subjectUnderTest->setStatus(200, $setPhrase);
         $this->assertSame($checkPhrase, $this->subjectUnderTest->getReasonPhrase());
+    }
+
+    /**
+     * @testdox Setting body is restricted on "No Content" code
+     */
+    public function testSettingBodyIsRestrictedOnNoContentCode()
+    {
+        $this->subjectUnderTest->setStatus(ResponseCode::NO_CONTENT);
+
+        $this->subjectUnderTest->setBody('');
+        $this->assertSame('', $this->subjectUnderTest->getBody());
+
+        $this->subjectUnderTest->setBody(null);
+        $this->assertNull($this->subjectUnderTest->getBody());
+
+        $body = chr(rand(32, 126)); //Random ASCII symbol excluding controls
+        $this->expectException(\LogicException::class);
+        $this->subjectUnderTest->setBody($body);
+    }
+
+    public function informationalCodesProvider()
+    {
+        for ($i = 100; $i < 200; $i++) {
+            yield [$i];
+        }
+    }
+
+    /**
+     * @testdox      Setting body is restricted on informational responses
+     * @dataProvider informationalCodesProvider
+     */
+    public function testSettingBodyIsRestrictedOnInformationalResponses($code)
+    {
+        $this->subjectUnderTest->setStatus($code);
+
+        $this->subjectUnderTest->setBody('');
+        $this->assertSame('', $this->subjectUnderTest->getBody());
+
+        $this->subjectUnderTest->setBody(null);
+        $this->assertNull($this->subjectUnderTest->getBody());
+
+        $body = chr(rand(32, 126)); //Random ASCII symbol excluding controls
+        $this->expectException(\LogicException::class);
+        $this->subjectUnderTest->setBody($body);
+    }
+
+    public function testFreshObjectContainsEmptyStringBody()
+    {
+        $this->assertSame('', $this->subjectUnderTest->getBody());
+    }
+
+    public function testBodyCanBeSetToStringValue()
+    {
+        $testString = 'FooBar';
+
+        $this->subjectUnderTest->setBody($testString);
+        $this->assertSame(
+            $testString,
+            $this->getRestrictedPropertyValue('body'),
+            'Protected body field is was not populated by setBody()'
+        );
+        $this->assertSame($testString, $this->subjectUnderTest->getBody());
+
+
+        $testString = 'BazzBar';
+
+        $this->subjectUnderTest->setBody($testString);
+        $this->assertSame(
+            $testString,
+            $this->getRestrictedPropertyValue('body'),
+            'Protected body field is was not populated by setBody()'
+        );
+        $this->assertSame($testString, $this->subjectUnderTest->getBody());
+    }
+
+    /**
+     * @testdox Body can be set to StreamInterface object
+     */
+    public function testBodyCanBeSetToStreamInterfaceObject()
+    {
+        $testStream = $this->getMockForAbstractClass(StreamInterface::class);
+
+        $this->subjectUnderTest->setBody($testStream);
+        $this->assertSame(
+            $testStream,
+            $this->getRestrictedPropertyValue('body'),
+            'Protected body field is was not populated by setBody()'
+        );
+        $this->assertSame($testStream, $this->subjectUnderTest->getBody());
+    }
+
+    public function testBodyCanBeClearedBySettingNull()
+    {
+        $this->subjectUnderTest->setBody('foo');
+        $this->subjectUnderTest->setBody(null);
+        $this->assertNull($this->subjectUnderTest->getBody());
+    }
+
+    /**
+     * @testdox setBody() throws \InvalidArgumentException object not implementing StreamInterface was passed
+     */
+    public function testSetBodyThrowsInvalidArgumentExceptionIfIObjectNotImplementingStreamInterfaceWasPassed()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->subjectUnderTest->setBody(new \stdClass());
+    }
+
+    public function contentLengthsTestProvider()
+    {
+        return [
+            ['Le foo?', '7'],
+            ["a\nb", '3'],
+            ['☃', '3'],
+            ["aa\0b", '4'],
+            [' a b ', '5']
+        ];
+    }
+
+    /**
+     * @testdox      Proper Content-Length header is added for string payload on setBody
+     * @dataProvider contentLengthsTestProvider
+     */
+    public function testProperContentLengthHeaderIsAddedForStringPayloadOnSetBody($body, $length)
+    {
+        $this->subjectUnderTest->setBody('Le foo?');
+        $this->subjectUnderTest->setBody($body);
+
+        $this->assertTrue(
+            $this->subjectUnderTest->hasHeader('Content-Length'),
+            'No header was added'
+        );
+
+        $this->assertSame(
+            [$length],
+            $this->subjectUnderTest->getHeader('Content-Length'),
+            'Invalid header value'
+        );
+    }
+
+    /**
+     * @testdox Proper Content-Length header is added for finite stream
+     */
+    public function testProperContentLengthHeaderIsAddedForFiniteStream()
+    {
+        $streamLength = rand(5, 100);
+
+        $stream = $this->getMockForAbstractClass(StreamInterface::class);
+        $stream->expects($this->atLeastOnce())->method('getLength')->willReturn($streamLength);
+
+        $this->subjectUnderTest->setBody($stream);
+        $this->assertTrue(
+            $this->subjectUnderTest->hasHeader('Content-Length'),
+            'No header was added'
+        );
+
+        $this->assertSame(
+            [(string)$streamLength],
+            $this->subjectUnderTest->getHeader('Content-Length'),
+            'Invalid header value'
+        );
+    }
+
+    /**
+     * @testdox No Content-Length header is added for stream with no known length
+     */
+    public function testNoContentLengthHeaderIsAddedForStreamWWithNoKnownLength()
+    {
+        $stream = $this->getMockForAbstractClass(StreamInterface::class);
+        $stream->expects($this->atLeastOnce())->method('getLength')->willReturn(null);
+
+        $this->subjectUnderTest->setBody($stream);
+        $this->assertFalse(
+            $this->subjectUnderTest->hasHeader('Content-Length'),
+            'Header was not expected to be present (but it is)'
+        );
+    }
+
+    /**
+     * @inheritdoc Content-Length header for string payload is overwritten if previously set
+     */
+    public function tesContentLengthHeaderForStringPayloadIsOverwrittenIfPreviouslySet()
+    {
+        $this->subjectUnderTest->setHeader('Content-Length', '123');
+        $this->subjectUnderTest->setBody('abcd');
+
+        $this->assertTrue(
+            $this->subjectUnderTest->hasHeader('Content-Length'),
+            'Header vanished completely'
+        );
+
+        $this->assertSame(
+            ['4'],
+            $this->subjectUnderTest->getHeader('Content-Length'),
+            'Invalid header value'
+        );
+    }
+
+    /**
+     * @inheritdoc Content-Length header for stream **WITH** known length is overwritten if previously set
+     */
+    public function tesContentLengthHeaderForStreamWithKnownLengthIsOverwrittenIfPreviouslySet()
+    {
+        $streamLength = rand(5, 100);
+
+        $stream = $this->getMockForAbstractClass(StreamInterface::class);
+        $stream->expects($this->atLeastOnce())->method('getLength')->willReturn($streamLength);
+
+        $this->subjectUnderTest->setHeader('Content-Length', '4');
+        $this->subjectUnderTest->setBody($stream);
+
+        $this->assertTrue(
+            $this->subjectUnderTest->hasHeader('Content-Length'),
+            'Header vanished completely'
+        );
+
+        $this->assertSame(
+            [(string)$streamLength],
+            $this->subjectUnderTest->getHeader('Content-Length'),
+            'Invalid header value'
+        );
+    }
+
+    /**
+     * @testdox Content-Length header for stream **WITHOUT** known length is not overwritten
+     */
+    public function testContentLengthHeaderForStreamWithoutKnownLengthIsNotOverwritten()
+    {
+        $streamLength = (string)rand(5, 100);
+
+        $stream = $this->getMockForAbstractClass(StreamInterface::class);
+        $stream->expects($this->atLeastOnce())->method('getLength')->willReturn(null);
+
+        $this->subjectUnderTest->setHeader('Content-Length', $streamLength);
+        $this->subjectUnderTest->setBody($stream);
+
+        $this->assertTrue(
+            $this->subjectUnderTest->hasHeader('Content-Length'),
+            'Header vanished'
+        );
+
+        $this->assertSame(
+            [$streamLength],
+            $this->subjectUnderTest->getHeader('Content-Length'),
+            'Value changed'
+        );
     }
 
     public function testObjectCanBeCastedToString()

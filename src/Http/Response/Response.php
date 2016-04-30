@@ -11,6 +11,7 @@
 namespace noFlash\CherryHttp\Http\Response;
 
 use noFlash\CherryHttp\Http\Message\Message;
+use noFlash\CherryHttp\IO\Stream\StreamInterface;
 
 /**
  * Represents message sent by endpoint handling request, by default it will be a server.
@@ -66,6 +67,45 @@ class Response extends Message implements ResponseInterface
 
         $reasonPhrase = (string)$reasonPhrase;
         $this->reasonPhrase = (empty($reasonPhrase)) ? ResponseCode::getReasonPhraseByCode($code) : $reasonPhrase;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @throws \LogicException If you try to set response and current code is 204 or 100-199
+     */
+    public function setBody($body)
+    {
+        if ($body === '' || $body === null) {
+            $this->setHeader('Content-Length', '0');
+            $this->body = $body;
+
+            return;
+        }
+
+        if ($this->statusCode === ResponseCode::NO_CONTENT || ($this->statusCode >= 100 && $this->statusCode < 200)) {
+            throw new \LogicException("You cannot set body on Response with current code ({$this->statusCode})");
+        }
+
+        $this->body = $body;
+
+        if (is_string($body)) {
+            $this->setHeader('Content-Length', strlen($body));
+
+            return;
+        }
+
+        if ($body instanceof StreamInterface) {
+            $streamLength = $this->body->getLength();
+
+            if ($streamLength !== null) {
+                $this->setHeader('Content-Length', $streamLength);
+            }
+
+            return;
+        }
+
+        throw new \InvalidArgumentException('Body need to be a string or object implementing StreamInterface');
     }
 
     /**
