@@ -157,7 +157,7 @@ class Message implements MessageInterface
     public function setBody($body)
     {
         if(!is_string($body) && $body !== null && !($body instanceof StreamInterface)) {
-            throw new \InvalidArgumentException('Stream need to be a string or object implementing StreamInterface');
+            throw new \InvalidArgumentException('Body need to be a string or object implementing StreamInterface');
         }
         
         $this->body = $body;
