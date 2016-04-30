@@ -35,12 +35,12 @@ class ResponseTest extends TestCase
         $this->assertStringStartsWith('CherryHttp/', reset($serverHeader));
     }
 
-    public function testResponseIsCreatedWithNoContentCodeAndRespectivePhraseByDefault()
+    public function testResponseIsCreatedWithOKCodeAndRespectivePhraseByDefault()
     {
-        $defaultCode = ResponseCode::NO_CONTENT;
+        $defaultCode = ResponseCode::OK;
         $defaultReasonPhrase = ResponseCode::getReasonPhraseByCode($defaultCode);
 
-        $this->assertSame(ResponseCode::NO_CONTENT, $this->subjectUnderTest->getStatusCode());
+        $this->assertSame(ResponseCode::OK, $this->subjectUnderTest->getStatusCode());
         $this->assertSame($defaultReasonPhrase, $this->subjectUnderTest->getReasonPhrase());
     }
 
