@@ -585,6 +585,6 @@ class ResponseTest extends TestCase
         $bodyPosition = strpos($response, "\r\n\r\n") + 4;
 
         $this->assertNotFalse($bodyPosition, 'Failed to find end of header section (where body starts)');
-        $this->assertSame('', substr($response, $bodyPosition));
+        $this->assertSame($bodyPosition, strlen($response));
     }
 }
