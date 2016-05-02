@@ -142,10 +142,16 @@ class Response extends Message implements ResponseInterface
     /**
      * Generates HTTP response to send down the wire
      *
-     * @return string
+     * @return string Example output:
+     *                HTTP/1.1 200 OK\r\n
+     *                Server: CherryHttp/2.0\r\n
+     *                Content-Length: 12\r\n
+     *                Connection: Keep-Alive\r\n
+     *                \r\n
+     *                Hello World!
      */
     public function __toString()
     {
-        return '';
+        return $this->getHeaderSection() . $this->body;
     }
 }

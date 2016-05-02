@@ -524,5 +524,67 @@ class ResponseTest extends TestCase
                                     'Header section need to end with empty line');
     }
 
-    //@todo Add "Content-Length" magic tests
+    public function testStringRepresentationOfTheObjectContainsProperHeaderSection()
+    {
+        $this->subjectUnderTest->setProtocolVersion('0.7');
+        $this->subjectUnderTest->setStatus(418, "I'm a Vodkapot");
+        $this->subjectUnderTest->setHeader('Server', 'FooServer/1.01');
+        $this->subjectUnderTest->addHeader('X-Foo', 'LeFoo');
+        $this->subjectUnderTest->setHeader('Connection', 'Close');
+
+        $this->assertRegExp(
+            "/^" .
+                "HTTP\/0.7 418 I'm a Vodkapot\r\n" .
+                "Server:\s?FooServer\/1.01\r\n" .
+                "X-Foo:\s?LeFoo\r\n" .
+                "Connection:\s?Close\r\n" .
+                "\r\n" .
+            "/",
+            (string)$this->subjectUnderTest
+        );
+    }
+
+    public function testStringRepresentationOfTheObjectContainsGivenStringBody()
+    {
+        $this->subjectUnderTest->setProtocolVersion('0.9');
+        $this->subjectUnderTest->unsetHeader('Server');
+        $this->subjectUnderTest->setStatus(ResponseCode::OK, 'OK');
+        $this->subjectUnderTest->setHeader('Connection', 'Close');
+        $this->subjectUnderTest->setBody('Hello World!');
+
+        $this->assertRegExp(
+            "/^" .
+            "HTTP\/0.9 200 OK\r\n" .
+            "Connection:\s?Close\r\n" .
+            "Content-Length:\s12\r\n" .
+            "\r\n" .
+            "Hello World!" .
+            "$/",
+            (string)$this->subjectUnderTest
+        );
+    }
+
+    public function testStringRepresentationOfTheObjectContainsGivenStreamBody()
+    {
+        $stream = $this->getMockForAbstractClass(StreamInterface::class);
+        $stream->expects($this->atLeastOnce())->method('__toString')->willReturn('How are you?');
+        $this->subjectUnderTest->setBody($stream);
+
+        $response = (string)$this->subjectUnderTest;
+        $bodyPosition = strpos($response, "\r\n\r\n") + 4;
+
+        $this->assertNotFalse($bodyPosition, 'Failed to find end of header section (where body starts)');
+        $this->assertSame('How are you?', substr($response, $bodyPosition));
+    }
+
+    public function testStringRepresentationOfTheObjectContainsNoBodyWhenNullBodyWasSet()
+    {
+        $this->subjectUnderTest->setBody(null);
+
+        $response = (string)$this->subjectUnderTest;
+        $bodyPosition = strpos($response, "\r\n\r\n") + 4;
+
+        $this->assertNotFalse($bodyPosition, 'Failed to find end of header section (where body starts)');
+        $this->assertSame('', substr($response, $bodyPosition));
+    }
 }
