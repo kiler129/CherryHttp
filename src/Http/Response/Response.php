@@ -109,6 +109,22 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
+     * Generates HTTP response to send down the wire
+     *
+     * @return string Example output:
+     *                HTTP/1.1 200 OK\r\n
+     *                Server: CherryHttp/2.0\r\n
+     *                Content-Length: 12\r\n
+     *                Connection: Keep-Alive\r\n
+     *                \r\n
+     *                Hello World!
+     */
+    public function __toString()
+    {
+        return $this->getHeaderSection() . $this->getBody();
+    }
+
+    /**
      * This method provides HTTP response header section (status line + headers + empty line) as defined in RFC:
      *  https://tools.ietf.org/html/rfc7230#section-2
      *
@@ -137,21 +153,5 @@ class Response extends Message implements ResponseInterface
         }
 
         return $header . "\r\n";
-    }
-
-    /**
-     * Generates HTTP response to send down the wire
-     *
-     * @return string Example output:
-     *                HTTP/1.1 200 OK\r\n
-     *                Server: CherryHttp/2.0\r\n
-     *                Content-Length: 12\r\n
-     *                Connection: Keep-Alive\r\n
-     *                \r\n
-     *                Hello World!
-     */
-    public function __toString()
-    {
-        return $this->getHeaderSection() . $this->body;
     }
 }
