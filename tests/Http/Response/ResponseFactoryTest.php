@@ -17,6 +17,9 @@ use noFlash\CherryHttp\Tests\TestHelpers\CloneAwareResponse;
 use noFlash\CherryHttp\Tests\TestHelpers\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
+/**
+ * @property ResponseFactory subjectUnderTest
+ */
 class ResponseFactoryTest extends TestCase
 {
     /**
@@ -29,7 +32,6 @@ class ResponseFactoryTest extends TestCase
 
     public function setUp()
     {
-        /** @var ResponseFactory subjectUnderTest */
         $this->subjectUnderTest = new ResponseFactory();
 
         parent::setUp();
@@ -120,6 +122,38 @@ class ResponseFactoryTest extends TestCase
         $this->setRestrictedPropertyValue(self::INTERNAL_RESPONSE_FACTORY_FIELD_NAME, $mock);
 
         return $mock;
+    }
+
+    /**
+     * @inheritdoc setDefaultHeaders() method replaces all given headers
+     */
+    public function testSetDefaultHeadersMethodReplacesAllGivenHeaders()
+    {
+        $testArray = [
+            'X-Foo' => ['baz', 'bar', 'aaa'],
+            'X-Le-Foo' => ['notin'],
+            'Content-Type' => ['text/html']
+        ];
+
+        $baseMock = $this->setMockedBaseResponse();
+        $baseMock->expects($this->exactly(3))->method('setHeader')->withConsecutive(
+            [
+                $this->equalTo('X-Foo'),
+                $this->equalTo($testArray['X-Foo'])
+            ],
+
+            [
+                $this->equalTo('X-Le-Foo'),
+                $this->equalTo($testArray['X-Le-Foo'])
+            ],
+
+            [
+                $this->equalTo('Content-Type'),
+                $this->equalTo($testArray['Content-Type'])
+            ]
+        );
+
+        $this->subjectUnderTest->setDefaultHeaders($testArray);
     }
 
     public function testAddDefaultHeaderAddsNewHeader()

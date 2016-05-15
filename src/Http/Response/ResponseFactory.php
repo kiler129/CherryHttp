@@ -141,15 +141,13 @@ class ResponseFactory implements ResponseFactoryInterface
     }
 
     /**
-     * Replaces default headers with given array.
-     *
-     * @param array $headers /No semantic defined yet/
-     *
-     * @todo
+     * @inheritdoc
      */
     final public function setDefaultHeaders($headers)
     {
-        throw new \RuntimeException(__METHOD__ . ' is not implemented (interface lacks specification for it)');
+        foreach ($headers as $headerName => $headerValues) {
+            $this->baseResponse->setHeader($headerName, $headerValues);
+        }
     }
 
     /**
