@@ -51,16 +51,13 @@ interface MessageInterface
      * However implementation MAY preserve only one variation of header cases (e.g. setting X-Test and x-Test you may
      * either get two separate headers or just X-Test with two values.
      *
-     * Method returns array where every key represents header name as it will be sent over the wire and each value is
-     * an array of header values.
-     * Example output of that method may look like following array:
-     * [
-     *  'X-Test' => ['foo'],
-     *  'X-Foo'  => ['foo', 'baz']
-     *  'Server' => ['CherryHttp/2.0-dev']
-     * ]
-     *
-     * @return array
+     * @return array Method returns array where every key represents header name as it will be sent over the wire and
+     *               each value is an array containing header values.
+     *               [
+     *                  'X-Test' => ['foo'],
+     *                  'X-Foo'  => ['foo', 'baz']
+     *                  'Server' => ['CherryHttp/2.0-dev']
+     *               ]
      */
     public function getHeaders();
 
