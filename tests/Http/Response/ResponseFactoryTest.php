@@ -88,6 +88,7 @@ class ResponseFactoryTest extends TestCase
 
     public function testReturnedCustomBaseResponseIsAlwaysNewObject()
     {
+        /** @var PHPUnit_Framework_MockObject_MockObject|ResponseInterface $baseResponse */
         $baseResponse = $this->getMock(ResponseInterface::class);
         $this->subjectUnderTest->setBaseResponse($baseResponse);
         $this->assertEquals($baseResponse, $this->subjectUnderTest->getBaseResponse());
@@ -335,6 +336,7 @@ class ResponseFactoryTest extends TestCase
 
     public function testObjectIsNotClonedDuringModificationCall()
     {
+        /** @var PHPUnit_Framework_MockObject_MockObject|ResponseInterface $responseMock */
         $responseMock = $this->getMockForAbstractClass(ResponseInterface::class);
         $responseMock->expects($this->any())->method('getHeaders')->willReturn([]);
 
@@ -353,6 +355,7 @@ class ResponseFactoryTest extends TestCase
         );
         $this->subjectUnderTest->setBaseResponse($baseMock);
 
+        /** @var PHPUnit_Framework_MockObject_MockObject|ResponseInterface $responseMock */
         $responseMock = $this->getMockForAbstractClass(ResponseInterface::class);
         $responseMock->expects($this->at(0))->method('addHeader')->with('X-Foo', ['Bar', 'Bzz']);
         $responseMock->expects($this->at(1))->method('addHeader')->with('X-Ufo', 'Derp');
@@ -372,6 +375,7 @@ class ResponseFactoryTest extends TestCase
         );
         $this->subjectUnderTest->setBaseResponse($baseMock);
 
+        /** @var PHPUnit_Framework_MockObject_MockObject|ResponseInterface $responseMock */
         $responseMock = $this->getMockForAbstractClass(ResponseInterface::class);
         $responseMock->expects($this->at(0))->method('addHeader')->with('X-Foo', ['Bar', 'Bzz']);
         $responseMock->expects($this->at(1))->method('addHeader')->with('X-Ufo', 'Derp');
@@ -392,6 +396,7 @@ class ResponseFactoryTest extends TestCase
         );
         $this->subjectUnderTest->setBaseResponse($baseMock);
 
+        /** @var PHPUnit_Framework_MockObject_MockObject|ResponseInterface $responseMock */
         $responseMock = $this->getMockForAbstractClass(ResponseInterface::class);
         $responseMock->expects($this->at(0))->method('setHeader')->with('X-Foo', ['Bar', 'Bzz']);
         $responseMock->expects($this->at(1))->method('setHeader')->with('X-Ufo', 'Derp');
