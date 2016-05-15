@@ -29,7 +29,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected $streamsToDestroy = [];
 
     /**
-     * Allows cataching typehint errors on PHP <7 & >=7
+     * Allows catching typehint errors on PHP <7 & >=7
      *
      *
      * For explanation refer to links below:
@@ -42,17 +42,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->expectException($className);
     }
 
-    protected function isOSX()
-    {
-        return (PHP_OS === 'Darwin');
-    }
-
+    /**
+     * @inheritdoc
+     *
+     * @throws \LogicException $this->subjectUnderTest was not defined in child class
+     */
     protected function setUp()
     {
         if (empty($this->subjectUnderTest)) {
             throw new \LogicException('You need to overwrite setUp() function and set $this->subjectUnderTest');
         }
-        
+
         $this->subjectUnderTestObjectReflection = new \ReflectionObject($this->subjectUnderTest);
     }
 
@@ -70,6 +70,24 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         parent::tearDown();
     }
 
+    /**
+     * Checks if current environment is running under OS X or Darwin
+     *
+     * @return bool
+     */
+    protected function isOSX()
+    {
+        return (PHP_OS === 'Darwin');
+    }
+
+    /**
+     * Gets protected or private property value from current SUT.
+     *
+     * @param string $name Variable name
+     *
+     * @return mixed
+     * @throws \RuntimeException Property not found in object
+     */
     protected function getRestrictedPropertyValue($name)
     {
         if (!$this->subjectUnderTestObjectReflection->hasProperty($name)) {
@@ -82,6 +100,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $property->getValue($this->subjectUnderTest);
     }
 
+    /**
+     * Sets protected or private property value from current SUT.
+     *
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @throws \RuntimeException Property not found in object
+     */
     protected function setRestrictedPropertyValue($name, $value)
     {
         if (!$this->subjectUnderTestObjectReflection->hasProperty($name)) {
@@ -93,14 +119,26 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $property->setValue($this->subjectUnderTest, $value);
     }
 
+    /**
+     * Skip current test if IPv6 is not available
+     *
+     * @see https://github.com/symfony/http-foundation/blob/master/IpUtils.php#L100 - method source
+     */
     protected function markTestSkippedIfNoIpV6TestEnvironment()
     {
-        //Method found at https://github.com/symfony/http-foundation/blob/master/IpUtils.php#L100
         if (!((extension_loaded('sockets') && defined('AF_INET6')) || @inet_pton('::1'))) {
             $this->markTestSkipped('Unable to check IPv6. Check that PHP was not compiled with option "disable-ipv6".');
         }
     }
 
+    /**
+     * Assertion for isMethodImplementedByClass()
+     *
+     * @param string $expectedMethodName
+     * @param string $className FQCN
+     *
+     * @see isMethodImplementedByClass
+     */
     protected function assertClassImplementsMethod($expectedMethodName, $className)
     {
         $this->assertTrue(
@@ -109,6 +147,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * Checks if given class really implements given method.
+     * No PHP built-in methods could be used here since they will fail in scenario where abstract class implements
+     * interface and than mock is build for that class.
+     *
+     * @param string $className FQCN
+     * @param string $methodName
+     *
+     * @return bool
+     */
     protected function isMethodImplementedByClass($className, $methodName)
     {
         //This is, I believe, the only method to really check if abstract class implementing interface has a method
@@ -126,6 +174,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return ($methodReflection->getDeclaringClass()->name === $className);
     }
 
+    /**
+     * Checks if given class is abstract
+     *
+     * @param string $className FQCN
+     */
     protected function assertIsAbstractClass($className)
     {
         $this->assertTrue(class_exists($className), 'Given class does not exists');
@@ -133,7 +186,18 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $classReflection = new \ReflectionClass($className);
         $this->assertTrue($classReflection->isAbstract(), 'Class is not abstract');
     }
-    
+
+    /**
+     * Creates TCP/IP socket server and connects client to it.
+     *
+     * @return array [
+     *                  'server' => (resource for server socket),
+     *                  'clientOnServer' => (resource for client on the sever side),
+     *                  'clientOnClient' => (resource for client on the client side)
+     *               ]
+     *
+     * @throws \PHPUnit_Framework_Exception
+     */
     protected function createDummyServerWithClient()
     {
         $server = stream_socket_server('tcp://127.0.0.1:0');
@@ -155,6 +219,13 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return ['server' => $server, 'clientOnServer' => $clientOnServer, 'clientOnClient' => $clientOnClient];
     }
 
+    /**
+     * Skips current test on HHVM
+     *
+     * @param string $info
+     *
+     * @throws \PHPUnit_Framework_SkippedTestError
+     */
     protected function skipTestOnHHVM($info = 'See test comments for details')
     {
         if ($this->isHHVM()) {
@@ -162,11 +233,23 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Checks if code runs under HHVM interpreter
+     *
+     * @return bool
+     */
     public function isHHVM()
     {
         return defined('HHVM_VERSION');
     }
 
+    /**
+     * Yes, some things are in fact broken on Linux and working on other OSs! (yes, I was also surprised)
+     *
+     * @param string $info
+     *
+     * @throws \PHPUnit_Framework_SkippedTestError
+     */
     protected function skipTestOnLinux($info = 'See test comments for details')
     {
         if ($this->isLinux()) {
@@ -174,10 +257,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Checks if currently running on Linux
+     *
+     * @return bool
+     */
     protected function isLinux()
     {
         return (PHP_OS === 'Linux');
     }
+
 
     /**
      * Method used instead of classic fwrite() when there's a risk that fread() will be performed too fast for OS
@@ -201,8 +290,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Method made essentially to test for HHVM bug, which was fixed in later releases
      * https://github.com/facebook/hhvm/issues/6938
-     * 
+     *
      * @return bool
+     *
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     protected function verifyStreamBlockingBug()
     {
@@ -215,8 +306,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
         if ($this->isHHVM()) {
             $this->fail(
-                "Your HHVM is affected by stream-blocking bug " . "(https://github.com/facebook/hhvm/issues/6938).\n" .
-                "If you're sure that your version is newer than described there report this" . " to HHVM developers."
+                "Your HHVM is affected by stream-blocking bug (https://github.com/facebook/hhvm/issues/6938).\n" .
+                "If you're sure that your version is newer than described there report this to HHVM developers."
             );
 
         } else {
