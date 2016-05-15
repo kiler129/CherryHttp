@@ -267,6 +267,27 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return (PHP_OS === 'Linux');
     }
 
+    /**
+     * Gets memory stream, optionally containing unread content
+     *
+     * @param string|null $content Optional content (null by default)
+     *
+     * @return resource
+     *
+     * @throws \PHPUnit_Framework_Exception
+     */
+    protected function getMemoryStream($content = null)
+    {
+        $testStream = fopen('php://memory', 'r+');
+        $this->assertInternalType('resource', $testStream, 'Failed to open test stream');
+
+        if ($content !== null) {
+            $this->safeWrite($testStream, $content);
+            $this->assertTrue(rewind($testStream), 'Failed to rewind test stream after adding data');
+        }
+
+        return $testStream;
+    }
 
     /**
      * Method used instead of classic fwrite() when there's a risk that fread() will be performed too fast for OS
