@@ -30,11 +30,11 @@ interface ResponseFactoryInterface
     public function getDefaultHeaders();
 
     /**
-     * Replaces default headers with given array.
+     * Merges current set of default headers with given one:
+     * - If header doesn't exists yet it will be created
+     * - If header exists it will be replaced with given one, previous set of values will be discarded and new one used
      *
-     * @param array $headers /No semantic defined yet/
-     *
-     * @todo
+     * @param array $headers Format should be the same as returned by MessageInterface::getHeaders()
      */
     public function setDefaultHeaders($headers);
 
