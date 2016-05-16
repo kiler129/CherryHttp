@@ -22,17 +22,18 @@ interface LoopInterface
     /**
      * Attaches node to current loop and calls LoopNodeInterface::onAttach() method on given node after attaching is
      * finished.
+     * AFTER attaching node to the loop onAttach() method will be called on the node object.
      *
      * @param LoopNodeInterface $node Node to attach to current loop.
      *
      * @return bool
-     * @throws NodeConflictException Thrown if node already is part of that loop, or node is attached to another loop.
+     * @throws NodeConflictException Thrown if node already is part of that loop
      */
     public function attachNode(LoopNodeInterface $node);
 
-
     /**
      * Detaches node from loop and calls LoopNodeInterface::onDetach() method on given node after detaching is finished.
+     * BEFORE detaching node from the loop onDetach() method will be called on the node object.
      *
      * @param LoopNodeInterface $node
      *
